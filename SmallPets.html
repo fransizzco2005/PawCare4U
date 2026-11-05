@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Small Pet Products | PawCare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-clean.css"><link rel="stylesheet" href="account-features.css">
+</head>
+<body class="page-rodent" data-loader-duration="2000">
+<audio id="pawcareMusic" data-pawcare-music src="assets/music/stream cafe - boba date  (1 hour) _ cute music.mp3" loop preload="auto" muted autoplay></audio>
+<div class="page-loader" id="pageLoader" role="status" aria-label="Loading PawCare">
+  <span class="page-loader-ring"></span>
+  <span class="page-loader-mark">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 21c-3.5 0-7-2.2-7-5.4 0-2 1.7-3.1 3.4-3.9 1.4-.7 1.9-1.3 1.9-2.4 0-1 .8-1.8 1.7-1.8s1.7.8 1.7 1.8c0 1.1.5 1.7 1.9 2.4 1.7.8 3.4 1.9 3.4 3.9 0 3.2-3.5 5.4-7 5.4Z"/>
+      <circle cx="6" cy="7.5" r="2.1"/>
+      <circle cx="12" cy="4.6" r="2.1"/>
+      <circle cx="18" cy="7.5" r="2.1"/>
+      <circle cx="3.4" cy="12.4" r="1.8"/>
+    </svg>
+  </span>
+  <span class="page-loader-text">PawCare</span>
+</div>
+<div class="topbar">
+    <div class="topbar-inner">
+      <span class="topbar-love">"Loved fiercely, cared for properly" — that's the whole idea.</span>
+      <span>Care Line: <span class="topbar-hotline">(082) 555-0143</span> · <a href="mailto:hello@pawcare.ph">hello@pawcare.ph</a></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="index.html">
+        <span class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 21c-3.5 0-7-2.2-7-5.4 0-2 1.7-3.1 3.4-3.9 1.4-.7 1.9-1.3 1.9-2.4 0-1 .8-1.8 1.7-1.8s1.7.8 1.7 1.8c0 1.1.5 1.7 1.9 2.4 1.7.8 3.4 1.9 3.4 3.9 0 3.2-3.5 5.4-7 5.4Z"/>
+            <circle cx="6" cy="7.5" r="2.1"/>
+            <circle cx="12" cy="4.6" r="2.1"/>
+            <circle cx="18" cy="7.5" r="2.1"/>
+            <circle cx="3.4" cy="12.4" r="1.8"/>
+          </svg>
+        </span>
+        <span>PawCare<span class="logo-tag">Premium pet care</span></span>
+      </a>
+
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true"></span>
+        <input type="text" placeholder="Search small pet products..." id="search-input">
+      </div>
+
+      <nav class="nav-menu">
+        <a href="index.html">Home</a>
+        <a href="Dogs.html">Dogs</a>
+        <a href="Cats.html">Cats</a>
+        <a href="Birds.html">Birds</a>
+        <a href="Fish.html">Fish</a>
+        <a href="SmallPets.html" class="active">Small Pets</a>
+        <a href="services.html">Services</a>
+        <a href="Find a store.html">Find a Store</a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="account-wrap" id="accountWrap">
+          <button class="icon-btn account-btn" id="accountBtn" aria-label="Account" title="Account" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="ui-icon"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 20c.9-3.5 3.1-5.3 6.5-5.3s5.6 1.8 6.5 5.3"></path></svg>
+          </button>
+          <span class="account-greeting" id="accountGreeting" hidden></span>
+          <div class="account-menu" id="accountMenu" hidden>
+            <p class="account-menu__hello" id="accountHello">Hello, <span id="accountName">there</span>!</p>
+            <p class="account-menu__loyalty" id="loyaltyPoints">Welcome to PawCare.</p>
+            <div id="accountSignedOut">
+              <button class="account-menu-btn" id="openSignIn" type="button">Sign in</button>
+              <button class="account-menu-btn account-menu-btn--secondary" id="openSignUp" type="button">Create account</button>
+            </div>
+            <div id="accountSignedIn" hidden>
+              <button class="account-menu-btn" id="viewAccountBtn" type="button">My account</button>
+              <button class="account-menu-btn account-menu-btn--secondary" id="logoutBtn" type="button">Sign out</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="icon-btn" id="cartBtn" onclick="togglePawCareCart()" aria-label="Shopping cart"><svg viewBox="0 0 24 24" aria-hidden="true" class="ui-icon"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H7"/><circle cx="10" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg><span class="icon-badge">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> / <span>Small Pets</span>
+  </div>
+
+  <section class="hero">
+    <h1>Small Pet Products & Supplies</h1>
+    <p>Quality care for rabbits, hamsters, guinea pigs, ferrets, and other small animals</p>
+  </section>
+
+  <main>
+    <div class="filters-grid">
+      <aside class="sidebar-filters">
+        <div class="filter-group">
+          <label>Pet Type</label>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Rabbit</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Hamster</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Guinea Pig</label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Price Range</label>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Under ₱500</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>₱500 - ₱1000</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Over ₱1000</label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Status</label>
+          <div class="filter-option">
+            <input type="checkbox"> <label>New</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Sale</label>
+          </div>
+        </div>
+      </aside>
+
+      <section class="products-section">
+        <div class="products-controls">
+          <div class="products-controls-left">
+            <div class="products-count">Showing 20 products</div>
+            <div class="products-legend">
+              <span class="legend-chip legend-sale"><i></i>Sale</span>
+              <span class="legend-chip legend-new"><i></i>New</span>
+              <span class="legend-chip legend-top"><i></i>Top rated</span>
+            </div>
+          </div>
+          <div class="products-controls-right">
+            <div class="sort-control">
+              <label>Sort by</label>
+              <select>
+              <option>Featured</option>
+              <option>Price: Low to High</option>
+              <option>Price: High to Low</option>
+              <option>Newest First</option>
+              <option>Best Rated</option>
+            </select>
+            </div>
+            <div class="view-toggle" role="group" aria-label="Layout view">
+              <button type="button" class="view-btn active" data-view="grid" aria-label="Grid view"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></button>
+              <button type="button" class="view-btn" data-view="list" aria-label="List view"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="products-grid">
+<article class="product-card" data-product-id="81" data-subcategory="Food &amp; Treats" data-name="Compressed Timothy Hay 2kg" data-price="546" data-old-price="" data-rating="4.7" data-reviews="117" data-description="Premium compressed timothy hay 2kg designed for everyday food &amp; treats care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/736x/5e/34/12/5e34122e4bfbcfffa40fb6f7551329e4.jpg" alt="Compressed Timothy Hay 2kg" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Food &amp; Treats</div>
+    <div class="product-name">Compressed Timothy Hay 2kg</div>
+    <div class="product-rating">★ 4.7 (117 reviews)</div>
+    <div class="product-price">₱546</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="82" data-subcategory="Food &amp; Treats" data-name="Compressed Timothy Hay 2kg Plus" data-price="683" data-old-price="" data-rating="4.9" data-reviews="134" data-description="Premium compressed timothy hay 2kg plus designed for everyday food &amp; treats care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/1200x/13/ad/de/13adde1a135f39256624799440483d16.jpg" alt="Compressed Timothy Hay 2kg Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Food &amp; Treats</div>
+    <div class="product-name">Compressed Timothy Hay 2kg Plus</div>
+    <div class="product-rating">★ 4.9 (134 reviews)</div>
+    <div class="product-price">₱683</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="83" data-subcategory="Grooming &amp; Beauty" data-name="Small Pet Gentle Grooming Kit" data-price="820" data-old-price="" data-rating="4.6" data-reviews="151" data-description="Premium small pet gentle grooming kit designed for everyday grooming &amp; beauty care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/1200x/f5/2f/b8/f52fb84643210f2ed7ba3976d9e809cd.jpg" alt="Small Pet Gentle Grooming Kit" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Grooming &amp; Beauty</div>
+    <div class="product-name">Small Pet Gentle Grooming Kit</div>
+    <div class="product-rating">★ 4.6 (151 reviews)</div>
+    <div class="product-price">₱820</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="84" data-subcategory="Grooming &amp; Beauty" data-name="Small Pet Gentle Grooming Kit Plus" data-price="957" data-old-price="1089" data-rating="4.8" data-reviews="168" data-description="Premium small pet gentle grooming kit plus designed for everyday grooming &amp; beauty care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/1200x/02/41/34/0241340aada57e3d7a57f3a3015a4cdd.jpg" alt="Small Pet Gentle Grooming Kit Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Grooming &amp; Beauty</div>
+    <div class="product-name">Small Pet Gentle Grooming Kit Plus</div>
+    <div class="product-rating">★ 4.8 (168 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱1,089</span> ₱957</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="85" data-subcategory="Toys &amp; Enrichment" data-name="Silent Enrichment Chew Toy Set" data-price="1094" data-old-price="" data-rating="4.5" data-reviews="185" data-description="Premium silent enrichment chew toy set designed for everyday toys &amp; enrichment care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/736x/c9/d1/2d/c9d12d9e9df364d7ad3b773bb0014d0f.jpg" alt="Silent Enrichment Chew Toy Set" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Toys &amp; Enrichment</div>
+    <div class="product-name">Silent Enrichment Chew Toy Set</div>
+    <div class="product-rating">★ 4.5 (185 reviews)</div>
+    <div class="product-price">₱1,094</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="86" data-subcategory="Toys &amp; Enrichment" data-name="Silent Enrichment Chew Toy Set Plus" data-price="1231" data-old-price="" data-rating="4.7" data-reviews="202" data-description="Premium silent enrichment chew toy set plus designed for everyday toys &amp; enrichment care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/1200x/48/51/a5/4851a5b8250fc6edda61260fa3c1c36e.jpg" alt="Silent Enrichment Chew Toy Set Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Toys &amp; Enrichment</div>
+    <div class="product-name">Silent Enrichment Chew Toy Set Plus</div>
+    <div class="product-rating">★ 4.7 (202 reviews)</div>
+    <div class="product-price">₱1,231</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="87" data-subcategory="Beds &amp; Comfort" data-name="Soft Small Pet Rest Bed" data-price="1368" data-old-price="" data-rating="4.9" data-reviews="219" data-description="Premium soft small pet rest bed designed for everyday beds &amp; comfort care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://loremflickr.com/640/640/small,pet,bed?lock=87" alt="Soft Small Pet Rest Bed" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Beds &amp; Comfort</div>
+    <div class="product-name">Soft Small Pet Rest Bed</div>
+    <div class="product-rating">★ 4.9 (219 reviews)</div>
+    <div class="product-price">₱1,368</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="88" data-subcategory="Beds &amp; Comfort" data-name="Soft Small Pet Rest Bed Plus" data-price="1505" data-old-price="1929" data-rating="4.6" data-reviews="236" data-description="Premium soft small pet rest bed plus designed for everyday beds &amp; comfort care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://loremflickr.com/640/640/small,pet,bed?lock=88" alt="Soft Small Pet Rest Bed Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Beds &amp; Comfort</div>
+    <div class="product-name">Soft Small Pet Rest Bed Plus</div>
+    <div class="product-rating">★ 4.6 (236 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱1,929</span> ₱1,505</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="89" data-subcategory="Feeding" data-name="Heavy-Duty Hay Feeder" data-price="1642" data-old-price="" data-rating="4.8" data-reviews="253" data-description="Premium heavy-duty hay feeder designed for everyday feeding care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://loremflickr.com/640/640/small,pet,feeding?lock=89" alt="Heavy-Duty Hay Feeder" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Feeding</div>
+    <div class="product-name">Heavy-Duty Hay Feeder</div>
+    <div class="product-rating">★ 4.8 (253 reviews)</div>
+    <div class="product-price">₱1,642</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="90" data-subcategory="Feeding" data-name="Heavy-Duty Hay Feeder Plus" data-price="1779" data-old-price="" data-rating="4.5" data-reviews="270" data-description="Premium heavy-duty hay feeder plus designed for everyday feeding care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://loremflickr.com/640/640/small,pet,feeding?lock=90" alt="Heavy-Duty Hay Feeder Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Feeding</div>
+    <div class="product-name">Heavy-Duty Hay Feeder Plus</div>
+    <div class="product-rating">★ 4.5 (270 reviews)</div>
+    <div class="product-price">₱1,779</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="91" data-subcategory="Walking &amp; Outdoor" data-name="Adjustable Small Pet Harness" data-price="1916" data-old-price="" data-rating="4.7" data-reviews="287" data-description="Premium adjustable small pet harness designed for everyday walking &amp; outdoor care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://loremflickr.com/640/640/small,pet,leash?lock=91" alt="Adjustable Small Pet Harness" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Walking &amp; Outdoor</div>
+    <div class="product-name">Adjustable Small Pet Harness</div>
+    <div class="product-rating">★ 4.7 (287 reviews)</div>
+    <div class="product-price">₱1,916</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="92" data-subcategory="Walking &amp; Outdoor" data-name="Adjustable Small Pet Harness Plus" data-price="2053" data-old-price="2269" data-rating="4.9" data-reviews="44" data-description="Premium adjustable small pet harness plus designed for everyday walking &amp; outdoor care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://loremflickr.com/640/640/small,pet,leash?lock=92" alt="Adjustable Small Pet Harness Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Walking &amp; Outdoor</div>
+    <div class="product-name">Adjustable Small Pet Harness Plus</div>
+    <div class="product-rating">★ 4.9 (44 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱2,269</span> ₱2,053</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="93" data-subcategory="Health &amp; Wellness" data-name="Small Pet Wellness Drops" data-price="2190" data-old-price="" data-rating="4.6" data-reviews="61" data-description="Premium small pet wellness drops designed for everyday health &amp; wellness care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://loremflickr.com/640/640/small,pet,health?lock=93" alt="Small Pet Wellness Drops" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Health &amp; Wellness</div>
+    <div class="product-name">Small Pet Wellness Drops</div>
+    <div class="product-rating">★ 4.6 (61 reviews)</div>
+    <div class="product-price">₱2,190</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="94" data-subcategory="Health &amp; Wellness" data-name="Small Pet Wellness Drops Plus" data-price="2327" data-old-price="" data-rating="4.8" data-reviews="78" data-description="Premium small pet wellness drops plus designed for everyday health &amp; wellness care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://loremflickr.com/640/640/small,pet,health?lock=94" alt="Small Pet Wellness Drops Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Health &amp; Wellness</div>
+    <div class="product-name">Small Pet Wellness Drops Plus</div>
+    <div class="product-rating">★ 4.8 (78 reviews)</div>
+    <div class="product-price">₱2,327</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="95" data-subcategory="Training" data-name="Target Training Clicker Kit" data-price="2464" data-old-price="" data-rating="4.5" data-reviews="95" data-description="Premium target training clicker kit designed for everyday training care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://loremflickr.com/640/640/small,pet,training?lock=95" alt="Target Training Clicker Kit" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Training</div>
+    <div class="product-name">Target Training Clicker Kit</div>
+    <div class="product-rating">★ 4.5 (95 reviews)</div>
+    <div class="product-price">₱2,464</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="96" data-subcategory="Training" data-name="Target Training Clicker Kit Plus" data-price="2601" data-old-price="2609" data-rating="4.7" data-reviews="112" data-description="Premium target training clicker kit plus designed for everyday training care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://loremflickr.com/640/640/small,pet,training?lock=96" alt="Target Training Clicker Kit Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Training</div>
+    <div class="product-name">Target Training Clicker Kit Plus</div>
+    <div class="product-rating">★ 4.7 (112 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱2,609</span> ₱2,601</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="97" data-subcategory="Clothing &amp; Accessories" data-name="Cozy Small Pet Vest" data-price="2738" data-old-price="" data-rating="4.9" data-reviews="129" data-description="Premium cozy small pet vest designed for everyday clothing &amp; accessories care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://loremflickr.com/640/640/small,pet,clothing?lock=97" alt="Cozy Small Pet Vest" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Clothing &amp; Accessories</div>
+    <div class="product-name">Cozy Small Pet Vest</div>
+    <div class="product-rating">★ 4.9 (129 reviews)</div>
+    <div class="product-price">₱2,738</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="98" data-subcategory="Clothing &amp; Accessories" data-name="Cozy Small Pet Vest Plus" data-price="2875" data-old-price="" data-rating="4.6" data-reviews="146" data-description="Premium cozy small pet vest plus designed for everyday clothing &amp; accessories care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://loremflickr.com/640/640/small,pet,clothing?lock=98" alt="Cozy Small Pet Vest Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Clothing &amp; Accessories</div>
+    <div class="product-name">Cozy Small Pet Vest Plus</div>
+    <div class="product-rating">★ 4.6 (146 reviews)</div>
+    <div class="product-price">₱2,875</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="99" data-subcategory="Travel" data-name="Ventilated Travel Carrier" data-price="3012" data-old-price="" data-rating="4.8" data-reviews="163" data-description="Premium ventilated travel carrier designed for everyday travel care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://loremflickr.com/640/640/small,pet,travel?lock=99" alt="Ventilated Travel Carrier" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Travel</div>
+    <div class="product-name">Ventilated Travel Carrier</div>
+    <div class="product-rating">★ 4.8 (163 reviews)</div>
+    <div class="product-price">₱3,012</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="100" data-subcategory="Travel" data-name="Ventilated Travel Carrier Plus" data-price="3149" data-old-price="3449" data-rating="4.5" data-reviews="180" data-description="Premium ventilated travel carrier plus designed for everyday travel care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://loremflickr.com/640/640/small,pet,travel?lock=100" alt="Ventilated Travel Carrier Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Travel</div>
+    <div class="product-name">Ventilated Travel Carrier Plus</div>
+    <div class="product-rating">★ 4.5 (180 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱3,449</span> ₱3,149</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+</div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>About PawCare</h4>
+        <a href="#">About Us</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+      </div>
+      <div class="footer-section">
+        <h4>Customer Service</h4>
+        <a href="#">Contact Us</a>
+        <a href="#">FAQ</a>
+        <a href="#">Returns</a>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="Find a store.html">Locations</a>
+        <a href="services.html">Services</a>
+        <a href="#">Products</a>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <a href="#">Facebook</a>
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 PawCare. All rights reserved.</p>
+    </div>
+  </footer>
+  <script src="catalog.js"></script>
+  <script src="site-enhancements.js"></script>
+</body>
+</html>

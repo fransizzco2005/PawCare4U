@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bird Products | PawCare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-clean.css"><link rel="stylesheet" href="account-features.css">
+</head>
+<body class="page-bird" data-loader-duration="2000">
+<audio id="pawcareMusic" data-pawcare-music src="assets/music/stream cafe - boba date  (1 hour) _ cute music.mp3" loop preload="auto" muted autoplay></audio>
+<div class="page-loader" id="pageLoader" role="status" aria-label="Loading PawCare">
+  <span class="page-loader-ring"></span>
+  <span class="page-loader-mark">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 21c-3.5 0-7-2.2-7-5.4 0-2 1.7-3.1 3.4-3.9 1.4-.7 1.9-1.3 1.9-2.4 0-1 .8-1.8 1.7-1.8s1.7.8 1.7 1.8c0 1.1.5 1.7 1.9 2.4 1.7.8 3.4 1.9 3.4 3.9 0 3.2-3.5 5.4-7 5.4Z"/>
+      <circle cx="6" cy="7.5" r="2.1"/>
+      <circle cx="12" cy="4.6" r="2.1"/>
+      <circle cx="18" cy="7.5" r="2.1"/>
+      <circle cx="3.4" cy="12.4" r="1.8"/>
+    </svg>
+  </span>
+  <span class="page-loader-text">PawCare</span>
+</div>
+<div class="topbar">
+    <div class="topbar-inner">
+      <span class="topbar-love">"Loved fiercely, cared for properly" — that's the whole idea.</span>
+      <span>Care Line: <span class="topbar-hotline">(082) 555-0143</span> · <a href="mailto:hello@pawcare.ph">hello@pawcare.ph</a></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="index.html">
+        <span class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 21c-3.5 0-7-2.2-7-5.4 0-2 1.7-3.1 3.4-3.9 1.4-.7 1.9-1.3 1.9-2.4 0-1 .8-1.8 1.7-1.8s1.7.8 1.7 1.8c0 1.1.5 1.7 1.9 2.4 1.7.8 3.4 1.9 3.4 3.9 0 3.2-3.5 5.4-7 5.4Z"/>
+            <circle cx="6" cy="7.5" r="2.1"/>
+            <circle cx="12" cy="4.6" r="2.1"/>
+            <circle cx="18" cy="7.5" r="2.1"/>
+            <circle cx="3.4" cy="12.4" r="1.8"/>
+          </svg>
+        </span>
+        <span>PawCare<span class="logo-tag">Premium pet care</span></span>
+      </a>
+
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true"></span>
+        <input type="text" placeholder="Search bird products..." id="search-input">
+      </div>
+
+      <nav class="nav-menu">
+        <a href="index.html">Home</a>
+        <a href="Dogs.html">Dogs</a>
+        <a href="Cats.html">Cats</a>
+        <a href="Birds.html" class="active">Birds</a>
+        <a href="Fish.html">Fish</a>
+        <a href="SmallPets.html">Small Pets</a>
+        <a href="services.html">Services</a>
+        <a href="Find a store.html">Find a Store</a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="account-wrap" id="accountWrap">
+          <button class="icon-btn account-btn" id="accountBtn" aria-label="Account" title="Account" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="ui-icon"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 20c.9-3.5 3.1-5.3 6.5-5.3s5.6 1.8 6.5 5.3"></path></svg>
+          </button>
+          <span class="account-greeting" id="accountGreeting" hidden></span>
+          <div class="account-menu" id="accountMenu" hidden>
+            <p class="account-menu__hello" id="accountHello">Hello, <span id="accountName">there</span>!</p>
+            <p class="account-menu__loyalty" id="loyaltyPoints">Welcome to PawCare.</p>
+            <div id="accountSignedOut">
+              <button class="account-menu-btn" id="openSignIn" type="button">Sign in</button>
+              <button class="account-menu-btn account-menu-btn--secondary" id="openSignUp" type="button">Create account</button>
+            </div>
+            <div id="accountSignedIn" hidden>
+              <button class="account-menu-btn" id="viewAccountBtn" type="button">My account</button>
+              <button class="account-menu-btn account-menu-btn--secondary" id="logoutBtn" type="button">Sign out</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="icon-btn" id="cartBtn" onclick="togglePawCareCart()" aria-label="Shopping cart"><svg viewBox="0 0 24 24" aria-hidden="true" class="ui-icon"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H7"/><circle cx="10" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg><span class="icon-badge">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> / <span>Birds</span>
+  </div>
+
+  <section class="hero">
+    <h1>Bird Products & Care</h1>
+    <p>Quality food, cages, toys, and supplies for all bird species</p>
+  </section>
+
+  <main>
+    <div class="filters-grid">
+      <aside class="sidebar-filters">
+        <div class="filter-group">
+          <label>Bird Type</label>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Parakeet</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Canary</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Lovebird</label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Price Range</label>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Under ₱500</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>₱500 - ₱1000</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Over ₱1000</label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Status</label>
+          <div class="filter-option">
+            <input type="checkbox"> <label>New</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Sale</label>
+          </div>
+        </div>
+      </aside>
+
+      <section class="products-section">
+        <div class="products-controls">
+          <div class="products-controls-left">
+            <div class="products-count">Showing 20 products</div>
+            <div class="products-legend">
+              <span class="legend-chip legend-sale"><i></i>Sale</span>
+              <span class="legend-chip legend-new"><i></i>New</span>
+              <span class="legend-chip legend-top"><i></i>Top rated</span>
+            </div>
+          </div>
+          <div class="products-controls-right">
+            <div class="sort-control">
+              <label>Sort by</label>
+              <select>
+              <option>Featured</option>
+              <option>Price: Low to High</option>
+              <option>Price: High to Low</option>
+              <option>Newest First</option>
+              <option>Best Rated</option>
+            </select>
+            </div>
+            <div class="view-toggle" role="group" aria-label="Layout view">
+              <button type="button" class="view-btn active" data-view="grid" aria-label="Grid view"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></button>
+              <button type="button" class="view-btn" data-view="list" aria-label="List view"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="products-grid">
+<article class="product-card" data-product-id="41" data-subcategory="Food &amp; Treats" data-name="Premium Seed &amp; Grain Mix 1kg" data-price="2266" data-old-price="" data-rating="4.7" data-reviews="217" data-description="Premium premium seed &amp; grain mix 1kg designed for everyday food &amp; treats care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/1200x/85/eb/a8/85eba8cebffa20a80e216dc661c40721.jpg" alt="Premium Seed &amp; Grain Mix 1kg" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Food &amp; Treats</div>
+    <div class="product-name">Premium Seed &amp; Grain Mix 1kg</div>
+    <div class="product-rating">★ 4.7 (217 reviews)</div>
+    <div class="product-price">₱2,266</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="42" data-subcategory="Food &amp; Treats" data-name="Everyday Seed &amp; Grain Mix 1kg" data-price="2403" data-old-price="" data-rating="4.9" data-reviews="234" data-description="Premium everyday seed &amp; grain mix 1kg designed for everyday food &amp; treats care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/736x/51/40/c7/5140c733c4cd60ee69835837bc59510f.jpg" alt="Everyday Seed &amp; Grain Mix 1kg" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Food &amp; Treats</div>
+    <div class="product-name">Everyday Seed &amp; Grain Mix 1kg</div>
+    <div class="product-rating">★ 4.9 (234 reviews)</div>
+    <div class="product-price">₱2,403</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="43" data-subcategory="Grooming &amp; Beauty" data-name="Gentle Bird Feather Care Spray" data-price="2540" data-old-price="" data-rating="4.6" data-reviews="251" data-description="Premium gentle bird feather care spray designed for everyday grooming &amp; beauty care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/736x/5a/73/44/5a7344e1f49d9180b466bc350e9a9022.jpg" alt="Gentle Bird Feather Care Spray" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Grooming &amp; Beauty</div>
+    <div class="product-name">Gentle Bird Feather Care Spray</div>
+    <div class="product-rating">★ 4.6 (251 reviews)</div>
+    <div class="product-price">₱2,540</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="44" data-subcategory="Grooming &amp; Beauty" data-name="Gentle Bird Feather Care Spray Plus" data-price="2677" data-old-price="2889" data-rating="4.8" data-reviews="268" data-description="Premium gentle bird feather care spray plus designed for everyday grooming &amp; beauty care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/1200x/0b/15/a3/0b15a3bbfd1e4a8c3a49a745cb1cbb39.jpg" alt="Gentle Bird Feather Care Spray Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Grooming &amp; Beauty</div>
+    <div class="product-name">Gentle Bird Feather Care Spray Plus</div>
+    <div class="product-rating">★ 4.8 (268 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱2,889</span> ₱2,677</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="45" data-subcategory="Toys &amp; Enrichment" data-name="Natural Wood Perch &amp; Toy Set" data-price="2814" data-old-price="" data-rating="4.5" data-reviews="285" data-description="Premium natural wood perch &amp; toy set designed for everyday toys &amp; enrichment care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/1200x/46/95/33/46953395de5ff17f2ee630180af6fce1.jpg" alt="Natural Wood Perch &amp; Toy Set" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Toys &amp; Enrichment</div>
+    <div class="product-name">Natural Wood Perch &amp; Toy Set</div>
+    <div class="product-rating">★ 4.5 (285 reviews)</div>
+    <div class="product-price">₱2,814</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="46" data-subcategory="Toys &amp; Enrichment" data-name="Natural Wood Perch &amp; Toy Set Plus" data-price="2951" data-old-price="" data-rating="4.7" data-reviews="42" data-description="Premium natural wood perch &amp; toy set plus designed for everyday toys &amp; enrichment care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/1200x/70/12/c8/7012c89885731d73fac8c8c7629a5706.jpg" alt="Natural Wood Perch &amp; Toy Set Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Toys &amp; Enrichment</div>
+    <div class="product-name">Natural Wood Perch &amp; Toy Set Plus</div>
+    <div class="product-rating">★ 4.7 (42 reviews)</div>
+    <div class="product-price">₱2,951</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="47" data-subcategory="Beds &amp; Comfort" data-name="Soft Cage Rest Hammock" data-price="3088" data-old-price="" data-rating="4.9" data-reviews="59" data-description="Premium soft cage rest hammock designed for everyday beds &amp; comfort care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/1200x/09/37/3e/09373e2291249246a9873e69f1342c8e.jpg" alt="Soft Cage Rest Hammock" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Beds &amp; Comfort</div>
+    <div class="product-name">Soft Cage Rest Hammock</div>
+    <div class="product-rating">★ 4.9 (59 reviews)</div>
+    <div class="product-price">₱3,088</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="48" data-subcategory="Beds &amp; Comfort" data-name="Soft Cage Rest Hammock Plus" data-price="3225" data-old-price="3229" data-rating="4.6" data-reviews="76" data-description="Premium soft cage rest hammock plus designed for everyday beds &amp; comfort care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/736x/fc/fc/0f/fcfc0f1c61ab80ed362a395781dec4f1.jpg" alt="Soft Cage Rest Hammock Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Beds &amp; Comfort</div>
+    <div class="product-name">Soft Cage Rest Hammock Plus</div>
+    <div class="product-rating">★ 4.6 (76 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱3,229</span> ₱3,225</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="49" data-subcategory="Feeding" data-name="Non-Spill Bird Feeder" data-price="3362" data-old-price="" data-rating="4.8" data-reviews="93" data-description="Premium non-spill bird feeder designed for everyday feeding care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/736x/18/68/52/186852ac3e0163714e83f24ea02db585.jpg" alt="Non-Spill Bird Feeder" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Feeding</div>
+    <div class="product-name">Non-Spill Bird Feeder</div>
+    <div class="product-rating">★ 4.8 (93 reviews)</div>
+    <div class="product-price">₱3,362</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="50" data-subcategory="Feeding" data-name="Non-Spill Bird Feeder Plus" data-price="3499" data-old-price="" data-rating="4.5" data-reviews="110" data-description="Premium non-spill bird feeder plus designed for everyday feeding care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/1200x/fd/19/b1/fd19b1aaae65c9fb80fb320202c2760f.jpg " alt="Non-Spill Bird Feeder Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Feeding</div>
+    <div class="product-name">Non-Spill Bird Feeder Plus</div>
+    <div class="product-rating">★ 4.5 (110 reviews)</div>
+    <div class="product-price">₱3,499</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="51" data-subcategory="Walking &amp; Outdoor" data-name="Secure Outdoor Flight Harness" data-price="3636" data-old-price="" data-rating="4.7" data-reviews="127" data-description="Premium secure outdoor flight harness designed for everyday walking &amp; outdoor care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/736x/50/e1/37/50e137b41256f5ce7e10ca0c2da9cd0a.jpg" alt="Secure Outdoor Flight Harness" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Walking &amp; Outdoor</div>
+    <div class="product-name">Secure Outdoor Flight Harness</div>
+    <div class="product-rating">★ 4.7 (127 reviews)</div>
+    <div class="product-price">₱3,636</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="52" data-subcategory="Walking &amp; Outdoor" data-name="Secure Outdoor Flight Harness Plus" data-price="3773" data-old-price="4069" data-rating="4.9" data-reviews="144" data-description="Premium secure outdoor flight harness plus designed for everyday walking &amp; outdoor care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/1200x/8c/42/f0/8c42f0adb530d4b3a47ac04abbd2a829.jpg" alt="Secure Outdoor Flight Harness Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Walking &amp; Outdoor</div>
+    <div class="product-name">Secure Outdoor Flight Harness Plus</div>
+    <div class="product-rating">★ 4.9 (144 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱4,069</span> ₱3,773</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="53" data-subcategory="Health &amp; Wellness" data-name="Daily Bird Vitamin Drops" data-price="310" data-old-price="" data-rating="4.6" data-reviews="161" data-description="Premium daily bird vitamin drops designed for everyday health &amp; wellness care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/1200x/62/46/0f/62460f4868879ee89965d4f4b1b99063.jpg" alt="Daily Bird Vitamin Drops" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Health &amp; Wellness</div>
+    <div class="product-name">Daily Bird Vitamin Drops</div>
+    <div class="product-rating">★ 4.6 (161 reviews)</div>
+    <div class="product-price">₱310</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="54" data-subcategory="Health &amp; Wellness" data-name="Daily Bird Vitamin Drops Plus" data-price="447" data-old-price="" data-rating="4.8" data-reviews="178" data-description="Premium daily bird vitamin drops plus designed for everyday health &amp; wellness care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/736x/3c/1f/fc/3c1ffca3775d4d73a396dd1ba37085da.jpg" alt="Daily Bird Vitamin Drops Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Health &amp; Wellness</div>
+    <div class="product-name">Daily Bird Vitamin Drops Plus</div>
+    <div class="product-rating">★ 4.8 (178 reviews)</div>
+    <div class="product-price">₱447</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="55" data-subcategory="Training" data-name="Clicker Training Starter Kit" data-price="584" data-old-price="" data-rating="4.5" data-reviews="195" data-description="Premium clicker training starter kit designed for everyday training care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/1200x/1d/83/bd/1d83bd065cea0f022f0f1aa95d25a6d2.jpg" alt="Clicker Training Starter Kit" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Training</div>
+    <div class="product-name">Clicker Training Starter Kit</div>
+    <div class="product-rating">★ 4.5 (195 reviews)</div>
+    <div class="product-price">₱584</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="56" data-subcategory="Training" data-name="Clicker Training Starter Kit Plus" data-price="721" data-old-price="809" data-rating="4.7" data-reviews="212" data-description="Premium clicker training starter kit plus designed for everyday training care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/1200x/6a/ce/7e/6ace7ec506a0ca531993f8f4724c63c3.jpg" alt="Clicker Training Starter Kit Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Training</div>
+    <div class="product-name">Clicker Training Starter Kit Plus</div>
+    <div class="product-rating">★ 4.7 (212 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱809</span> ₱721</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="57" data-subcategory="Clothing &amp; Accessories" data-name="Colorful Bird Accessory Set" data-price="858" data-old-price="" data-rating="4.9" data-reviews="229" data-description="Premium colorful bird accessory set designed for everyday clothing &amp; accessories care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/736x/d7/b4/f2/d7b4f22a837ecd01a9dabe029fea0248.jpg" alt="Colorful Bird Accessory Set" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Clothing &amp; Accessories</div>
+    <div class="product-name">Colorful Bird Accessory Set</div>
+    <div class="product-rating">★ 4.9 (229 reviews)</div>
+    <div class="product-price">₱858</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="58" data-subcategory="Clothing &amp; Accessories" data-name="Colorful Bird Accessory Set Plus" data-price="995" data-old-price="" data-rating="4.6" data-reviews="246" data-description="Premium colorful bird accessory set plus designed for everyday clothing &amp; accessories care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/1200x/11/56/37/115637c84a2a48aeab604831188d8af2.jpg" alt="Colorful Bird Accessory Set Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Clothing &amp; Accessories</div>
+    <div class="product-name">Colorful Bird Accessory Set Plus</div>
+    <div class="product-rating">★ 4.6 (246 reviews)</div>
+    <div class="product-price">₱995</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="59" data-subcategory="Travel" data-name="Travel Cage with Carry Handle" data-price="1132" data-old-price="" data-rating="4.8" data-reviews="263" data-description="Premium travel cage with carry handle designed for everyday travel care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/736x/dd/87/34/dd8734aa446c896e589f53fb4d1e0eb3.jpg  " alt="Travel Cage with Carry Handle" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Travel</div>
+    <div class="product-name">Travel Cage with Carry Handle</div>
+    <div class="product-rating">★ 4.8 (263 reviews)</div>
+    <div class="product-price">₱1,132</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="60" data-subcategory="Travel" data-name="Travel Cage with Carry Handle Plus" data-price="1269" data-old-price="1649" data-rating="4.5" data-reviews="280" data-description="Premium travel cage with carry handle plus designed for everyday travel care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/736x/70/7e/f8/707ef812a09de857b1df6e9a7357a540.jpg" alt="Travel Cage with Carry Handle Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Travel</div>
+    <div class="product-name">Travel Cage with Carry Handle Plus</div>
+    <div class="product-rating">★ 4.5 (280 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱1,649</span> ₱1,269</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+</div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>About PawCare</h4>
+        <a href="#">About Us</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+      </div>
+      <div class="footer-section">
+        <h4>Customer Service</h4>
+        <a href="#">Contact Us</a>
+        <a href="#">FAQ</a>
+        <a href="#">Returns</a>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="Find a store.html">Locations</a>
+        <a href="services.html">Services</a>
+        <a href="#">Products</a>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <a href="#">Facebook</a>
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 PawCare. All rights reserved.</p>
+    </div>
+  </footer>
+  <script src="catalog.js"></script>
+  <script src="site-enhancements.js"></script>
+</body>
+</html>

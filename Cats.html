@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cat Products | PawCare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles-clean.css"><link rel="stylesheet" href="account-features.css">
+</head>
+<body class="page-cat" data-loader-duration="2000">
+<audio id="pawcareMusic" data-pawcare-music src="assets/music/stream cafe - boba date  (1 hour) _ cute music.mp3" loop preload="auto" muted autoplay></audio>
+<div class="page-loader" id="pageLoader" role="status" aria-label="Loading PawCare">
+  <span class="page-loader-ring"></span>
+  <span class="page-loader-mark">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 21c-3.5 0-7-2.2-7-5.4 0-2 1.7-3.1 3.4-3.9 1.4-.7 1.9-1.3 1.9-2.4 0-1 .8-1.8 1.7-1.8s1.7.8 1.7 1.8c0 1.1.5 1.7 1.9 2.4 1.7.8 3.4 1.9 3.4 3.9 0 3.2-3.5 5.4-7 5.4Z"/>
+      <circle cx="6" cy="7.5" r="2.1"/>
+      <circle cx="12" cy="4.6" r="2.1"/>
+      <circle cx="18" cy="7.5" r="2.1"/>
+      <circle cx="3.4" cy="12.4" r="1.8"/>
+    </svg>
+  </span>
+  <span class="page-loader-text">PawCare</span>
+</div>
+<div class="topbar">
+    <div class="topbar-inner">
+      <span class="topbar-love">"Loved fiercely, cared for properly" — that's the whole idea.</span>
+      <span>Care Line: <span class="topbar-hotline">(082) 555-0143</span> · <a href="mailto:hello@pawcare.ph">hello@pawcare.ph</a></span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="index.html">
+        <span class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 21c-3.5 0-7-2.2-7-5.4 0-2 1.7-3.1 3.4-3.9 1.4-.7 1.9-1.3 1.9-2.4 0-1 .8-1.8 1.7-1.8s1.7.8 1.7 1.8c0 1.1.5 1.7 1.9 2.4 1.7.8 3.4 1.9 3.4 3.9 0 3.2-3.5 5.4-7 5.4Z"/>
+            <circle cx="6" cy="7.5" r="2.1"/>
+            <circle cx="12" cy="4.6" r="2.1"/>
+            <circle cx="18" cy="7.5" r="2.1"/>
+            <circle cx="3.4" cy="12.4" r="1.8"/>
+          </svg>
+        </span>
+        <span>PawCare<span class="logo-tag">Premium pet care</span></span>
+      </a>
+
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true"></span>
+        <input type="text" placeholder="Search cat products..." id="search-input">
+      </div>
+
+      <nav class="nav-menu">
+        <a href="index.html">Home</a>
+        <a href="Dogs.html">Dogs</a>
+        <a href="Cats.html" class="active">Cats</a>
+        <a href="Birds.html">Birds</a>
+        <a href="Fish.html">Fish</a>
+        <a href="SmallPets.html">Small Pets</a>
+        <a href="services.html">Services</a>
+        <a href="Find a store.html">Find a Store</a>
+      </nav>
+
+      <div class="header-actions">
+        <div class="account-wrap" id="accountWrap">
+          <button class="icon-btn account-btn" id="accountBtn" aria-label="Account" title="Account" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="ui-icon"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 20c.9-3.5 3.1-5.3 6.5-5.3s5.6 1.8 6.5 5.3"></path></svg>
+          </button>
+          <span class="account-greeting" id="accountGreeting" hidden></span>
+          <div class="account-menu" id="accountMenu" hidden>
+            <p class="account-menu__hello" id="accountHello">Hello, <span id="accountName">there</span>!</p>
+            <p class="account-menu__loyalty" id="loyaltyPoints">Welcome to PawCare.</p>
+            <div id="accountSignedOut">
+              <button class="account-menu-btn" id="openSignIn" type="button">Sign in</button>
+              <button class="account-menu-btn account-menu-btn--secondary" id="openSignUp" type="button">Create account</button>
+            </div>
+            <div id="accountSignedIn" hidden>
+              <button class="account-menu-btn" id="viewAccountBtn" type="button">My account</button>
+              <button class="account-menu-btn account-menu-btn--secondary" id="logoutBtn" type="button">Sign out</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="icon-btn" id="cartBtn" onclick="togglePawCareCart()" aria-label="Shopping cart"><svg viewBox="0 0 24 24" aria-hidden="true" class="ui-icon"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 8H7"/><circle cx="10" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/></svg><span class="icon-badge">0</span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> / <span>Cats</span>
+  </div>
+
+  <section class="hero">
+    <h1>Cat Products & Accessories</h1>
+    <p>Premium food, litter, toys, and grooming for kittens, adult cats, and senior cats</p>
+  </section>
+
+  <main>
+    <div class="filters-grid">
+      <aside class="sidebar-filters">
+        <div class="filter-group">
+          <label>Life Stage</label>
+          <div class="filter-option">
+            <input type="checkbox" id="kitten"> <label for="kitten">Kitten</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="adult-cat"> <label for="adult-cat">Adult</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox" id="senior-cat"> <label for="senior-cat">Senior</label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Price Range</label>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Under ₱500</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>₱500 - ₱1000</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Over ₱1000</label>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Status</label>
+          <div class="filter-option">
+            <input type="checkbox"> <label>New</label>
+          </div>
+          <div class="filter-option">
+            <input type="checkbox"> <label>Sale</label>
+          </div>
+        </div>
+      </aside>
+
+      <section class="products-section">
+        <div class="products-controls">
+          <div class="products-controls-left">
+            <div class="products-count">Showing 20 products</div>
+            <div class="products-legend">
+              <span class="legend-chip legend-sale"><i></i>Sale</span>
+              <span class="legend-chip legend-new"><i></i>New</span>
+              <span class="legend-chip legend-top"><i></i>Top rated</span>
+            </div>
+          </div>
+          <div class="products-controls-right">
+            <div class="sort-control">
+              <label>Sort by</label>
+              <select>
+              <option>Featured</option>
+              <option>Price: Low to High</option>
+              <option>Price: High to Low</option>
+              <option>Newest First</option>
+              <option>Best Rated</option>
+            </select>
+            </div>
+            <div class="view-toggle" role="group" aria-label="Layout view">
+              <button type="button" class="view-btn active" data-view="grid" aria-label="Grid view"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></button>
+              <button type="button" class="view-btn" data-view="list" aria-label="List view"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="products-grid">
+<article class="product-card" data-product-id="21" data-subcategory="Food &amp; Treats" data-name="Premium Salmon Cat Food 3kg" data-price="3126" data-old-price="" data-rating="4.7" data-reviews="137" data-description="Premium premium salmon cat food 3kg designed for everyday food &amp; treats care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/1200x/03/7a/1c/037a1c36d079268529f52d4051b15006.jpg" alt="Premium Salmon Cat Food 3kg" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Food &amp; Treats</div>
+    <div class="product-name">Premium Salmon Cat Food 3kg</div>
+    <div class="product-rating">★ 4.7 (137 reviews)</div>
+    <div class="product-price">₱3,126</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="22" data-subcategory="Food &amp; Treats" data-name="Everyday Salmon Cat Food 3kg" data-price="3263" data-old-price="" data-rating="4.9" data-reviews="154" data-description="Premium everyday salmon cat food 3kg designed for everyday food &amp; treats care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/736x/c9/69/d0/c969d0c3653a5ffdcf37a567e1872c6f.jpg" alt="Everyday Salmon Cat Food 3kg" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Food &amp; Treats</div>
+    <div class="product-name">Everyday Salmon Cat Food 3kg</div>
+    <div class="product-rating">★ 4.9 (154 reviews)</div>
+    <div class="product-price">₱3,263</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="23" data-subcategory="Grooming &amp; Beauty" data-name="Sensitive Skin Cat Shampoo" data-price="3400" data-old-price="" data-rating="4.6" data-reviews="171" data-description="Premium sensitive skin cat shampoo designed for everyday grooming &amp; beauty care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/1200x/ff/f4/73/fff473a7e5b0e7b4fdc4b5c55166b2db.jpg" alt="Sensitive Skin Cat Shampoo" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Grooming &amp; Beauty</div>
+    <div class="product-name">Sensitive Skin Cat Shampoo</div>
+    <div class="product-rating">★ 4.6 (171 reviews)</div>
+    <div class="product-price">₱3,400</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="24" data-subcategory="Grooming &amp; Beauty" data-name="Sensitive Skin Cat Shampoo Plus" data-price="3537" data-old-price="3789" data-rating="4.8" data-reviews="188" data-description="Premium sensitive skin cat shampoo plus designed for everyday grooming &amp; beauty care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/736x/e4/26/8f/e4268f5eb3895b0cc9e70d4db759a2cf.jpg" alt="Sensitive Skin Cat Shampoo Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Grooming &amp; Beauty</div>
+    <div class="product-name">Sensitive Skin Cat Shampoo Plus</div>
+    <div class="product-rating">★ 4.8 (188 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱3,789</span> ₱3,537</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="25" data-subcategory="Toys &amp; Enrichment" data-name="Feather &amp; Bell Enrichment Set" data-price="3674" data-old-price="" data-rating="4.5" data-reviews="205" data-description="Premium feather &amp; bell enrichment set designed for everyday toys &amp; enrichment care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/736x/b3/f7/7d/b3f77d3ace6ed879ff9984b1e5c036b1.jpg" alt="Feather &amp; Bell Enrichment Set" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Toys &amp; Enrichment</div>
+    <div class="product-name">Feather &amp; Bell Enrichment Set</div>
+    <div class="product-rating">★ 4.5 (205 reviews)</div>
+    <div class="product-price">₱3,674</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="26" data-subcategory="Toys &amp; Enrichment" data-name="Feather &amp; Bell Enrichment Set Plus" data-price="3811" data-old-price="" data-rating="4.7" data-reviews="222" data-description="Premium feather &amp; bell enrichment set plus designed for everyday toys &amp; enrichment care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/1200x/61/9c/92/619c92e14bcc901bcc20381072002711.jpg" alt="Feather &amp; Bell Enrichment Set Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Toys &amp; Enrichment</div>
+    <div class="product-name">Feather &amp; Bell Enrichment Set Plus</div>
+    <div class="product-rating">★ 4.7 (222 reviews)</div>
+    <div class="product-price">₱3,811</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="27" data-subcategory="Beds &amp; Comfort" data-name="Cozy Cat Cave Bed" data-price="348" data-old-price="" data-rating="4.9" data-reviews="239" data-description="Premium cozy cat cave bed designed for everyday beds &amp; comfort care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/736x/63/7e/ea/637eea9668c4f56e756f1a4dd3448eac.jpg" alt="Cozy Cat Cave Bed" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Beds &amp; Comfort</div>
+    <div class="product-name">Cozy Cat Cave Bed</div>
+    <div class="product-rating">★ 4.9 (239 reviews)</div>
+    <div class="product-price">₱348</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="28" data-subcategory="Beds &amp; Comfort" data-name="Cozy Cat Cave Bed Plus" data-price="485" data-old-price="529" data-rating="4.6" data-reviews="256" data-description="Premium cozy cat cave bed plus designed for everyday beds &amp; comfort care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/736x/91/9a/32/919a3268cdec10dc99507f356b860ea5.jpg" alt="Cozy Cat Cave Bed Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Beds &amp; Comfort</div>
+    <div class="product-name">Cozy Cat Cave Bed Plus</div>
+    <div class="product-rating">★ 4.6 (256 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱529</span> ₱485</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="29" data-subcategory="Feeding" data-name="Elevated Ceramic Cat Bowl" data-price="622" data-old-price="" data-rating="4.8" data-reviews="273" data-description="Premium elevated ceramic cat bowl designed for everyday feeding care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/736x/aa/44/15/aa4415d961512448ac1d0669a71814cb.jpg" alt="Elevated Ceramic Cat Bowl" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Feeding</div>
+    <div class="product-name">Elevated Ceramic Cat Bowl</div>
+    <div class="product-rating">★ 4.8 (273 reviews)</div>
+    <div class="product-price">₱622</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="30" data-subcategory="Feeding" data-name="Elevated Ceramic Cat Bowl Plus" data-price="759" data-old-price="" data-rating="4.5" data-reviews="290" data-description="Premium elevated ceramic cat bowl plus designed for everyday feeding care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/1200x/3a/e6/51/3ae65149669bc087545729d36655f606.jpg" alt="Elevated Ceramic Cat Bowl Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Feeding</div>
+    <div class="product-name">Elevated Ceramic Cat Bowl Plus</div>
+    <div class="product-rating">★ 4.5 (290 reviews)</div>
+    <div class="product-price">₱759</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="31" data-subcategory="Walking &amp; Outdoor" data-name="Reflective Cat Walking Harness" data-price="896" data-old-price="" data-rating="4.7" data-reviews="47" data-description="Premium reflective cat walking harness designed for everyday walking &amp; outdoor care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/1200x/45/07/1a/45071a935460f9d999fa30a9268035b5.jpg" alt="Reflective Cat Walking Harness" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Walking &amp; Outdoor</div>
+    <div class="product-name">Reflective Cat Walking Harness</div>
+    <div class="product-rating">★ 4.7 (47 reviews)</div>
+    <div class="product-price">₱896</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="32" data-subcategory="Walking &amp; Outdoor" data-name="Reflective Cat Walking Harness Plus" data-price="1033" data-old-price="1369" data-rating="4.9" data-reviews="64" data-description="Premium reflective cat walking harness plus designed for everyday walking &amp; outdoor care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/1200x/28/53/49/2853493c0440d81451ca1ca498e1fef3.jpg" alt="Reflective Cat Walking Harness Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Walking &amp; Outdoor</div>
+    <div class="product-name">Reflective Cat Walking Harness Plus</div>
+    <div class="product-rating">★ 4.9 (64 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱1,369</span> ₱1,033</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="33" data-subcategory="Health &amp; Wellness" data-name="Hairball &amp; Wellness Bites" data-price="1170" data-old-price="" data-rating="4.6" data-reviews="81" data-description="Premium hairball &amp; wellness bites designed for everyday health &amp; wellness care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/1200x/c8/52/b5/c852b53c86a475d152df5a5632bec1ff.jpg" alt="Hairball &amp; Wellness Bites" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Health &amp; Wellness</div>
+    <div class="product-name">Hairball &amp; Wellness Bites</div>
+    <div class="product-rating">★ 4.6 (81 reviews)</div>
+    <div class="product-price">₱1,170</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="34" data-subcategory="Health &amp; Wellness" data-name="Hairball &amp; Wellness Bites Plus" data-price="1307" data-old-price="" data-rating="4.8" data-reviews="98" data-description="Premium hairball &amp; wellness bites plus designed for everyday health &amp; wellness care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/1200x/cb/94/17/cb941703323f6d02d347a1d3f1d904f2.jpg" alt="Hairball &amp; Wellness Bites Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Health &amp; Wellness</div>
+    <div class="product-name">Hairball &amp; Wellness Bites Plus</div>
+    <div class="product-rating">★ 4.8 (98 reviews)</div>
+    <div class="product-price">₱1,307</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="35" data-subcategory="Training" data-name="Clicker Training Kit for Cats" data-price="1444" data-old-price="" data-rating="4.5" data-reviews="115" data-description="Premium clicker training kit for cats designed for everyday training care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/736x/43/b7/9f/43b79f0feaba075ec65e404c7eac6e8a.jpg" alt="Clicker Training Kit for Cats" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Training</div>
+    <div class="product-name">Clicker Training Kit for Cats</div>
+    <div class="product-rating">★ 4.5 (115 reviews)</div>
+    <div class="product-price">₱1,444</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="36" data-subcategory="Training" data-name="Clicker Training Kit Plus for Cats" data-price="1581" data-old-price="1709" data-rating="4.7" data-reviews="132" data-description="Premium clicker training kit plus for cats designed for everyday training care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/736x/c6/cc/bb/c6ccbb37b7b049975a67d421fa9f1923.jpg" alt="Clicker Training Kit Plus for Cats" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Training</div>
+    <div class="product-name">Clicker Training Kit Plus for Cats</div>
+    <div class="product-rating">★ 4.7 (132 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱1,709</span> ₱1,581</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="37" data-subcategory="Clothing &amp; Accessories" data-name="Soft Cat Harness &amp; Vest" data-price="1718" data-old-price="" data-rating="4.9" data-reviews="149" data-description="Premium soft cat harness &amp; vest designed for everyday clothing &amp; accessories care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge sale">SALE</div><img src="https://i.pinimg.com/736x/33/35/78/333578d6ff8a037e14496cb6f9d6ba3d.jpg" alt="Soft Cat Harness &amp; Vest" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Clothing &amp; Accessories</div>
+    <div class="product-name">Soft Cat Harness &amp; Vest</div>
+    <div class="product-rating">★ 4.9 (149 reviews)</div>
+    <div class="product-price">₱1,718</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="38" data-subcategory="Clothing &amp; Accessories" data-name="Soft Cat Harness &amp; Vest Plus" data-price="1855" data-old-price="" data-rating="4.6" data-reviews="166" data-description="Premium soft cat harness &amp; vest plus designed for everyday clothing &amp; accessories care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge top">TOP</div><img src="https://i.pinimg.com/1200x/67/56/6a/67566a1ee25c3772fc687c2ee5bab56d.jpg" alt="Soft Cat Harness &amp; Vest Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Clothing &amp; Accessories</div>
+    <div class="product-name">Soft Cat Harness &amp; Vest Plus</div>
+    <div class="product-rating">★ 4.6 (166 reviews)</div>
+    <div class="product-price">₱1,855</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="39" data-subcategory="Travel" data-name="Airline-Friendly Cat Carrier" data-price="1992" data-old-price="" data-rating="4.8" data-reviews="183" data-description="Premium airline-friendly cat carrier designed for everyday travel care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><img src="https://i.pinimg.com/236x/71/64/68/716468dd92bfef84649a370587fcbccb.jpg" alt="Airline-Friendly Cat Carrier" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Travel</div>
+    <div class="product-name">Airline-Friendly Cat Carrier</div>
+    <div class="product-rating">★ 4.8 (183 reviews)</div>
+    <div class="product-price">₱1,992</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+<article class="product-card" data-product-id="40" data-subcategory="Travel" data-name="Airline-Friendly Cat Carrier Plus" data-price="2129" data-old-price="2549" data-rating="4.5" data-reviews="200" data-description="Premium airline-friendly cat carrier plus designed for everyday travel care. Made for comfort, enrichment and practical use at home or while traveling." data-stock="100">
+  <div class="product-thumb"><div class="product-badge new">NEW</div><img src="https://i.pinimg.com/1200x/6b/c0/cd/6bc0cd9e7760bd59a65e09677c488383.jpg" alt="Airline-Friendly Cat Carrier Plus" loading="lazy"></div>
+  <div class="product-info">
+    <div class="product-category">Travel</div>
+    <div class="product-name">Airline-Friendly Cat Carrier Plus</div>
+    <div class="product-rating">★ 4.5 (200 reviews)</div>
+    <div class="product-price"><span class="card-old-price">₱2,549</span> ₱2,129</div>
+    <div class="product-actions"><button class="btn btn-secondary btn-small product-view-btn" type="button">View Details</button><button class="btn btn-primary btn-small product-add-btn" type="button">Add to Cart</button></div>
+  </div>
+</article>
+</div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>About PawCare</h4>
+        <a href="#">About Us</a>
+        <a href="#">Careers</a>
+        <a href="#">Press</a>
+      </div>
+      <div class="footer-section">
+        <h4>Customer Service</h4>
+        <a href="#">Contact Us</a>
+        <a href="#">FAQ</a>
+        <a href="#">Returns</a>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <a href="Find a store.html">Locations</a>
+        <a href="services.html">Services</a>
+        <a href="#">Products</a>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <a href="#">Facebook</a>
+        <a href="#">Instagram</a>
+        <a href="#">TikTok</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 PawCare. All rights reserved.</p>
+    </div>
+  </footer>
+  <script src="catalog.js"></script>
+  <script src="site-enhancements.js"></script>
+</body>
+</html>

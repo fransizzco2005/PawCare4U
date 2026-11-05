@@ -1,0 +1,10 @@
+php_errors.log
+*.log
+.DS_Store
+Thumbs.db
+
+# Local dependencies and generated files
+vendor/
+node_modules/
+.env
+.env.*

@@ -1,0 +1,2899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>PawCare | Premium Pet Care</title>
+
+  <link rel="stylesheet" href="styles-clean.css"><link rel="stylesheet" href="account-features.css">
+
+  <style>
+    /* =========================================================
+       HOMEPAGE-ONLY SAFETY OVERRIDES
+       These prevent old catalog/product styles from affecting
+       the index page.
+       ========================================================= */
+
+    #shopView {
+      display: block !important;
+    }
+
+    #shopView[hidden] {
+      display: block !important;
+    }
+
+    /* Homepage cards are informational/navigation cards */
+    .homepage-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .homepage-link button {
+      font: inherit;
+    }
+
+    .home-feature-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(140,181,230,.28);
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .home-feature-btn:hover {
+      background: rgba(255,255,255,.14);
+    }
+
+    .home-service-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .home-service-link .service-card {
+      cursor: pointer;
+    }
+
+    .home-newsletter-note {
+      font-size: 11px;
+      color: #9eb1ca;
+      margin-top: 8px;
+    }
+
+    /* Hide old product-only elements if an older script
+       accidentally leaves them in the DOM */
+    #newArrivalsGrid,
+    #productGrid,
+    #filterPills,
+    .products-section {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body class="home-page" data-loader-duration="4500">
+<audio id="pawcareMusic"
+       src="c:\xampp\htdocs\PawCare4U\assets\music\stream cafe - boba date  (1 hour) _ cute music.mp3"
+       loop
+       preload="auto"
+       muted
+       autoplay>
+</audio>
+
+<div class="page-loader" id="pageLoader" role="status" aria-label="Loading PawCare">
+  <span class="page-loader-ring"></span>
+  <span class="page-loader-mark">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 21c-3.5 0-7-2.2-7-5.4 0-2 1.7-3.1 3.4-3.9 1.4-.7 1.9-1.3 1.9-2.4 0-1 .8-1.8 1.7-1.8s1.7.8 1.7 1.8c0 1.1.5 1.7 1.9 2.4 1.7.8 3.4 1.9 3.4 3.9 0 3.2-3.5 5.4-7 5.4Z"/>
+      <circle cx="6" cy="7.5" r="2.1"/>
+      <circle cx="12" cy="4.6" r="2.1"/>
+      <circle cx="18" cy="7.5" r="2.1"/>
+      <circle cx="3.4" cy="12.4" r="1.8"/>
+    </svg>
+  </span>
+  <span class="page-loader-text">PawCare</span>
+</div>
+<!-- =========================================================
+     TOP BAR
+     ========================================================= -->
+
+<div class="topbar">
+  <div class="topbar-inner">
+
+    <span class="topbar-love">
+      "Loved fiercely, cared for properly" — that's the whole idea.
+    </span>
+
+    <span>
+      Care Line:
+      <span class="topbar-hotline">(082) 555-0143</span>
+      ·
+      <a href="mailto:hello@pawcare.ph">
+        hello@pawcare.ph
+      </a>
+    </span>
+
+  </div>
+</div>
+
+
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
+
+<header class="site-header">
+
+  <div class="header-inner">
+
+    <button
+      class="hamburger"
+      id="hamburgerBtn"
+      aria-label="Open navigation menu"
+      type="button">
+
+      <span></span>
+      <span></span>
+      <span></span>
+
+    </button>
+
+
+    <!-- LOGO -->
+
+    <a href="index.html" class="logo">
+
+      <span class="logo-mark">
+
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true">
+
+          <path d="M12 21c-3.5 0-7-2.2-7-5.4 0-2 1.7-3.1 3.4-3.9 1.4-.7 1.9-1.3 1.9-2.4 0-1 .8-1.8 1.7-1.8s1.7.8 1.7 1.8c0 1.1.5 1.7 1.9 2.4 1.7.8 3.4 1.9 3.4 3.9 0 3.2-3.5 5.4-7 5.4Z"/>
+
+          <circle cx="6" cy="7.5" r="2.1"/>
+          <circle cx="12" cy="4.6" r="2.1"/>
+          <circle cx="18" cy="7.5" r="2.1"/>
+          <circle cx="3.4" cy="12.4" r="1.8"/>
+
+        </svg>
+
+      </span>
+
+      <span>
+        PawCare
+        <span class="logo-tag">
+          Premium pet care
+        </span>
+      </span>
+
+    </a>
+
+
+    <!-- NAVIGATION -->
+
+    <nav class="main-nav" id="mainNav">
+
+      <a
+        href="index.html"
+        class="nav-link active">
+        Home
+      </a>
+
+      <a
+        href="Dogs.html"
+        class="nav-link">
+        Dogs
+      </a>
+
+      <a
+        href="Cats.html"
+        class="nav-link">
+        Cats
+      </a>
+
+      <a
+        href="Birds.html"
+        class="nav-link">
+        Birds
+      </a>
+
+      <a
+        href="Fish.html"
+        class="nav-link">
+        Fish
+      </a>
+
+      <a
+        href="SmallPets.html"
+        class="nav-link">
+        Small Pets
+      </a>
+
+      <a
+        href="services.html"
+        class="nav-link">
+        Services
+      </a>
+
+      <a
+        href="Find a store.html"
+        class="nav-link">
+        Find a Store
+      </a>
+
+    </nav>
+
+
+    <!-- SEARCH
+         Homepage search is intentionally non-product.
+    -->
+
+    <div class="search-wrap">
+
+      <span class="search-icon"></span>
+
+      <input
+        type="text"
+        id="homeSearch"
+        placeholder="Search PawCare..."
+        autocomplete="off">
+
+    </div>
+
+
+    <!-- HEADER ACTIONS -->
+
+    <div class="header-icons">
+
+      <!-- SIGN IN / ACCOUNT -->
+        <div class="account-wrap" id="accountWrap">
+          <button class="icon-btn account-btn" id="accountBtn" aria-label="Account" title="Account" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="ui-icon"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 20c.9-3.5 3.1-5.3 6.5-5.3s5.6 1.8 6.5 5.3"></path></svg>
+          </button>
+          <span class="account-greeting" id="accountGreeting" hidden></span>
+          <span class="header-role-indicator" id="headerRoleIndicator" hidden></span>
+          <div class="account-menu" id="accountMenu" hidden>
+            <p class="account-menu__hello" id="accountHello">Hello, <span id="accountName">there</span>!</p>
+            <p class="account-menu__loyalty" id="loyaltyPoints">My Account</p>
+            <div id="accountSignedOut">
+              <button class="account-menu-btn" id="openSignIn" type="button">Sign in</button>
+              <button class="account-menu-btn account-menu-btn--secondary" id="openSignUp" type="button">Create account</button>
+            </div>
+            <div id="accountSignedIn" hidden>
+              <div id="ownerAccountLabel" class="owner-account-label" hidden>👑 OWNER ACCOUNT</div>
+              <button class="account-menu-btn" id="viewAccountBtn" type="button">👤 My Profile</button>
+              <button class="account-menu-btn" id="accountOrdersMenuBtn" type="button">📦 My Orders</button>
+              <button class="account-menu-btn" id="accountReservationsMenuBtn" type="button">🗓️ My Reservations</button>
+              <button class="account-menu-btn account-menu-btn--secondary" id="logoutBtn" type="button">Sign out</button>
+            </div>
+          </div>
+        </div>
+
+
+      <!-- CART -->
+
+      <button
+        class="icon-btn"
+        id="cartBtn"
+        aria-label="Cart"
+        type="button">
+
+        🛒
+        <span class="icon-badge" id="cartBadge">0</span>
+
+      </button>
+
+    </div>
+
+  </div>
+
+</header>
+
+
+<!-- =========================================================
+     HOMEPAGE
+     ========================================================= -->
+
+<main id="shopView">
+
+
+  <!-- =======================================================
+       HERO
+       ======================================================= -->
+
+  <section class="hero">
+
+    <div class="hero-copy">
+
+      <span class="eyebrow">
+        Trusted by modern pet families
+      </span>
+
+      <h1>
+        Better care for the
+        <em>family</em>
+        that wags, purrs,
+        and depends on you.
+      </h1>
+
+      <p>
+        PawCare brings together trusted pet-care information,
+        professional services, and everyday guidance for dogs,
+        cats, birds, fish, and small pets.
+      </p>
+
+
+      <div class="hero-ctas">
+
+        <a
+          href="#pet-companions"
+          class="btn-primary homepage-link">
+
+          Explore Pet Care →
+
+        </a>
+
+        <a
+          href="services.html"
+          class="btn-secondary homepage-link">
+
+          Book a Service
+
+        </a>
+
+      </div>
+
+
+      <div
+        class="hero-metrics"
+        aria-label="PawCare information">
+
+        <div>
+
+          <strong>
+            5
+          </strong>
+
+          <span>
+            pet categories
+          </span>
+
+        </div>
+
+        <div>
+
+          <strong>
+            4+
+          </strong>
+
+          <span>
+            care services
+          </span>
+
+        </div>
+
+        <div>
+
+          <strong>
+            24/7
+          </strong>
+
+          <span>
+            care information
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="hero-art">
+
+      <img
+        src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=1400&q=88"
+        alt="Golden retriever being cared for"
+        id="heroImg"
+        onerror="this.style.display='none';">
+
+      <span class="hero-art__caption">
+        Caring for pets from nose to tail
+      </span>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       BUSINESS / CARE PROOF
+       ======================================================= -->
+
+  <section class="business-proof">
+
+    <div class="business-proof__item">
+
+      <span class="business-proof__icon">
+        ❤️
+      </span>
+
+      <div>
+
+        <strong>
+          Complete pet care
+        </strong>
+
+        <small>
+          Information for different kinds of companions
+        </small>
+
+      </div>
+
+    </div>
+
+
+    <div class="business-proof__item">
+
+      <span class="business-proof__icon">
+        ✓
+      </span>
+
+      <div>
+
+        <strong>
+          Practical guidance
+        </strong>
+
+        <small>
+          Simple information for everyday pet parents
+        </small>
+
+      </div>
+
+    </div>
+
+
+    <div class="business-proof__item">
+
+      <span class="business-proof__icon">
+        🐾
+      </span>
+
+      <div>
+
+        <strong>
+          Professional services
+        </strong>
+
+        <small>
+          Grooming, veterinary and other care options
+        </small>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       TRUST STRIP
+       ======================================================= -->
+
+  <section class="trust-strip">
+
+    <div class="trust-row">
+
+      <div class="trust-item">
+
+        <span class="trust-icon">
+          ✓
+        </span>
+
+        <div>
+
+          <strong>
+            Pet-first
+          </strong>
+
+          <span class="sub">
+            Designed around animal wellbeing
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="trust-item">
+
+        <span class="trust-icon">
+          ♥
+        </span>
+
+        <div>
+
+          <strong>
+            Family focused
+          </strong>
+
+          <span class="sub">
+            Helpful for new and experienced owners
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="trust-item">
+
+        <span class="trust-icon">
+          +
+        </span>
+
+        <div>
+
+          <strong>
+            Multiple companions
+          </strong>
+
+          <span class="sub">
+            Dogs, cats, birds, fish and small pets
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="trust-item">
+
+        <span class="trust-icon">
+          ★
+        </span>
+
+        <div>
+
+          <strong>
+            Care guidance
+          </strong>
+
+          <span class="sub">
+            Tips and resources for responsible ownership
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       FEATURED CARE
+       ======================================================= -->
+
+  <section class="featured-collection">
+
+    <div class="section-head">
+
+      <div>
+
+        <span class="section-eyebrow">
+          Everyday wellbeing
+        </span>
+
+        <h2>
+          Essential areas of pet care
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="feature-grid">
+
+
+      <!-- Nutrition -->
+
+      <article class="feature-card feature-card--large">
+
+        <img
+          src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1000&q=82"
+          alt="Dog receiving care">
+
+        <div class="feature-card__content">
+
+          <span>
+            Nutrition
+          </span>
+
+          <h3>
+            Good nutrition supports a healthier, happier life.
+          </h3>
+
+          <a
+            href="Dogs.html"
+            class="home-feature-btn">
+
+            Dog Care →
+
+          </a>
+
+        </div>
+
+      </article>
+
+
+      <!-- Cat -->
+
+      <article class="feature-card">
+
+        <img
+          src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=900&q=82"
+          alt="Cat receiving care">
+
+        <div class="feature-card__content">
+
+          <span>
+            Cat care
+          </span>
+
+          <h3>
+            Comfort, enrichment and healthy routines.
+          </h3>
+
+        </div>
+
+      </article>
+
+
+      <!-- Grooming -->
+
+      <article class="feature-card">
+
+        <img
+          src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=900&q=82"
+          alt="Pet care">
+
+        <div class="feature-card__content">
+
+          <span>
+            Grooming
+          </span>
+
+          <h3>
+            Clean, comfortable and well-maintained companions.
+          </h3>
+
+        </div>
+
+      </article>
+
+
+      <!-- Health -->
+
+      <article class="feature-card">
+
+        <img
+          src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=900&q=82"
+          alt="Veterinarian caring for a pet">
+
+        <div class="feature-card__content">
+
+          <span>
+            Health & wellness
+          </span>
+
+          <h3>
+            Prevention, checkups and responsible care.
+          </h3>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       SHOP BY NEEDS
+       Converted to CARE BY NEEDS
+       No products.
+       ======================================================= -->
+
+  <section class="shop-by-needs">
+
+    <div class="section-head">
+
+      <div>
+
+        <span class="section-eyebrow">
+          Start with their needs
+        </span>
+
+        <h2>
+          Care by life stage
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="needs-grid">
+
+      <a
+        href="Dogs.html?stage=puppy"
+        class="need-card homepage-link">
+
+        <span>
+          Puppy
+        </span>
+
+        <small>
+          Growth, nutrition and training
+        </small>
+
+      </a>
+
+
+      <a
+        href="Dogs.html?stage=adult-dog"
+        class="need-card homepage-link">
+
+        <span>
+          Adult Dog
+        </span>
+
+        <small>
+          Daily health and activity
+        </small>
+
+      </a>
+
+
+      <a
+        href="Dogs.html?stage=senior-dog"
+        class="need-card homepage-link">
+
+        <span>
+          Senior Dog
+        </span>
+
+        <small>
+          Comfort and mobility
+        </small>
+
+      </a>
+
+
+      <a
+        href="Cats.html?stage=kitten"
+        class="need-card homepage-link">
+
+        <span>
+          Kitten
+        </span>
+
+        <small>
+          Development and healthy routines
+        </small>
+
+      </a>
+
+
+      <a
+        href="Cats.html?stage=adult-cat"
+        class="need-card homepage-link">
+
+        <span>
+          Adult Cat
+        </span>
+
+        <small>
+          Balanced everyday care
+        </small>
+
+      </a>
+
+
+      <a
+        href="Cats.html?stage=senior-cat"
+        class="need-card homepage-link">
+
+        <span>
+          Senior Cat
+        </span>
+
+        <small>
+          Comfort and wellness
+        </small>
+
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       CARE BANNER
+       ======================================================= -->
+
+  <section class="category-banner">
+
+    <div class="category-banner__copy">
+
+      <span class="section-eyebrow">
+        Preventive care
+      </span>
+
+      <h2>
+        Keep your companions protected and comfortable.
+      </h2>
+
+      <p>
+        Learn about routine health checks, parasite prevention,
+        grooming, identification, nutrition and other important
+        aspects of responsible pet ownership.
+      </p>
+
+      <a
+        href="services.html"
+        class="btn-primary homepage-link">
+
+        Explore Care Services →
+
+      </a>
+
+    </div>
+
+
+    <img
+      src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1000&q=82"
+      alt="Veterinarian examining a dog">
+
+  </section>
+
+
+  <!-- =======================================================
+       PET COMPANIONS
+       ======================================================= -->
+
+  <section
+    class="shop-by-pet"
+    id="pet-companions">
+
+    <div class="section-head">
+
+      <div>
+
+        <span class="section-eyebrow">
+          Choose a companion
+        </span>
+
+        <h2>
+          Explore pet care
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="pet-tiles">
+
+
+      <!-- DOG -->
+
+      <a
+        href="Dogs.html"
+        class="pet-tile homepage-link">
+
+        <img
+          src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=700&q=82"
+          alt="Dog">
+
+        <span class="pet-tile__label">
+          Dogs →
+        </span>
+
+      </a>
+
+
+      <!-- CAT -->
+
+      <a
+        href="Cats.html"
+        class="pet-tile homepage-link">
+
+        <img
+          src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=700&q=82"
+          alt="Cat">
+
+        <span class="pet-tile__label">
+          Cats →
+        </span>
+
+      </a>
+
+
+      <!-- BIRD -->
+
+      <a
+        href="Birds.html"
+        class="pet-tile homepage-link">
+
+        <img
+          src="https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=700&q=82"
+          alt="Bird">
+
+        <span class="pet-tile__label">
+          Birds →
+        </span>
+
+      </a>
+
+
+      <!-- FISH -->
+
+      <a
+        href="Fish.html"
+        class="pet-tile homepage-link">
+
+        <img
+          src="https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?auto=format&fit=crop&w=700&q=82"
+          alt="Fish">
+
+        <span class="pet-tile__label">
+          Fish →
+        </span>
+
+      </a>
+
+
+      <!-- SMALL PETS -->
+
+      <a
+        href="SmallPets.html"
+        class="pet-tile homepage-link">
+
+        <img
+          src="https://images.unsplash.com/photo-1425082661705-1834bfd09dca?auto=format&fit=crop&w=700&q=82"
+          alt="Small pet">
+
+        <span class="pet-tile__label">
+          Small Pets →
+        </span>
+
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       LIFE STAGES
+       ======================================================= -->
+
+  <section class="life-stage-section">
+
+    <div class="section-head">
+
+      <div>
+
+        <span class="section-eyebrow">
+          Responsible ownership
+        </span>
+
+        <h2>
+          Care changes with age
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="life-stage-row">
+
+      <a
+        href="Dogs.html?stage=puppy"
+        class="life-chip homepage-link">
+
+        Puppy
+
+      </a>
+
+      <a
+        href="Dogs.html?stage=adult-dog"
+        class="life-chip homepage-link">
+
+        Adult Dog
+
+      </a>
+
+      <a
+        href="Dogs.html?stage=senior-dog"
+        class="life-chip homepage-link">
+
+        Senior Dog
+
+      </a>
+
+      <a
+        href="Cats.html?stage=kitten"
+        class="life-chip homepage-link">
+
+        Kitten
+
+      </a>
+
+      <a
+        href="Cats.html?stage=adult-cat"
+        class="life-chip homepage-link">
+
+        Adult Cat
+
+      </a>
+
+      <a
+        href="Cats.html?stage=senior-cat"
+        class="life-chip homepage-link">
+
+        Senior Cat
+
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       SERVICES
+       ======================================================= -->
+
+  <section
+    class="services-section"
+    id="servicesSection">
+
+    <div class="section-head">
+
+      <div>
+
+        <span class="section-eyebrow">
+          Beyond everyday care
+        </span>
+
+        <h2>
+          PawCare services
+        </h2>
+
+      </div>
+
+      <a
+        href="services.html"
+        class="btn-secondary homepage-link">
+
+        See all services →
+
+      </a>
+
+    </div>
+
+
+    <div class="services-grid">
+
+
+      <!-- VETERINARY -->
+
+      <a
+        href="services.html"
+        class="home-service-link">
+
+        <article class="service-card">
+
+          <div class="icon"></div>
+
+          <h3>
+            Veterinary Care
+          </h3>
+
+          <p>
+            Consultations, vaccinations and routine
+            health checkups.
+          </p>
+
+        </article>
+
+      </a>
+
+
+      <!-- GROOMING -->
+
+      <a
+        href="services.html"
+        class="home-service-link">
+
+        <article class="service-card">
+
+          <div class="icon"></div>
+
+          <h3>
+            Professional Grooming
+          </h3>
+
+          <p>
+            Bathing, grooming and coat care tailored
+            to your companion.
+          </p>
+
+        </article>
+
+      </a>
+
+
+      <!-- MICROCHIP -->
+
+      <a
+        href="services.html"
+        class="home-service-link">
+
+        <article class="service-card">
+
+          <div class="icon"></div>
+
+          <h3>
+            Microchipping & ID
+          </h3>
+
+          <p>
+            Identification support for safer and
+            more responsible pet ownership.
+          </p>
+
+        </article>
+
+      </a>
+
+
+      <!-- INSURANCE -->
+
+      <a
+        href="services.html"
+        class="home-service-link">
+
+        <article class="service-card">
+
+          <div class="icon"></div>
+
+          <h3>
+            Pet Protection
+          </h3>
+
+          <p>
+            Learn about ways to prepare for unexpected
+            veterinary expenses.
+          </p>
+
+        </article>
+
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       CARE BANNER
+       ======================================================= -->
+
+  <section class="care-banner">
+
+    <div class="care-banner-inner">
+
+      <div class="care-banner__copy">
+
+        <span class="section-eyebrow">
+          Peace of mind
+        </span>
+
+        <h2>
+          Love your pet? Protect them too.
+        </h2>
+
+        <p>
+          Preventive care can help identify problems early.
+          Learn more about veterinary visits, grooming,
+          identification and responsible pet care.
+        </p>
+
+        <a
+          href="services.html"
+          class="btn-primary homepage-link">
+
+          Learn About Services →
+
+        </a>
+
+      </div>
+
+
+      <div class="care-banner__art">
+
+        <img
+          src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&w=1000&q=82"
+          alt="Veterinarian caring for a dog">
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       PET CARE GUIDES
+       ======================================================= -->
+
+  <section class="guides-section">
+
+    <div class="section-head">
+
+      <div>
+
+        <span class="section-eyebrow">
+          Helpful information
+        </span>
+
+        <h2>
+          Guides worth reading
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="guides-grid">
+
+
+      <article>
+
+        <span class="section-eyebrow">
+          Pet Parenting
+        </span>
+
+        <h3 style="color:#12253d;margin:8px 0;">
+          Preparing your pet for travel
+        </h3>
+
+        <p style="color:#68778a;font-size:12px;">
+          Learn how preparation, comfort and proper
+          identification can make travel easier.
+        </p>
+
+      </article>
+
+
+      <article>
+
+        <span class="section-eyebrow">
+          Nutrition
+        </span>
+
+        <h3 style="color:#12253d;margin:8px 0;">
+          Understanding life-stage care
+        </h3>
+
+        <p style="color:#68778a;font-size:12px;">
+          Puppies, kittens, adults and senior pets
+          have different care requirements.
+        </p>
+
+      </article>
+
+
+      <article>
+
+        <span class="section-eyebrow">
+          Daily Care
+        </span>
+
+        <h3 style="color:#12253d;margin:8px 0;">
+          Building healthy routines
+        </h3>
+
+        <p style="color:#68778a;font-size:12px;">
+          Consistent exercise, grooming, enrichment
+          and checkups can support wellbeing.
+        </p>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       TESTIMONIALS
+       ======================================================= -->
+
+  <section class="testimonials-section">
+
+    <div class="section-head">
+
+      <div>
+
+        <span class="section-eyebrow">
+          Pet parent experiences
+        </span>
+
+        <h2>
+          Families choose better care
+        </h2>
+
+      </div>
+
+    </div>
+
+
+    <div class="testimonial-grid">
+
+
+      <article class="testimonial-card">
+
+        <div class="testimonial-stars">
+          ★★★★★
+        </div>
+
+        <p>
+          “PawCare makes it easier to understand what
+          my dog needs at different stages of life.”
+        </p>
+
+        <div class="testimonial-author">
+
+          <strong>
+            Maria C.
+          </strong>
+
+          <span>
+            Dog parent
+          </span>
+
+        </div>
+
+      </article>
+
+
+      <article class="testimonial-card">
+
+        <div class="testimonial-stars">
+          ★★★★★
+        </div>
+
+        <p>
+          “I like having pet-care information and
+          service options in one place.”
+        </p>
+
+        <div class="testimonial-author">
+
+          <strong>
+            Lucas T.
+          </strong>
+
+          <span>
+            Cat parent
+          </span>
+
+        </div>
+
+      </article>
+
+
+      <article class="testimonial-card">
+
+        <div class="testimonial-stars">
+          ★★★★★
+        </div>
+
+        <p>
+          “The guides are simple and useful, especially
+          when taking care of an older pet.”
+        </p>
+
+        <div class="testimonial-author">
+
+          <strong>
+            Janelle P.
+          </strong>
+
+          <span>
+            Senior pet caregiver
+          </span>
+
+        </div>
+
+      </article>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       BUSINESS CTA
+       ======================================================= -->
+
+  <section class="business-cta">
+
+    <div>
+
+      <span class="section-eyebrow">
+        Need professional help?
+      </span>
+
+      <h2>
+        Connect with a PawCare service
+      </h2>
+
+      <p>
+        Find veterinary, grooming and other pet-care
+        services available through PawCare.
+      </p>
+
+    </div>
+
+    <a
+      href="services.html"
+      class="btn-primary homepage-link">
+
+      Explore Services →
+
+    </a>
+
+  </section>
+
+
+  <!-- =======================================================
+       FIND A STORE
+       ======================================================= -->
+
+  <section class="promo-strip">
+
+    <div class="promo-card">
+
+      <h3>
+        Local pet care
+      </h3>
+
+      <p>
+        Find veterinary clinics, groomers, boarding
+        services and pet-care locations.
+      </p>
+
+    </div>
+
+
+    <div class="promo-divider">
+      +
+    </div>
+
+
+    <div class="promo-card">
+
+      <h3>
+        Find care near you
+      </h3>
+
+      <p>
+        Explore available PawCare locations and
+        service providers.
+      </p>
+
+      <a
+        href="Find a store.html"
+        class="btn-secondary homepage-link">
+
+        Find a Store →
+
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <!-- =======================================================
+       NEWSLETTER
+       ======================================================= -->
+
+  <section class="newsletter">
+
+    <h2>
+      Stay close to the good stuff
+    </h2>
+
+    <p>
+      Get helpful pet-care notes, seasonal reminders
+      and PawCare updates.
+    </p>
+
+
+    <form
+      class="newsletter-form"
+      id="newsletterForm">
+
+      <input
+        type="email"
+        name="email"
+        placeholder="Your email address"
+        required
+        autocomplete="email">
+
+      <button
+        type="submit">
+
+        Subscribe
+
+      </button>
+
+    </form>
+
+
+    <p class="home-newsletter-note">
+      We only use your email for PawCare updates.
+    </p>
+
+  </section>
+
+
+</main>
+
+
+<!-- =========================================================
+     AUTH MODAL
+     Kept because Account remains a homepage feature.
+     ========================================================= -->
+
+<div
+  class="modal-overlay"
+  id="authOverlay">
+
+  <div
+    class="modal-card auth-card"
+    id="authCard">
+
+    <button
+      class="modal-close"
+      id="authClose"
+      type="button">
+
+      ✕
+
+    </button>
+
+
+    <div class="auth-tabs">
+
+      <button
+        class="auth-tab active"
+        data-tab="signin"
+        type="button">
+
+        Sign in
+
+      </button>
+
+      <button
+        class="auth-tab"
+        data-tab="signup"
+        type="button">
+
+        Create account
+
+      </button>
+
+    </div>
+
+
+    <!-- SIGN IN -->
+
+    <form
+      id="signinForm"
+      class="auth-form">
+
+      <label>
+
+        Email
+
+        <input
+          type="email"
+          name="email"
+          required
+          autocomplete="email">
+
+      </label>
+
+
+      <label>
+
+        Password
+
+        <input
+          type="password"
+          name="password"
+          required
+          autocomplete="current-password">
+
+      </label>
+
+
+      <p
+        class="auth-error"
+        id="signinError"
+        hidden>
+      </p>
+
+
+      <button
+        type="submit"
+        class="btn-primary btn-full">
+
+        Sign in
+
+      </button>
+
+    </form>
+
+
+    <!-- SIGN UP -->
+
+    <form
+      id="signupForm"
+      class="auth-form"
+      hidden>
+
+      <label>
+
+        Full name
+
+        <input
+          type="text"
+          name="name"
+          required
+          autocomplete="name">
+
+      </label>
+
+
+      <label>
+
+        Email
+
+        <input
+          type="email"
+          name="email"
+          required
+          autocomplete="email">
+
+      </label>
+
+
+      <label>
+
+        Password
+
+        <input
+          type="password"
+          name="password"
+          required
+          minlength="6"
+          autocomplete="new-password">
+
+      </label>
+
+
+      <p class="auth-note">
+        Creating an account gives you access to
+        PawCare account features.
+      </p>
+
+
+      <p
+        class="auth-error"
+        id="signupError"
+        hidden>
+      </p>
+
+
+      <button
+        type="submit"
+        class="btn-primary btn-full">
+
+        Create account
+
+      </button>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     CART DRAWER
+     Added so the cart icon in the header (and the basket icon
+     on Dogs.html/Cats.html/etc, which links back here) has
+     somewhere to actually show what's in the cart.
+     ========================================================= -->
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<aside class="cart-drawer" id="cartDrawer">
+
+  <div class="cart-drawer__head">
+    <h2>Your cart</h2>
+    <button class="close-btn" id="closeCart" type="button">✕</button>
+  </div>
+
+  <div class="cart-items" id="cartItems"><!-- injected --></div>
+  <p class="empty-state" id="cartEmpty">Your cart is empty.</p>
+
+  <div class="cart-drawer__footer">
+    <div class="cart-total-row">
+      <span>Subtotal</span>
+      <strong id="cartSubtotal">₱0.00</strong>
+    </div>
+    <button class="btn-primary btn-full" id="checkoutBtn" type="button">Checkout</button>
+  </div>
+
+</aside>
+
+
+<!-- =========================================================
+     CHECKOUT MODAL (address + payment)
+     ========================================================= -->
+
+<div class="modal-overlay" id="checkoutOverlay">
+
+  <div class="modal-card checkout-card" id="checkoutCard">
+
+    <button class="modal-close" id="checkoutClose" type="button">✕</button>
+
+    <h2>Checkout</h2>
+
+    <form id="checkoutForm">
+
+      <h3 class="checkout-subhead">Delivery address</h3>
+
+      <div class="checkout-grid">
+        <label>Full name<input type="text" name="full_name" required></label>
+        <label>Phone<input type="tel" name="phone" required></label>
+        <label class="span-2">Address line<input type="text" name="line1" required></label>
+        <label>City<input type="text" name="city" required></label>
+        <label>Province<input type="text" name="province" required></label>
+        <label>Postal code<input type="text" name="postal_code" required></label>
+      </div>
+
+      <h3 class="checkout-subhead">Payment method</h3>
+
+      <div class="payment-options">
+        <label class="payment-option">
+          <input type="radio" name="payment_method" value="cod" checked>
+          <span>💵 Cash on Delivery</span>
+        </label>
+        <label class="payment-option">
+          <input type="radio" name="payment_method" value="gcash">
+          <span>📱 GCash</span>
+        </label>
+        <label class="payment-option">
+          <input type="radio" name="payment_method" value="card">
+          <span>💳 Credit / Debit card</span>
+        </label>
+      </div>
+
+      <p class="payment-note">GCash and card payments are processed securely by PayMongo — you'll be redirected to their checkout page to complete payment.</p>
+
+      <div class="checkout-summary" id="checkoutSummary"><!-- injected --></div>
+
+      <p class="auth-error" id="checkoutError" hidden></p>
+
+      <button type="submit" class="btn-primary btn-full" id="placeOrderBtn">Place order</button>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     GENERAL INFORMATION MODAL
+     ========================================================= -->
+
+<div
+  class="modal-overlay"
+  id="modalOverlay">
+
+  <div
+    class="modal-card"
+    id="modalCard">
+
+    <button
+      class="modal-close"
+      type="button"
+      id="modalCloseDefault">
+
+      ✕
+
+    </button>
+
+    <h2>
+      PawCare
+    </h2>
+
+    <p style="color:#68778a;">
+      Your companion for responsible and informed
+      pet care.
+    </p>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST
+     ========================================================= -->
+
+<div
+  class="toast"
+  id="toast">
+</div>
+
+
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+
+<footer class="site-footer">
+
+
+  <div class="footer-badges">
+
+    <div class="footer-badges-row">
+
+      <div class="footer-badge">
+        ✓ Pet-first care
+      </div>
+
+      <div class="footer-badge">
+        ♥ Family focused
+      </div>
+
+      <div class="footer-badge">
+        ★ Helpful guides
+      </div>
+
+      <div class="footer-badge">
+        + Professional services
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="footer-main">
+
+
+    <!-- BRAND -->
+
+    <div class="footer-col footer-brand">
+
+      <a
+        href="index.html"
+        class="logo">
+
+        <span class="logo-mark">
+
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true">
+
+            <path d="M12 21c-3.5 0-7-2.2-7-5.4 0-2 1.7-3.1 3.4-3.9 1.4-.7 1.9-1.3 1.9-2.4 0-1 .8-1.8 1.7-1.8s1.7.8 1.7 1.8c0 1.1.5 1.7 1.9 2.4 1.7.8 3.4 1.9 3.4 3.9 0 3.2-3.5 5.4-7 5.4Z"/>
+
+            <circle cx="6" cy="7.5" r="2.1"/>
+            <circle cx="12" cy="4.6" r="2.1"/>
+            <circle cx="18" cy="7.5" r="2.1"/>
+            <circle cx="3.4" cy="12.4" r="1.8"/>
+
+          </svg>
+
+        </span>
+
+        PawCare
+
+      </a>
+
+
+      <p>
+        "The love of an animal asks nothing complicated
+        of us — only that we show up for it properly."
+      </p>
+
+
+      <div class="footer-social">
+
+        <a
+          href="#"
+          aria-label="Facebook">
+          f
+        </a>
+
+        <a
+          href="#"
+          aria-label="Instagram">
+          ◎
+        </a>
+
+        <a
+          href="#"
+          aria-label="TikTok">
+          ♪
+        </a>
+
+        <a
+          href="#"
+          aria-label="YouTube">
+          ▶
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <!-- PETS -->
+
+    <div class="footer-col">
+
+      <h4>
+        Pets
+      </h4>
+
+      <a href="Dogs.html">
+        Dogs
+      </a>
+
+      <a href="Cats.html">
+        Cats
+      </a>
+
+      <a href="Birds.html">
+        Birds
+      </a>
+
+      <a href="Fish.html">
+        Fish
+      </a>
+
+      <a href="SmallPets.html">
+        Small Pets
+      </a>
+
+    </div>
+
+
+    <!-- SERVICES -->
+
+    <div class="footer-col">
+
+      <h4>
+        Services
+      </h4>
+
+      <a href="services.html">
+        Veterinary care
+      </a>
+
+      <a href="services.html">
+        Grooming
+      </a>
+
+      <a href="services.html">
+        Microchipping
+      </a>
+
+      <a href="services.html">
+        Pet protection
+      </a>
+
+    </div>
+
+
+    <!-- COMPANY -->
+
+    <div class="footer-col">
+
+      <h4>
+        PawCare
+      </h4>
+
+      <a href="index.html">
+        About PawCare
+      </a>
+
+      <a href="#guides">
+        Pet-care guides
+      </a>
+
+      <a href="Find a store.html">
+        Store locations
+      </a>
+
+      <a href="#">
+        Privacy policy
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <div class="footer-bottom">
+
+    PawCare — a pet-care experience focused on
+    responsible ownership and companion wellbeing.
+
+  </div>
+
+</footer>
+
+
+<!-- =========================================================
+     HOMEPAGE JS
+     IMPORTANT:
+     The homepage no longer needs product/catalog JS.
+     ========================================================= -->
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  /* =========================================================
+     MOBILE MENU
+     ========================================================= */
+
+  const hamburger =
+    document.getElementById('hamburgerBtn');
+
+  const nav =
+    document.getElementById('mainNav');
+
+  if (hamburger && nav) {
+
+    hamburger.addEventListener('click', function () {
+
+      nav.classList.toggle('open');
+
+    });
+
+  }
+
+
+  /* =========================================================
+     CLOSE MOBILE MENU AFTER NAVIGATION
+     ========================================================= */
+
+  if (nav) {
+
+    nav.querySelectorAll('a').forEach(function (link) {
+
+      link.addEventListener('click', function () {
+
+        nav.classList.remove('open');
+
+      });
+
+    });
+
+  }
+
+
+  /* =========================================================
+     ACCOUNT MENU
+     ========================================================= */
+
+  const accountBtn =
+    document.getElementById('accountBtn');
+
+  const accountMenu =
+    document.getElementById('accountMenu');
+
+  if (accountBtn && accountMenu) {
+
+    accountBtn.addEventListener('click', function (event) {
+
+      event.stopPropagation();
+
+      accountMenu.hidden =
+        !accountMenu.hidden;
+
+    });
+
+  }
+
+
+  document.addEventListener('click', function (event) {
+
+    if (
+      accountMenu &&
+      !accountMenu.contains(event.target) &&
+      event.target !== accountBtn
+    ) {
+
+      accountMenu.hidden = true;
+
+    }
+
+  });
+
+
+  /* =========================================================
+     STATE + API HELPER (real backend calls)
+     ========================================================= */
+
+  const state = { user: null, cart: [] };
+
+  async function api(path, options = {}) {
+    const res = await fetch(path, {
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      ...options,
+    });
+    const raw = await res.text();
+    let data;
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      console.error(`[PawCare] ${path} did not return valid JSON:`, raw);
+      throw new Error(`Server error calling ${path}.`);
+    }
+    if (!res.ok) throw new Error(data.error || `Something went wrong (HTTP ${res.status}).`);
+    return data;
+  }
+
+  function money(n) { return '₱' + Number(n).toFixed(2); }
+
+
+  /* =========================================================
+     ACCOUNT UI (signed in / signed out)
+     ========================================================= */
+
+  function renderAccount() {
+    const signedOut = document.getElementById('accountSignedOut');
+    const signedIn = document.getElementById('accountSignedIn');
+    if (!signedOut || !signedIn) return;
+    if (state.user) {
+      signedOut.hidden = true;
+      signedIn.hidden = false;
+      const nameEl = document.getElementById('accountName');
+      if (nameEl) nameEl.textContent = state.user.name.split(' ')[0];
+    } else {
+      signedOut.hidden = false;
+      signedIn.hidden = true;
+    }
+  }
+
+  async function checkSession() {
+    try {
+      const { user } = await api('api/session.php');
+      state.user = user || null;
+    } catch (e) {
+      state.user = null;
+    }
+    renderAccount();
+    window.PawCareOwnerMode?.init(state.user);
+  }
+
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async function () {
+      try { await api('api/logout.php', { method: 'POST' }); } catch (e) {}
+      state.user = null;
+      state.cart = [];
+      renderAccount();
+      renderCart();
+      const accountMenu = document.getElementById('accountMenu');
+      if (accountMenu) accountMenu.hidden = true;
+      showToast('Signed out.');
+    });
+  }
+
+
+  /* =========================================================
+     SIGN IN / SIGN UP (real backend calls — this is the fix
+     for "clicking Sign in returns home": the forms now
+     preventDefault() and POST to the PHP API instead of doing
+     a normal browser form submission.)
+     ========================================================= */
+
+  const signinForm = document.getElementById('signinForm');
+  const signupForm = document.getElementById('signupForm');
+
+  if (signinForm) {
+    signinForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const errEl = document.getElementById('signinError');
+      errEl.hidden = true;
+      const btn = signinForm.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+      try {
+        const { user } = await api('api/login.php', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: signinForm.email.value,
+            password: signinForm.password.value,
+          }),
+        });
+        state.user = user;
+        renderAccount();
+        authOverlay.classList.remove('open');
+        signinForm.reset();
+        await loadCart();
+        showToast(`Welcome back, ${user.name.split(' ')[0]}.`);
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.hidden = false;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    });
+  }
+
+  if (signupForm) {
+    signupForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const errEl = document.getElementById('signupError');
+      errEl.hidden = true;
+      const btn = signupForm.querySelector('button[type="submit"]');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Creating account…';
+      try {
+        const { user } = await api('api/register.php', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: signupForm.name.value,
+            email: signupForm.email.value,
+            password: signupForm.password.value,
+          }),
+        });
+        state.user = user;
+        renderAccount();
+        authOverlay.classList.remove('open');
+        signupForm.reset();
+        await loadCart();
+        showToast(`Account created — welcome, ${user.name.split(' ')[0]}.`);
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.hidden = false;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    });
+  }
+
+
+  /* =========================================================
+     CART (real backend calls via api/cart.php)
+     ========================================================= */
+
+  function cartSubtotal() {
+    return state.cart.reduce((s, c) => s + Number(c.price) * c.qty, 0);
+  }
+
+  function renderCart() {
+    const wrap = document.getElementById('cartItems');
+    const emptyMsg = document.getElementById('cartEmpty');
+    const badge = document.getElementById('cartBadge');
+    if (!wrap) return;
+    const count = state.cart.reduce((s, c) => s + c.qty, 0);
+    if (badge) badge.textContent = count;
+    emptyMsg.hidden = state.cart.length !== 0;
+    wrap.innerHTML = state.cart.map(function (c) {
+      return `
+        <div class="cart-item">
+          <div class="cart-item__thumb">🐾</div>
+          <div class="cart-item__info">
+            <p>${c.name}</p>
+            <span>${money(c.price)} each</span>
+            <div class="qty-control">
+              <button data-qty="${c.product_id}" data-delta="-1" type="button">−</button>
+              <span>${c.qty}</span>
+              <button data-qty="${c.product_id}" data-delta="1" type="button">+</button>
+            </div>
+            <div class="remove-item" data-remove="${c.product_id}">Remove</div>
+          </div>
+        </div>`;
+    }).join('');
+    document.getElementById('cartSubtotal').textContent = money(cartSubtotal());
+  }
+
+  async function loadCart() {
+    try {
+      const { items } = await api('api/cart.php');
+      state.cart = items;
+    } catch (e) {
+      state.cart = [];
+    }
+    renderCart();
+  }
+
+  document.getElementById('cartItems').addEventListener('click', async function (event) {
+    const qtyBtn = event.target.closest('[data-qty]');
+    const removeBtn = event.target.closest('[data-remove]');
+    try {
+      if (qtyBtn) {
+        const id = Number(qtyBtn.dataset.qty);
+        const delta = Number(qtyBtn.dataset.delta);
+        const { items } = await api('api/cart.php', { method: 'POST', body: JSON.stringify({ product_id: id, delta }) });
+        state.cart = items;
+        renderCart();
+      } else if (removeBtn) {
+        const id = Number(removeBtn.dataset.remove);
+        const { items } = await api('api/cart.php', { method: 'DELETE', body: JSON.stringify({ product_id: id }) });
+        state.cart = items;
+        renderCart();
+      }
+    } catch (err) {
+      showToast(err.message);
+    }
+  });
+
+  const cartBtn = document.getElementById('cartBtn');
+  const cartDrawer = document.getElementById('cartDrawer');
+  const drawerOverlay = document.getElementById('drawerOverlay');
+  const closeCartBtn = document.getElementById('closeCart');
+
+  function openCart() {
+    loadCart();
+    cartDrawer.classList.add('active');
+    drawerOverlay.classList.add('active');
+  }
+
+  function closeCart() {
+    cartDrawer.classList.remove('active');
+    drawerOverlay.classList.remove('active');
+  }
+
+  if (cartBtn) cartBtn.addEventListener('click', openCart);
+  if (closeCartBtn) closeCartBtn.addEventListener('click', closeCart);
+  if (drawerOverlay) drawerOverlay.addEventListener('click', closeCart);
+
+
+  /* =========================================================
+     CHECKOUT (real backend call via api/checkout.php,
+     including GCash / card redirect to PayMongo)
+     ========================================================= */
+
+  const checkoutOverlay = document.getElementById('checkoutOverlay');
+  const checkoutClose = document.getElementById('checkoutClose');
+  const checkoutForm = document.getElementById('checkoutForm');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+
+  function openCheckout() {
+    if (state.cart.length === 0) { showToast('Your cart is empty.'); return; }
+    if (!state.user) {
+      closeCart();
+      openAuth('signin');
+      showToast('Please sign in to check out.');
+      return;
+    }
+    const subtotal = cartSubtotal();
+    const shipping = subtotal >= 50 ? 0 : 4.99;
+    document.getElementById('checkoutSummary').innerHTML = `
+      <div class="checkout-summary__row"><span>Subtotal</span><span>${money(subtotal)}</span></div>
+      <div class="checkout-summary__row"><span>Shipping</span><span>${shipping === 0 ? 'Free' : money(shipping)}</span></div>
+      <div class="checkout-summary__row total"><span>Total</span><span>${money(subtotal + shipping)}</span></div>
+    `;
+    document.getElementById('checkoutError').hidden = true;
+    closeCart();
+    checkoutOverlay.classList.add('open');
+  }
+
+  function closeCheckout() { checkoutOverlay.classList.remove('open'); }
+
+  if (checkoutBtn) checkoutBtn.addEventListener('click', openCheckout);
+  if (checkoutClose) checkoutClose.addEventListener('click', closeCheckout);
+  if (checkoutOverlay) {
+    checkoutOverlay.addEventListener('click', function (event) {
+      if (event.target === checkoutOverlay) closeCheckout();
+    });
+  }
+
+  if (checkoutForm) {
+    checkoutForm.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const errEl = document.getElementById('checkoutError');
+      const btn = document.getElementById('placeOrderBtn');
+      errEl.hidden = true;
+      btn.disabled = true;
+      btn.textContent = 'Placing order…';
+      try {
+        const payload = {
+          full_name: checkoutForm.full_name.value,
+          phone: checkoutForm.phone.value,
+          line1: checkoutForm.line1.value,
+          city: checkoutForm.city.value,
+          province: checkoutForm.province.value,
+          postal_code: checkoutForm.postal_code.value,
+          payment_method: checkoutForm.payment_method.value,
+        };
+        const result = await api('api/checkout.php', { method: 'POST', body: JSON.stringify(payload) });
+        state.cart = [];
+        renderCart();
+        if (result.checkout_url) {
+          window.location.href = result.checkout_url;
+        } else if (result.redirect) {
+          window.location.href = result.redirect;
+        } else {
+          closeCheckout();
+          showToast('Order placed!');
+        }
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.hidden = false;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Place order';
+      }
+    });
+  }
+
+
+  /* =========================================================
+     ARRIVING FROM A CATEGORY PAGE (#cart or #account in the URL)
+     ========================================================= */
+
+  function openFromHash() {
+    const hash = location.hash.replace('#', '');
+    if (hash === 'cart') {
+      openCart();
+    } else if (hash === 'account') {
+      if (state.user) {
+        const accountMenu = document.getElementById('accountMenu');
+        if (accountMenu) accountMenu.hidden = false;
+      } else {
+        openAuth('signin');
+      }
+    }
+  }
+
+  checkSession().then(function () {
+    loadCart();
+    openFromHash();
+  });
+
+
+  /* =========================================================
+     AUTH
+     ========================================================= */
+
+  const authOverlay =
+    document.getElementById('authOverlay');
+
+  const authClose =
+    document.getElementById('authClose');
+
+  const openSignIn =
+    document.getElementById('openSignIn');
+
+  const openSignUp =
+    document.getElementById('openSignUp');
+
+
+  function openAuth(tab) {
+
+    if (!authOverlay) return;
+
+    authOverlay.classList.add('open');
+
+    document
+      .querySelectorAll('.auth-tab')
+      .forEach(function (button) {
+
+        button.classList.toggle(
+          'active',
+          button.dataset.tab === tab
+        );
+
+      });
+
+    const signin =
+      document.getElementById('signinForm');
+
+    const signup =
+      document.getElementById('signupForm');
+
+    if (signin) {
+      signin.hidden =
+        tab !== 'signin';
+    }
+
+    if (signup) {
+      signup.hidden =
+        tab !== 'signup';
+    }
+
+  }
+
+
+  if (openSignIn) {
+
+    openSignIn.addEventListener(
+      'click',
+      function () {
+
+        openAuth('signin');
+
+      }
+    );
+
+  }
+
+
+  if (openSignUp) {
+
+    openSignUp.addEventListener(
+      'click',
+      function () {
+
+        openAuth('signup');
+
+      }
+    );
+
+  }
+
+
+  if (authClose) {
+
+    authClose.addEventListener(
+      'click',
+      function () {
+
+        authOverlay.classList.remove('open');
+
+      }
+    );
+
+  }
+
+
+  document
+    .querySelectorAll('.auth-tab')
+    .forEach(function (button) {
+
+      button.addEventListener(
+        'click',
+        function () {
+
+          openAuth(button.dataset.tab);
+
+        }
+      );
+
+    });
+
+
+  if (authOverlay) {
+
+    authOverlay.addEventListener(
+      'click',
+      function (event) {
+
+        if (event.target === authOverlay) {
+
+          authOverlay.classList.remove('open');
+
+        }
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     HOMEPAGE SEARCH
+     It does NOT search products.
+     It simply directs users to relevant pages.
+     ========================================================= */
+
+  const homeSearch =
+    document.getElementById('homeSearch');
+
+  if (homeSearch) {
+
+    homeSearch.addEventListener(
+      'keydown',
+      function (event) {
+
+        if (event.key !== 'Enter') return;
+
+        const query =
+          homeSearch.value
+            .trim()
+            .toLowerCase();
+
+        if (!query) return;
+
+
+        if (
+          query.includes('dog') ||
+          query.includes('puppy')
+        ) {
+
+          window.location.href =
+            'Dogs.html';
+
+          return;
+
+        }
+
+
+        if (
+          query.includes('cat') ||
+          query.includes('kitten')
+        ) {
+
+          window.location.href =
+            'Cats.html';
+
+          return;
+
+        }
+
+
+        if (query.includes('bird')) {
+
+          window.location.href =
+            'Birds.html';
+
+          return;
+
+        }
+
+
+        if (
+          query.includes('fish') ||
+          query.includes('aquarium')
+        ) {
+
+          window.location.href =
+            'Fish.html';
+
+          return;
+
+        }
+
+
+        if (
+          query.includes('small pet') ||
+          query.includes('hamster') ||
+          query.includes('rabbit')
+        ) {
+
+          window.location.href =
+            'SmallPets.html';
+
+          return;
+
+        }
+
+
+        if (
+          query.includes('vet') ||
+          query.includes('groom') ||
+          query.includes('service') ||
+          query.includes('microchip')
+        ) {
+
+          window.location.href =
+            'Services.html';
+
+          return;
+
+        }
+
+
+        if (
+          query.includes('store') ||
+          query.includes('clinic') ||
+          query.includes('near')
+        ) {
+
+          window.location.href =
+            'Find a store.html';
+
+          return;
+
+        }
+
+
+        showToast(
+          'Try searching for dogs, cats, birds, fish, small pets, services, or stores.'
+        );
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     NEWSLETTER
+     No backend dependency.
+     ========================================================= */
+
+  const newsletter =
+    document.getElementById('newsletterForm');
+
+  if (newsletter) {
+
+    newsletter.addEventListener(
+      'submit',
+      function (event) {
+
+        event.preventDefault();
+
+        const input =
+          newsletter.querySelector('input');
+
+        if (!input) return;
+
+        const email =
+          input.value.trim();
+
+        if (!email) return;
+
+        showToast(
+          'Thank you for subscribing to PawCare!'
+        );
+
+        newsletter.reset();
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     GENERAL TOAST
+     ========================================================= */
+
+  function showToast(message) {
+
+    const toast =
+      document.getElementById('toast');
+
+    if (!toast) return;
+
+    toast.textContent = message;
+
+    toast.classList.add('show');
+
+    clearTimeout(
+      window.pawcareToastTimer
+    );
+
+    window.pawcareToastTimer =
+      setTimeout(function () {
+
+        toast.classList.remove('show');
+
+      }, 2800);
+
+  }
+
+
+  /* =========================================================
+     CLOSE MODAL
+     ========================================================= */
+
+  const modalOverlay =
+    document.getElementById('modalOverlay');
+
+  const modalClose =
+    document.getElementById('modalCloseDefault');
+
+  if (modalClose && modalOverlay) {
+
+    modalClose.addEventListener(
+      'click',
+      function () {
+
+        modalOverlay.classList.remove('open');
+
+      }
+    );
+
+  }
+
+
+  if (modalOverlay) {
+
+    modalOverlay.addEventListener(
+      'click',
+      function (event) {
+
+        if (event.target === modalOverlay) {
+
+          modalOverlay.classList.remove('open');
+
+        }
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     PREVENT OLD PRODUCT EVENTS
+     ========================================================= */
+
+  document
+    .querySelectorAll('[data-add], [data-add-db]')
+    .forEach(function (element) {
+
+      element.removeAttribute('data-add');
+      element.removeAttribute('data-add-db');
+
+    });
+
+
+  /* =========================================================
+     NOTE: The homepage's own product catalog remains disabled
+     (products live on Dogs.html/Cats.html/etc). Only account
+     and cart/checkout are handled here.
+     ========================================================= */
+
+});
+
+</script>
+
+  <script src="site-enhancements.js"></script>
+</body>
+</html>
