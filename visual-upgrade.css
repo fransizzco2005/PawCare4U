@@ -429,35 +429,42 @@ body.page-dog .sidebar-filters,body.page-cat .sidebar-filters,body.page-bird .si
 body.page-dog .hero,body.page-cat .hero,body.page-bird .hero,body.page-fish .hero,body.page-rodent .hero,body.page-small-pets .hero{
   min-height:210px!important;
   height:210px!important;
-  grid-template-columns:minmax(320px,1fr) minmax(220px,.8fr) 250px!important;
-  align-content:center!important;
-  gap:24px!important;
+  grid-template-columns:minmax(420px,1fr) 250px!important;
+  grid-template-rows:1fr!important;
+  align-items:center!important;
+  gap:18px!important;
   padding:24px 30px!important;
   margin-bottom:22px!important;
 }
 body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-fish .hero h1,body.page-rodent .hero h1,body.page-small-pets .hero h1{
-  align-self:center!important;
   grid-column:1!important;
   grid-row:1!important;
+  align-self:end!important;
   max-width:520px!important;
-  margin:0!important;
+  margin:0 0 42px!important;
   font-size:clamp(28px,2.5vw,38px)!important;
   line-height:1.08!important;
+  color:#f7fbff!important;
+  opacity:1!important;
+  text-shadow:0 0 24px rgba(108,199,255,.32)!important;
 }
 body.page-dog .hero p,body.page-cat .hero p,body.page-bird .hero p,body.page-fish .hero p,body.page-rodent .hero p,body.page-small-pets .hero p{
-  align-self:center!important;
-  grid-column:2!important;
+  grid-column:1!important;
   grid-row:1!important;
+  align-self:end!important;
   max-width:310px!important;
   margin:0!important;
   font-size:14px!important;
   line-height:1.45!important;
+  color:#d9edff!important;
 }
 body.page-dog .catalog-hero-visual,body.page-cat .catalog-hero-visual,body.page-bird .catalog-hero-visual,body.page-fish .catalog-hero-visual,body.page-rodent .catalog-hero-visual,body.page-small-pets .catalog-hero-visual{
   width:250px!important;
   height:160px!important;
-  grid-column:3!important;
+  grid-column:2!important;
   grid-row:1!important;
+  justify-self:start!important;
+  transform:translateX(-52px)!important;
 }
 body.page-dog .catalog-hero-frame,body.page-cat .catalog-hero-frame,body.page-bird .catalog-hero-frame,body.page-fish .catalog-hero-frame,body.page-rodent .catalog-hero-frame,body.page-small-pets .catalog-hero-frame{
   inset:0 6px!important;
@@ -588,13 +595,15 @@ body.page-dog .product-thumb img,body.page-cat .product-thumb img,body.page-bird
     grid-template-columns:1fr!important;
     grid-template-rows:auto auto auto!important;
   }
-  body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-fish .hero h1,body.page-rodent .hero h1,body.page-small-pets .hero h1{grid-column:1!important;grid-row:1!important;font-size:26px!important}
+  body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-fish .hero h1,body.page-rodent .hero h1,body.page-small-pets .hero h1{grid-column:1!important;grid-row:1!important;align-self:start!important;margin:0 0 10px!important;font-size:26px!important}
   body.page-dog .hero p,body.page-cat .hero p,body.page-bird .hero p,body.page-fish .hero p,body.page-rodent .hero p,body.page-small-pets .hero p{grid-column:1!important;grid-row:2!important;max-width:none!important}
   body.page-dog .catalog-hero-visual,body.page-cat .catalog-hero-visual,body.page-bird .catalog-hero-visual,body.page-fish .catalog-hero-visual,body.page-rodent .catalog-hero-visual,body.page-small-pets .catalog-hero-visual{
     width:min(240px,72vw)!important;
     height:150px!important;
     grid-column:1!important;
     grid-row:3!important;
+    justify-self:center!important;
+    transform:none!important;
   }
   .catalog-scroll-cue{right:12px;bottom:10px;font-size:9px}
 }
