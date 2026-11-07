@@ -51,7 +51,12 @@ async function body(req) {
   try {
     if (typeof req.rawBody === 'string') text = req.rawBody;
     if (Buffer.isBuffer(req.body)) text = req.body.toString();
-    else if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) return req.body;
+    else if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) {
+      const keys = Object.keys(req.body);
+      if (keys.some(key => ['name','email','password','nickname','phone','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id'].includes(key))) {
+        if (!text) return req.body;
+      }
+    }
     if (!text && typeof req.body === 'string') text = req.body;
   } catch (_) {
     // Vercel's Node adapter may expose req.body as a throwing getter.
