@@ -50,7 +50,8 @@ async function body(req) {
   let text = '';
   try {
     if (typeof req.rawBody === 'string') text = req.rawBody;
-    if (req.body && typeof req.body === 'object') return req.body;
+    if (Buffer.isBuffer(req.body)) text = req.body.toString();
+    else if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) return req.body;
     if (!text && typeof req.body === 'string') text = req.body;
   } catch (_) {
     // Vercel's Node adapter may expose req.body as a throwing getter.
