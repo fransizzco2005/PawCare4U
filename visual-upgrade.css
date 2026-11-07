@@ -61,6 +61,26 @@ body.page-home,body.home-page{background:#050b16!important;background-image:radi
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 
+/* Supplied PawCare badge used as the branded header logo. */
+.logo-mark,
+.paw-logo-mark,
+.footer-logo-mark,
+.account-brand-mark{
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+  overflow:hidden!important;
+  border-radius:50%!important;
+  border:1px solid rgba(124,204,255,.28)!important;
+  background:#fff url('pawcare-logo.png') center/cover no-repeat!important;
+  box-shadow:0 8px 22px rgba(30,113,180,.22)!important;
+}
+.logo-mark svg,
+.paw-logo-mark svg,
+.footer-logo-mark svg,
+.account-brand-mark svg{display:none!important}
+.paw-logo-mark,.account-brand-mark{font-size:0!important}
+
 /* Catalog presentation: bright reading contrast, compact cards, and a premium
    animal showcase that stays distinct on every species page. */
 .topbar-love{
