@@ -53,7 +53,7 @@ async function body(req) {
     if (Buffer.isBuffer(req.body)) text = req.body.toString();
     else if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) {
       const keys = Object.keys(req.body);
-      if (keys.some(key => ['name','email','password','nickname','phone','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id'].includes(key))) {
+      if (keys.some(key => ['name','email','password','nickname','phone','avatar_data','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id'].includes(key))) {
         if (!text) return req.body;
       }
     }

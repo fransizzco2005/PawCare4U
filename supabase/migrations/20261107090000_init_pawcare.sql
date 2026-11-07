@@ -276,9 +276,9 @@ WHERE NOT EXISTS (SELECT 1 FROM order_status_history h WHERE h.order_id=o.id);
 
 -- Profile fields used by the account pages.
 ALTER TABLE users ADD COLUMN IF NOT EXISTS nickname VARCHAR(80) DEFAULT NULL;
-ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255) DEFAULT NULL;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT NULL;
 ALTER TABLE owners ADD COLUMN IF NOT EXISTS profile_name VARCHAR(120) DEFAULT NULL;
-ALTER TABLE owners ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(255) DEFAULT NULL;
+ALTER TABLE owners ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT NULL;
 
 -- Owner-to-customer order messages.
 CREATE TABLE IF NOT EXISTS order_messages (

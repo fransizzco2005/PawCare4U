@@ -113,7 +113,7 @@ function resizeAvatar(file){
    const img=new Image();
    img.onerror=()=>reject(Error('Please select a valid image.'));
    img.onload=()=>{
-    const size=512,canvas=document.createElement('canvas');
+    const size=256,canvas=document.createElement('canvas');
     canvas.width=size;canvas.height=size;
     const ctx=canvas.getContext('2d'),scale=Math.max(size/img.width,size/img.height);
     const width=img.width*scale,height=img.height*scale;
@@ -133,7 +133,10 @@ document.getElementById('profileForm').addEventListener('submit',async e=>{
  try{
   if(f)payload.avatar_data=await resizeAvatar(f);
   const d=await fetch('api/profile.php',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  const j=await d.json();if(!d.ok)throw Error(j.error||'Could not save profile.');
+  const responseText=await d.text();
+  let j={};
+  try{j=responseText?JSON.parse(responseText):{}}catch(_){throw Error(d.ok?'Server returned an invalid response.':`Server request failed (${d.status}).`)}
+  if(!d.ok)throw Error(j.error||`Server request failed (${d.status}).`);
   profile=j.profile;msg.textContent='Saved.';await loadProfile();
   window.dispatchEvent(new CustomEvent('pawcare:profile-updated',{detail:profile}));
   setTimeout(()=>msg.textContent='',1800);
