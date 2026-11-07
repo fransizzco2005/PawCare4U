@@ -60,3 +60,164 @@ body.page-home,body.home-page{background:#050b16!important;background-image:radi
   .store-map-shell{grid-template-columns:1fr!important;height:auto!important}.store-results-panel{max-height:520px}.store-map-modern{height:430px!important}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Catalog presentation: bright reading contrast, compact cards, and a premium
+   animal showcase that stays distinct on every species page. */
+.topbar-love{
+  color:#b9eaff!important;
+  text-shadow:0 0 7px rgba(91,205,255,.9),0 0 18px rgba(43,139,255,.55);
+  letter-spacing:.08em;
+  font-weight:800!important;
+  animation:topbarNeonPulse 3.2s ease-in-out infinite;
+}
+.topbar-love span{color:#7fe7ff!important}
+@keyframes topbarNeonPulse{0%,100%{text-shadow:0 0 7px rgba(91,205,255,.75),0 0 18px rgba(43,139,255,.42)}50%{text-shadow:0 0 10px rgba(152,229,255,1),0 0 26px rgba(43,139,255,.78)}}
+.topbar-hotline{
+  color:#8fe5ff!important;
+  text-shadow:0 0 10px rgba(69,194,255,.75);
+}
+.topbar-inner a{color:#d9f5ff!important}
+.page-dog .hero,.page-cat .hero,.page-bird .hero,.page-fish .hero,.page-rodent .hero,.page-small-pets .hero{
+  position:relative;
+  min-height:280px;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 330px;
+  align-items:center;
+  gap:32px;
+  padding-right:24px!important;
+  border-radius:22px!important;
+  border:1px solid rgba(134,205,255,.22);
+  background:
+    radial-gradient(circle at 82% 46%,rgba(102,213,255,.22),transparent 24%),
+    linear-gradient(125deg,#07172f 0%,#0c3264 58%,#081a32 100%)!important;
+  box-shadow:0 24px 70px rgba(5,33,78,.34),inset 0 1px rgba(255,255,255,.08)!important;
+}
+.page-dog .hero:before,.page-cat .hero:before,.page-bird .hero:before,.page-fish .hero:before,.page-rodent .hero:before,.page-small-pets .hero:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background-image:linear-gradient(rgba(114,208,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(114,208,255,.055) 1px,transparent 1px);
+  background-size:28px 28px;
+  mask-image:linear-gradient(90deg,transparent 10%,#000);
+}
+.page-dog .hero h1,.page-cat .hero h1,.page-bird .hero h1,.page-fish .hero h1,.page-rodent .hero h1,.page-small-pets .hero h1{
+  position:relative;
+  z-index:2;
+  color:#f6fbff!important;
+  text-shadow:0 0 28px rgba(108,199,255,.38);
+}
+.page-dog .hero p,.page-cat .hero p,.page-bird .hero p,.page-fish .hero p,.page-rodent .hero p,.page-small-pets .hero p{
+  position:relative;
+  z-index:2;
+  color:#d9edff!important;
+  font-weight:600;
+}
+.catalog-hero-visual{
+  position:relative;
+  z-index:2;
+  width:280px;
+  height:220px;
+  justify-self:end;
+  perspective:900px;
+}
+.catalog-hero-frame{
+  position:absolute;
+  inset:12px 8px 8px 18px;
+  border-radius:20px;
+  border:1px solid rgba(163,221,255,.38);
+  overflow:hidden;
+  transform:rotateY(-7deg) rotateX(2deg);
+  box-shadow:0 22px 50px rgba(0,14,40,.48),0 0 32px rgba(67,177,255,.28);
+  animation:catalogHeroFloat 4.8s ease-in-out infinite;
+}
+.catalog-hero-frame:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(127,219,255,.24),transparent 42%,rgba(9,76,154,.28));
+  mix-blend-mode:screen;
+}
+.catalog-hero-frame img{width:100%;height:100%;object-fit:cover;display:block}
+.catalog-hero-frame span{
+  position:absolute;
+  left:14px;
+  bottom:12px;
+  z-index:2;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(4,20,43,.78);
+  border:1px solid rgba(158,223,255,.36);
+  color:#fff;
+  font-size:.66rem;
+  font-weight:900;
+  letter-spacing:.18em;
+}
+.catalog-hero-orbit{
+  position:absolute;
+  inset:-12px;
+  border:1px solid rgba(124,210,255,.22);
+  border-radius:50%;
+  transform:rotateX(68deg);
+  box-shadow:0 0 22px rgba(72,184,255,.14);
+  animation:catalogOrbit 12s linear infinite;
+}
+@keyframes catalogHeroFloat{0%,100%{transform:rotateY(-7deg) rotateX(2deg) translateY(0)}50%{transform:rotateY(-3deg) rotateX(-1deg) translateY(-8px)}}
+@keyframes catalogOrbit{to{transform:rotateX(68deg) rotateZ(360deg)}}
+
+.filters-grid{gap:18px!important}
+.products-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important}
+.product-card{
+  border-radius:12px!important;
+  box-shadow:0 7px 22px rgba(20,30,50,.08)!important;
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease!important;
+}
+.product-card:hover{transform:translateY(-4px)!important}
+.product-thumb{aspect-ratio:1.12/1!important}
+.product-thumb img{padding:10px!important}
+.product-info{padding:12px 14px 14px!important}
+.product-name{min-height:auto!important;line-height:1.35!important}
+.product-actions{grid-template-columns:1fr 1fr!important;gap:7px!important;margin-top:9px!important}
+.product-actions .btn{min-height:38px!important;padding:8px 10px!important;font-size:11.5px!important;border-radius:9px!important}
+.product-category,.product-rating{font-size:11px!important}
+.product-price{font-size:15px!important;margin-top:5px!important}
+
+.product-modal{z-index:10050!important;padding:18px!important;backdrop-filter:blur(10px)}
+.product-modal__dialog{
+  width:min(980px,calc(100vw - 36px))!important;
+  max-height:min(760px,calc(100vh - 36px))!important;
+  grid-template-columns:minmax(300px,42%) minmax(0,58%)!important;
+  border-radius:18px!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  box-shadow:0 30px 100px rgba(0,18,48,.42)!important;
+}
+.product-modal__media{min-height:520px!important;padding:24px!important;background:radial-gradient(circle,#eef8ff,#e9f2fa)!important}
+.product-modal__media img{max-height:470px!important;object-fit:contain!important;border-radius:12px}
+.product-modal__body{padding:26px 30px!important;color:#17253a!important;overflow:auto}
+.product-modal__body h2{color:#11233a!important;margin-top:5px!important;line-height:1.2!important}
+.product-modal__body p{color:#5a6980!important;line-height:1.65!important}
+.product-modal__body .modal-product-category{color:#177bcf!important;font-weight:800!important}
+.product-modal__body .product-price{color:#0d4f9d!important;font-size:22px!important}
+.modal-qty{border-color:#d9e4ef!important;color:#17253a!important}
+.modal-qty button{background:#edf4fb!important;color:#145b9d!important}
+.product-feedback-box{background:#f6f9fc!important;border:1px solid #e0e9f2!important}
+.product-feedback-box h3{color:#17253a!important}
+.feedback-note{color:#64748b!important}
+.product-feedback-box textarea{border-color:#d4e0ec!important;background:#fff!important;color:#17253a!important}
+
+@media(max-width:1050px){
+  .products-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .page-dog .hero,.page-cat .hero,.page-bird .hero,.page-fish .hero,.page-rodent .hero,.page-small-pets .hero{grid-template-columns:minmax(0,1fr) 250px}
+  .catalog-hero-visual{width:230px;height:200px}
+}
+@media(max-width:760px){
+  .page-dog .hero,.page-cat .hero,.page-bird .hero,.page-fish .hero,.page-rodent .hero,.page-small-pets .hero{grid-template-columns:1fr!important;padding:32px 24px!important}
+  .catalog-hero-visual{width:min(280px,100%)!important;height:190px!important;justify-self:center!important}
+  .products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .product-modal__dialog{grid-template-columns:1fr!important}
+  .product-modal__media{min-height:250px!important;height:250px!important}
+  .product-modal__media img{max-height:220px!important}
+  .product-modal__body{padding:20px!important}
+}

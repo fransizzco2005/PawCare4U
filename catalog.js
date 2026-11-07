@@ -1,5 +1,23 @@
 /* PawCare static catalog interactions. Images intentionally stay in HTML. */
 (function(){
+  const hero=document.querySelector('.hero');
+  if(hero && !hero.querySelector('.catalog-hero-visual')){
+    const animalMap={
+      'page-dog':{label:'DOGS',src:'https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=900&q=85'},
+      'page-cat':{label:'CATS',src:'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=900&q=85'},
+      'page-bird':{label:'BIRDS',src:'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=900&q=85'},
+      'page-fish':{label:'FISH',src:'https://images.unsplash.com/photo-1522069169874-c58ec4b4bb49?auto=format&fit=crop&w=900&q=85'},
+      'page-rodent':{label:'SMALL PETS',src:'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?auto=format&fit=crop&w=900&q=85'}
+    };
+    const animal=Object.keys(animalMap).find(name=>document.body.classList.contains(name));
+    const art=animalMap[animal];
+    if(art){
+      const visual=document.createElement('div');
+      visual.className='catalog-hero-visual';
+      visual.innerHTML=`<div class="catalog-hero-orbit"></div><div class="catalog-hero-frame"><img src="${art.src}" alt="${art.label.toLowerCase()} care collection"><span>${art.label}</span></div>`;
+      hero.appendChild(visual);
+    }
+  }
   const grid=document.querySelector('.products-grid');
   if(!grid) return;
   const cards=[...grid.querySelectorAll('.product-card')];
