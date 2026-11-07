@@ -84,10 +84,10 @@ body .page-loader-mark{
   animation:pcLoaderLogoAlign 1.7s ease-in-out infinite!important;
 }
 @keyframes pcLoaderLogoAlign{
-  0%,100%{transform:translateY(13px) scale(1)}
-  50%{transform:translateY(13px) scale(1.07)}
+  0%,100%{transform:translateY(17px) scale(1)}
+  50%{transform:translateY(17px) scale(1.07)}
 }
-.page-loader-text{transform:translateY(4px)}
+.page-loader-text{transform:translateY(8px)}
 @media(min-width:761px){
   body.home-page .search-wrap{width:220px!important;flex:0 0 220px!important}
 }
@@ -325,23 +325,6 @@ body.owner-session.owner-mode header.site-header{
   border-bottom-color:rgba(255,196,74,.48)!important;
   box-shadow:0 14px 40px rgba(0,0,0,.28),0 1px 0 rgba(255,196,74,.2)!important;
 }
-body.owner-session.owner-mode .site-header:before{
-  content:"OWNER CONTROL";
-  position:absolute;
-  left:50%;
-  top:0;
-  transform:translate(-50%,0);
-  z-index:20;
-  padding:4px 12px;
-  border-radius:0 0 9px 9px;
-  background:linear-gradient(135deg,#ffc45a,#e79d25);
-  color:#17243a;
-  font-size:8px;
-  line-height:1;
-  font-weight:900;
-  letter-spacing:.16em;
-  box-shadow:0 7px 18px rgba(255,196,74,.22);
-}
 body.owner-session.owner-mode .header-role-indicator.is-owner,
 body.owner-session.owner-mode #headerRoleIndicator.is-owner{
   background:linear-gradient(135deg,#ffd977,#e9a52c)!important;
@@ -361,10 +344,6 @@ body.owner-mode .main-nav a.active,body.owner-mode .nav-menu a.active{
   color:#ffd87d!important;
   border-bottom-color:#ffc45a!important;
 }
-@media(max-width:760px){
-  body.owner-session.owner-mode .site-header:before{display:none}
-}
-
 /* Final homepage composition: layered, editorial, and motion-rich. */
 body.home-page #shopView,
 body.home-page main#shopView{background:transparent!important}
@@ -1425,7 +1404,7 @@ body.page-dog .catalog-hero-visual,body.page-cat .catalog-hero-visual,body.page-
 }
 @media(prefers-reduced-motion:reduce){
   .topbar:before{animation:none}
-  .page-loader-mark{animation:none!important;transform:translateY(13px)}
+  .page-loader-mark{animation:none!important;transform:translateY(17px)}
   body.home-page .business-cta:after{display:none}
 }
 
@@ -1504,25 +1483,29 @@ body.page-rodent .catalog-hero-visual{margin-top:-26px!important;top:-8px!import
 }
 .site-header:before{
   background:
-    radial-gradient(ellipse at 18% 45%,rgba(28,128,255,.2),transparent 34%),
-    radial-gradient(ellipse at 76% 10%,rgba(40,196,255,.12),transparent 30%),
-    radial-gradient(ellipse at 95% 100%,rgba(73,119,255,.16),transparent 32%);
-  background-size:150% 180%;
-  animation:pcHeaderGlow 22s ease-in-out infinite alternate;
+    radial-gradient(ellipse at 18% 45%,rgba(28,128,255,.28),transparent 38%),
+    radial-gradient(ellipse at 76% 10%,rgba(40,196,255,.2),transparent 34%),
+    radial-gradient(ellipse at 95% 100%,rgba(73,119,255,.24),transparent 36%),
+    linear-gradient(112deg,transparent 12%,rgba(73,161,255,.02) 35%,rgba(73,161,255,.13) 51%,rgba(79,190,255,.1) 55%,transparent 78%);
+  background-size:150% 180%,150% 180%,150% 180%,220% 100%;
+  animation:pcHeaderAurora 17s ease-in-out infinite alternate;
 }
 .site-header:after{
-  background-image:radial-gradient(circle,rgba(142,213,255,.38) 1px,transparent 1.6px);
-  background-size:34px 34px;
-  opacity:.22;
-  animation:pcHeaderParticles 32s linear infinite;
+  background-image:
+    radial-gradient(circle,rgba(160,220,255,.72) 1.15px,transparent 1.8px),
+    radial-gradient(circle,rgba(93,169,255,.5) 1px,transparent 1.7px);
+  background-size:42px 42px,68px 68px;
+  background-position:0 0,20px 11px;
+  opacity:.34;
+  animation:pcHeaderParticles 28s linear infinite;
 }
 .site-header .header-inner{position:relative;z-index:1}
-@keyframes pcHeaderGlow{
-  0%{background-position:0% 40%}
-  100%{background-position:100% 60%}
+@keyframes pcHeaderAurora{
+  0%{background-position:0% 35%,100% 0%,100% 100%,0% 0%}
+  100%{background-position:100% 65%,0% 100%,0% 0%,100% 0%}
 }
 @keyframes pcHeaderParticles{
-  to{background-position:68px -34px}
+  to{background-position:84px -42px,-68px 68px}
 }
 
 .product-modal__dialog{
