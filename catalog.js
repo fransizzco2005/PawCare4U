@@ -119,7 +119,24 @@
       if(!d||!d.feedback)return;
       fbReplies.innerHTML=d.feedback.map(x=>`<div class="feedback-note" style="margin-top:10px"><b>${d.__owner?'Customer: '+String(x.user_name||'Customer'):'Your comment:'}</b> ${String(x.comment).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}${x.owner_reply?`<br><b>Owner reply:</b> ${String(x.owner_reply).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}`:''}</div>`).join('');
     }).catch(()=>{});
-    fbSend.onclick=async()=>{if(!feedbackUser){fbNote.textContent='Please sign in first.';return}const comment=fbText.value.trim();if(!comment){fbNote.textContent='Please write a comment first.';return}fbSend.disabled=true;try{await fetch('api/product_feedback.php',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({product_id:p.id,comment})}).then(async r=>{const d=await r.json();if(!r.ok)throw Error(d.error||'Could not send comment');return d});fbText.value='';fbNote.textContent='Comment sent to the owner. Thank you!';}catch(e){fbNote.textContent=e.message}finally{fbSend.disabled=false}};
+    fbSend.onclick=async()=>{
+      if(!feedbackUser){fbNote.textContent='Please sign in first to add a comment.';return}
+      const comment=fbText.value.trim();
+      if(!comment){fbNote.textContent='Please write a comment first.';return}
+      fbSend.disabled=true;fbSend.textContent='Sending...';
+      try{
+        const response=await fetch('/api/product_feedback.php',{method:'POST',credentials:'include',cache:'no-store',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({product_id:p.id,comment})});
+        const text=await response.text();let result={};
+        try{result=text?JSON.parse(text):{}}catch(_){throw new Error('The server returned an invalid response.')}
+        if(!response.ok)throw new Error(result.error||'Could not send comment');
+        fbText.value='';
+        fbNote.textContent='Comment sent to the owner. Thank you!';
+        const refreshed=await fetch(`/api/product_feedback.php?product_id=${encodeURIComponent(p.id)}&v=${Date.now()}`,{credentials:'include',cache:'no-store',headers:{'Accept':'application/json'}});
+        const refreshedData=await refreshed.json();
+        if(refreshedData.feedback) fbReplies.innerHTML=refreshedData.feedback.map(x=>`<div class="feedback-note" style="margin-top:10px"><b>Your comment:</b> ${String(x.comment).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}${x.owner_reply?`<br><b>Owner reply:</b> ${String(x.owner_reply).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}`:''}</div>`).join('');
+      }catch(e){fbNote.textContent=e.message||'Could not send comment.'}
+      finally{fbSend.disabled=false;fbSend.textContent='Send comment'}
+    };
     modal.classList.add('open');document.body.classList.add('modal-open'); setTimeout(()=>modal.querySelector('.product-modal__close').focus(),100);
     function close(){
       modal.classList.remove('open');
