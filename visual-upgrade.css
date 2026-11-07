@@ -713,12 +713,72 @@ body.page-small-pets .hero p{
 
 /* Video-inspired floating navigation: compact, centered and depth-responsive. */
 body:not(.home-page) .header-inner{position:relative!important}
+@media(min-width:821px){
+  body:not(.home-page) .header-inner{
+    display:grid!important;
+    grid-template-columns:minmax(150px,170px) 170px minmax(420px,1fr) auto!important;
+    gap:12px!important;
+    align-items:center!important;
+  }
+  body:not(.home-page) .logo{
+    grid-column:1!important;
+    width:max-content!important;
+  }
+  body:not(.home-page) .search-box{
+    grid-column:2!important;
+    width:170px!important;
+    flex-basis:170px!important;
+  }
+  body:not(.home-page) .nav-menu{
+    grid-column:3!important;
+    width:100%!important;
+    min-width:0!important;
+    margin:0!important;
+    display:flex!important;
+    justify-content:center!important;
+    flex-wrap:nowrap!important;
+    overflow:hidden!important;
+  }
+  body:not(.home-page) .header-actions{
+    grid-column:4!important;
+    justify-self:end!important;
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    z-index:20!important;
+  }
+  body:not(.home-page) .header-actions .icon-btn{
+    width:40px!important;
+    height:40px!important;
+    flex:0 0 40px!important;
+    border-color:rgba(150,211,255,.18)!important;
+    background:rgba(255,255,255,.035)!important;
+  }
+  body:not(.home-page) .header-actions .ui-icon{
+    width:20px!important;
+    height:20px!important;
+    fill:none!important;
+    stroke:currentColor!important;
+    stroke-width:1.7!important;
+  }
+}
+@media(min-width:821px) and (max-width:1050px){
+  body:not(.home-page) .header-inner{
+    grid-template-columns:125px 150px minmax(330px,1fr) 92px!important;
+    gap:8px!important;
+  }
+  body:not(.home-page) .search-box{width:150px!important;flex-basis:150px!important}
+  body:not(.home-page) .nav-menu a{padding:7px 5px!important;font-size:9.5px!important}
+  body:not(.home-page) .logo>span:last-child{font-size:15px!important}
+}
 body:not(.home-page) .nav-menu{
-  position:absolute!important;
-  left:50%!important;
-  top:50%!important;
-  transform:translate(-50%,-50%) perspective(900px)!important;
-  margin-left:0!important;
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  transform:none!important;
+  justify-self:center!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
   padding:7px!important;
   gap:2px!important;
   border-radius:999px!important;
