@@ -23,6 +23,18 @@
 ## PHP hosting requirement
 PawCare must run on a host that executes PHP and POST requests. A static-only host will return HTTP 405 because login, registration, cart, checkout, and owner APIs use PHP endpoints.
 
+## Vercel deployment
+1. Import the GitHub repository in Vercel.
+2. Add these Vercel Environment Variables:
+   - `SUPABASE_DB_HOST=aws-0-ap-southeast-1.pooler.supabase.com`
+   - `SUPABASE_DB_PORT=5432`
+   - `SUPABASE_DB_NAME=postgres`
+   - `SUPABASE_DB_USER=postgres.nbickxvumjpvqvmiiznj`
+   - `SUPABASE_DB_PASSWORD=<database password>`
+   - `SUPABASE_URL=https://nbickxvumjpvqvmiiznj.supabase.co`
+3. Redeploy from the latest commit.
+4. Verify `https://YOUR-VERCEL-DOMAIN/api/health.php` returns `"ok":true`.
+
 
 ## Appointment booking
 - Services now have a real appointment form on `services.html`.
