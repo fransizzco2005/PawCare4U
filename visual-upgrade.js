@@ -105,11 +105,31 @@
       entries.forEach(entry=>{
         if(entry.isIntersecting){
           entry.target.classList.add('pc-is-visible');
-          revealObserver.unobserve(entry.target);
+          entry.target.classList.add('pc-seen');
         }
       });
-    },{threshold:.12,rootMargin:'0px 0px -4% 0px'});
+    },{threshold:.08,rootMargin:'0px 0px -2% 0px'});
     revealed.forEach(section=>revealObserver.observe(section));
+
+    const depthTargets=document.querySelectorAll(
+      '#shopView .feature-card,#shopView .need-card,#shopView .pet-tile,' +
+      '#shopView .category-banner,#shopView .care-banner,#shopView .business-proof__item,' +
+      '#shopView .trust-item,#shopView .life-stage-card,#shopView .guide-card,' +
+      '#shopView .testimonial-card,#shopView .promo-strip,#shopView .service-card'
+    );
+    depthTargets.forEach(target=>{
+      target.style.transformStyle='preserve-3d';
+      target.addEventListener('pointermove',event=>{
+        if(matchMedia('(pointer: coarse)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const rect=target.getBoundingClientRect();
+        const x=(event.clientX-rect.left)/rect.width-.5;
+        const y=(event.clientY-rect.top)/rect.height-.5;
+        target.style.transform=`translateY(-8px) perspective(1100px) rotateX(${y*-4.5}deg) rotateY(${x*5}deg) translateZ(5px)`;
+      });
+      target.addEventListener('pointerleave',()=>{
+        target.style.transform='';
+      });
+    });
 
     let ticking=false;
     const updateHero=()=>{
