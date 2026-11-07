@@ -627,3 +627,86 @@ body.page-dog .product-thumb img,body.page-cat .product-thumb img,body.page-bird
   }
   .catalog-scroll-cue{right:12px;bottom:10px;font-size:9px}
 }
+
+/* Reference-style navigation depth and catalog title stack. */
+.nav-menu,
+.main-nav{
+  perspective:900px!important;
+  transform-style:preserve-3d!important;
+}
+.nav-menu a,
+.main-nav a{
+  position:relative!important;
+  isolation:isolate;
+  transform-style:preserve-3d!important;
+  transition:transform .22s cubic-bezier(.2,.75,.25,1),background .22s ease,color .22s ease,box-shadow .22s ease!important;
+}
+.nav-menu a:before,
+.main-nav a:before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  z-index:-1;
+  border-radius:10px;
+  border:1px solid transparent;
+  opacity:0;
+  transform:translateZ(-8px);
+  transition:.22s ease;
+}
+.nav-menu a:hover,
+.main-nav a:hover{
+  transform:translateY(-2px) perspective(700px) rotateX(5deg) translateZ(8px)!important;
+  background:rgba(88,174,255,.16)!important;
+  box-shadow:0 10px 22px rgba(38,124,210,.18),inset 0 1px rgba(255,255,255,.08)!important;
+}
+.nav-menu a:hover:before,
+.main-nav a:hover:before{
+  opacity:1;
+  border-color:rgba(143,216,255,.22);
+}
+.nav-menu a.active,
+.main-nav a.active{
+  transform:translateY(-1px) translateZ(5px)!important;
+}
+
+body.page-dog .hero h1,
+body.page-cat .hero h1,
+body.page-bird .hero h1,
+body.page-fish .hero h1,
+body.page-rodent .hero h1,
+body.page-small-pets .hero h1{
+  align-self:start!important;
+  margin:12px 0 0!important;
+}
+body.page-dog .hero p,
+body.page-cat .hero p,
+body.page-bird .hero p,
+body.page-fish .hero p,
+body.page-rodent .hero p,
+body.page-small-pets .hero p{
+  align-self:start!important;
+  margin:66px 0 0!important;
+  max-width:430px!important;
+}
+
+@media(max-width:760px){
+  body.page-dog .hero h1,
+  body.page-cat .hero h1,
+  body.page-bird .hero h1,
+  body.page-fish .hero h1,
+  body.page-rodent .hero h1,
+  body.page-small-pets .hero h1{
+    margin:0 0 10px!important;
+    text-align:center!important;
+  }
+  body.page-dog .hero p,
+  body.page-cat .hero p,
+  body.page-bird .hero p,
+  body.page-fish .hero p,
+  body.page-rodent .hero p,
+  body.page-small-pets .hero p{
+    margin:52px 0 0!important;
+    max-width:none!important;
+    text-align:center!important;
+  }
+}

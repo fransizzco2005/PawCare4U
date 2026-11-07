@@ -62,6 +62,17 @@
     addEventListener('resize',resize);resize();draw();
   }
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.nav-menu a,.main-nav a').forEach(link=>{
+      link.addEventListener('pointermove',e=>{
+        const r=link.getBoundingClientRect();
+        const x=(e.clientX-r.left)/r.width-.5;
+        const y=(e.clientY-r.top)/r.height-.5;
+        link.style.transform=`translateY(-2px) perspective(700px) rotateY(${x*10}deg) rotateX(${y*-8}deg) translateZ(10px)`;
+      });
+      link.addEventListener('pointerleave',()=>link.classList.contains('active')
+        ? link.style.transform='translateY(-1px) translateZ(5px)'
+        : link.style.transform='');
+    });
     document.querySelectorAll('.product-card,.service-card,.feature-card,.category-card,.profile-card,.store-result-card').forEach(card=>{
       card.addEventListener('pointermove',e=>{
         const r=card.getBoundingClientRect();const x=(e.clientX-r.left)/r.width-.5;const y=(e.clientY-r.top)/r.height-.5;
