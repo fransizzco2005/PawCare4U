@@ -21,7 +21,7 @@
     if (img.complete && img.naturalWidth === 0) applyFallback();
   });
 
-  if (document.querySelector('.page-dog,.page-cat,.page-bird,.page-fish,.page-small-pets') && !document.querySelector('.catalog-scroll-cue')) {
+  if (document.querySelector('.page-dog,.page-cat,.page-bird,.page-fish,.page-rodent,.page-small-pets') && !document.querySelector('.catalog-scroll-cue')) {
     const products = document.querySelector('.products-section') || document.querySelector('.filters-grid');
     if (products) {
       const cue = document.createElement('a');
