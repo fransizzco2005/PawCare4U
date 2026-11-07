@@ -119,7 +119,7 @@
     const href=a.getAttribute('href'); if(!href||href.startsWith('#')||href.startsWith('mailto:')||href.startsWith('tel:'))return;
     try{const u=new URL(href,location.href);if(u.origin!==location.origin)return;if(u.pathname===location.pathname&&!u.hash)return}catch(_){return}
     const shopPage=/^(dogs|cats|birds|fish|smallpets)\.html$/i.test(new URL(href,location.href).pathname.split('/').pop()||'');
-    if(shopPage && (!currentUser || currentUser.role !== 'user')){
+    if(shopPage && !currentUser){
       e.preventDefault();
       openAuth('signin');
       toast('Please sign in or create an account to access the shop.');
@@ -202,7 +202,7 @@
       setAccount(user);window.PawCareOwnerMode?.init(user);
       const page=location.pathname.split('/').pop().toLowerCase();
       const isShopPage=/^(dogs|cats|birds|fish|smallpets)\.html$/.test(page);
-      if(isShopPage && (!user || user.role !== 'user')){
+      if(isShopPage && !user){
         sessionStorage.setItem('pawcareSkipHomeGalaxy','1');
         sessionStorage.setItem('pawcareRequireSignIn','1');
         location.replace('index.html');

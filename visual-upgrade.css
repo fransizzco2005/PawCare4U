@@ -221,3 +221,96 @@ body.page-home,body.home-page{background:#050b16!important;background-image:radi
   .product-modal__media img{max-height:220px!important}
   .product-modal__body{padding:20px!important}
 }
+
+/* Animated neon catalog atmosphere */
+.page-dog .hero,.page-cat .hero,.page-bird .hero,.page-fish .hero,.page-rodent .hero,.page-small-pets .hero{
+  background:
+    radial-gradient(circle at 78% 30%,rgba(91,220,255,.30),transparent 17%),
+    radial-gradient(circle at 92% 78%,rgba(49,120,255,.30),transparent 20%),
+    radial-gradient(circle at 12% 85%,rgba(55,190,255,.12),transparent 18%),
+    linear-gradient(125deg,#06101f 0%,#0a2a55 56%,#07182f 100%)!important;
+}
+.page-dog .hero:after,.page-cat .hero:after,.page-bird .hero:after,.page-fish .hero:after,.page-rodent .hero:after,.page-small-pets .hero:after{
+  content:"";
+  position:absolute;
+  width:6px;height:6px;right:18%;top:22%;
+  border-radius:50%;
+  background:#9feaff;
+  box-shadow:
+    40px 36px 0 rgba(111,210,255,.9),
+    -58px 82px 0 rgba(111,210,255,.68),
+    94px 118px 0 rgba(111,210,255,.6),
+    18px 155px 0 rgba(111,210,255,.72),
+    -120px 40px 0 rgba(111,210,255,.48),
+    160px 38px 0 rgba(111,210,255,.55);
+  filter:drop-shadow(0 0 7px #55cfff);
+  animation:catalogParticles 5.2s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes catalogParticles{
+  0%{transform:translate3d(-8px,10px,0) rotate(0deg);opacity:.45}
+  50%{opacity:1}
+  100%{transform:translate3d(18px,-14px,0) rotate(18deg);opacity:.72}
+}
+.catalog-hero-frame{
+  isolation:isolate;
+}
+.catalog-hero-frame:before{
+  content:"";
+  position:absolute;
+  z-index:3;
+  inset:-60%;
+  background:linear-gradient(115deg,transparent 42%,rgba(168,238,255,.46) 50%,transparent 58%);
+  transform:translateX(-45%) rotate(8deg);
+  animation:catalogShimmer 4.5s ease-in-out infinite;
+}
+@keyframes catalogShimmer{0%,20%{transform:translateX(-48%) rotate(8deg)}65%,100%{transform:translateX(48%) rotate(8deg)}}
+
+/* Owner and customer accounts are visually separated across every page. */
+body.owner-session,body.owner-mode{
+  --owner-accent:#ffc45a;
+}
+body.owner-session.owner-mode .site-header,
+body.owner-session.owner-mode header.site-header{
+  border-bottom-color:rgba(255,196,74,.48)!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.28),0 1px 0 rgba(255,196,74,.2)!important;
+}
+body.owner-session.owner-mode .site-header:before{
+  content:"OWNER CONTROL";
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translate(-50%,0);
+  z-index:20;
+  padding:4px 12px;
+  border-radius:0 0 9px 9px;
+  background:linear-gradient(135deg,#ffc45a,#e79d25);
+  color:#17243a;
+  font-size:8px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:.16em;
+  box-shadow:0 7px 18px rgba(255,196,74,.22);
+}
+body.owner-session.owner-mode .header-role-indicator.is-owner,
+body.owner-session.owner-mode #headerRoleIndicator.is-owner{
+  background:linear-gradient(135deg,#ffd977,#e9a52c)!important;
+  border-color:#ffe4a1!important;
+  color:#1d2630!important;
+  box-shadow:0 0 18px rgba(255,196,74,.32)!important;
+}
+body.owner-session.owner-mode .account-btn{
+  border-color:#ffc45a!important;
+  box-shadow:0 0 0 2px rgba(255,196,74,.16),0 8px 24px rgba(255,196,74,.16)!important;
+}
+body.owner-session.owner-mode .account-menu{
+  border-color:rgba(255,196,74,.32)!important;
+  box-shadow:0 24px 65px rgba(0,0,0,.38)!important;
+}
+body.owner-mode .main-nav a.active,body.owner-mode .nav-menu a.active{
+  color:#ffd87d!important;
+  border-bottom-color:#ffc45a!important;
+}
+@media(max-width:760px){
+  body.owner-session.owner-mode .site-header:before{display:none}
+}

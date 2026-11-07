@@ -16,6 +16,15 @@
       visual.className='catalog-hero-visual';
       visual.innerHTML=`<div class="catalog-hero-orbit"></div><div class="catalog-hero-frame"><img src="${art.src}" alt="${art.label.toLowerCase()} care collection"><span>${art.label}</span></div>`;
       hero.appendChild(visual);
+      const frame=visual.querySelector('.catalog-hero-frame');
+      hero.addEventListener('pointermove',e=>{
+        if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+        const rect=hero.getBoundingClientRect();
+        const x=(e.clientX-rect.left)/rect.width-.5;
+        const y=(e.clientY-rect.top)/rect.height-.5;
+        frame.style.transform=`rotateY(${-7+x*8}deg) rotateX(${2-y*7}deg) translate3d(${x*7}px,${y*7}px,24px)`;
+      });
+      hero.addEventListener('pointerleave',()=>{frame.style.transform='';});
     }
   }
   const grid=document.querySelector('.products-grid');
