@@ -100,10 +100,13 @@ body.page-home,body.home-page{background:#050b16!important;background-image:radi
 .page-dog .hero,.page-cat .hero,.page-bird .hero,.page-fish .hero,.page-rodent .hero,.page-small-pets .hero{
   position:relative;
   min-height:280px;
+  height:280px;
   overflow:hidden;
   display:grid;
   grid-template-columns:minmax(0,1fr) 330px;
+  grid-template-rows:auto auto;
   align-items:center;
+  align-content:center;
   gap:32px;
   padding-right:24px!important;
   border-radius:22px!important;
@@ -125,14 +128,28 @@ body.page-home,body.home-page{background:#050b16!important;background-image:radi
 .page-dog .hero h1,.page-cat .hero h1,.page-bird .hero h1,.page-fish .hero h1,.page-rodent .hero h1,.page-small-pets .hero h1{
   position:relative;
   z-index:2;
+  grid-column:1;
+  grid-row:1;
+  align-self:end;
+  margin:0!important;
   color:#f6fbff!important;
   text-shadow:0 0 28px rgba(108,199,255,.38);
 }
 .page-dog .hero p,.page-cat .hero p,.page-bird .hero p,.page-fish .hero p,.page-rodent .hero p,.page-small-pets .hero p{
   position:relative;
   z-index:2;
+  grid-column:1;
+  grid-row:2;
+  align-self:start;
+  margin-top:-18px!important;
   color:#d9edff!important;
   font-weight:600;
+}
+.page-dog .catalog-hero-visual,.page-cat .catalog-hero-visual,.page-bird .catalog-hero-visual,.page-fish .catalog-hero-visual,.page-rodent .catalog-hero-visual,.page-small-pets .catalog-hero-visual{
+  grid-column:2;
+  grid-row:1 / span 2;
+  align-self:center;
+  justify-self:end;
 }
 .catalog-hero-visual{
   position:relative;
@@ -1099,6 +1116,42 @@ body.home-page #shopView .guide-card:hover:before,
 body.home-page #shopView .testimonial-card:hover:before,
 body.home-page #shopView .service-card:hover:before{opacity:1}
 
+/* Remove the redundant homepage blocks and keep the final CTA as one box. */
+body.home-page .shop-by-needs,
+body.home-page .life-stage-section,
+body.home-page .services-section,
+body.home-page .care-banner,
+body.home-page .promo-strip{display:none!important}
+
+body.home-page .business-cta{
+  width:min(900px,calc(100% - 48px))!important;
+  min-height:170px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:center!important;
+  justify-items:center!important;
+  gap:18px!important;
+  padding:42px!important;
+}
+body.home-page .business-cta a{width:min(290px,100%)!important;text-align:center!important}
+
+/* Keep homepage section labels readable on the light and dark surfaces. */
+body.home-page .section-eyebrow{
+  color:#4d86c4!important;
+  text-shadow:none!important;
+}
+body.home-page .section-head h2,
+body.home-page .guides-section h2,
+body.home-page .testimonials-section h2,
+body.home-page .shop-by-pet h2{
+  color:#10243c!important;
+}
+body.home-page .guides-section article p,
+body.home-page .testimonial-card p,
+body.home-page .testimonial-author span{color:#50647c!important}
+
 @media(max-width:820px){
   body.home-page #shopView .hero{
     min-height:720px!important;
@@ -1113,5 +1166,30 @@ body.home-page #shopView .service-card:hover:before{opacity:1}
   }
   body.home-page .homepage-scroll-cue{
     width:158px;
+  }
+  body.home-page .business-cta{
+    width:calc(100% - 32px)!important;
+    grid-template-columns:1fr!important;
+    min-height:220px!important;
+    padding:28px 18px!important;
+  }
+  .page-dog .hero,.page-cat .hero,.page-bird .hero,.page-fish .hero,.page-rodent .hero,.page-small-pets .hero{
+    height:auto!important;
+    min-height:360px!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto auto auto!important;
+    gap:8px!important;
+    padding:26px 24px!important;
+  }
+  .page-dog .hero h1,.page-cat .hero h1,.page-bird .hero h1,.page-fish .hero h1,.page-rodent .hero h1,.page-small-pets .hero h1,
+  .page-dog .hero p,.page-cat .hero p,.page-bird .hero p,.page-fish .hero p,.page-rodent .hero p,.page-small-pets .hero p{
+    grid-column:1!important;
+  }
+  .page-dog .hero h1,.page-cat .hero h1,.page-bird .hero h1,.page-fish .hero h1,.page-rodent .hero h1,.page-small-pets .hero h1{grid-row:1!important}
+  .page-dog .hero p,.page-cat .hero p,.page-bird .hero p,.page-fish .hero p,.page-rodent .hero p,.page-small-pets .hero p{grid-row:2!important;margin-top:0!important}
+  .page-dog .catalog-hero-visual,.page-cat .catalog-hero-visual,.page-bird .catalog-hero-visual,.page-fish .catalog-hero-visual,.page-rodent .catalog-hero-visual,.page-small-pets .catalog-hero-visual{
+    grid-column:1!important;
+    grid-row:3!important;
+    justify-self:center!important;
   }
 }
