@@ -2,5 +2,9 @@
   "private": true,
   "engines": {
     "node": "20.x"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "pg": "^8.16.3"
   }
 }
