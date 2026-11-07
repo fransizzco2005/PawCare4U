@@ -75,8 +75,33 @@
   }
   function openDetails(card){
     const p=data(card); let modal=document.getElementById('productModal');
-    if(!modal){modal=document.createElement('div');modal.id='productModal';modal.className='product-modal';modal.innerHTML=`<div class="product-modal__backdrop" data-close-product></div><div class="product-modal__dialog" role="dialog" aria-modal="true" aria-label="Product details"><button class="product-modal__close" type="button" data-close-product aria-label="Close">×</button><div class="product-modal__media"><img id="modalProductImg" alt=""></div><div class="product-modal__body"><div class="modal-product-category" id="modalProductCategory"></div><h2 id="modalProductName"></h2><div id="modalProductRating" class="product-rating"></div><p id="modalProductDescription"></p><div id="modalProductPrice" class="product-price"></div><div class="modal-qty"><button type="button" id="modalQtyMinus">−</button><span id="modalQty">1</span><button type="button" id="modalQtyPlus">+</button></div><div class="modal-actions"><button class="btn btn-primary" id="modalAdd">Add to Cart</button><button class="btn btn-secondary" id="modalCheckout">Checkout</button></div><div class="product-feedback-box"><h3>Product comment</h3><p class="feedback-note" id="modalFeedbackNote">Sign in to leave a comment for the owner.</p><textarea id="modalFeedbackText" placeholder="Write your comment or feedback..." maxlength="1000"></textarea><button type="button" class="feedback-send" id="modalFeedbackSend">Send comment</button><div id="modalFeedbackReplies"></div></div></div></div>`;document.body.appendChild(modal);modal.addEventListener('click',e=>{if(e.target.closest('[data-close-product]'))close()})}
-    const img=modal.querySelector('#modalProductImg'); img.src=card.querySelector('img').getAttribute('src'); img.alt=p.name;
+    if(!modal){modal=document.createElement('div');modal.id='productModal';modal.className='product-modal';modal.innerHTML=`<div class="product-modal__backdrop" data-close-product></div><div class="product-modal__dialog" role="dialog" aria-modal="true" aria-label="Product details"><button class="product-modal__close" type="button" data-close-product aria-label="Close">×</button><div class="product-modal__media"><button class="modal-zoom-button" type="button" aria-label="Zoom product image">⌕</button><img id="modalProductImg" alt=""><div class="modal-thumbnail-strip" aria-label="Product image views"><button class="active" type="button" data-view="0"></button><button type="button" data-view="1"></button><button type="button" data-view="2"></button></div></div><div class="product-modal__body"><div class="modal-product-category" id="modalProductCategory"></div><h2 id="modalProductName"></h2><div id="modalProductRating" class="product-rating"></div><p id="modalProductDescription"></p><div id="modalProductPrice" class="product-price"></div><div class="modal-qty"><button type="button" id="modalQtyMinus">−</button><span id="modalQty">1</span><button type="button" id="modalQtyPlus">+</button></div><div class="modal-actions"><button class="btn btn-primary" id="modalAdd">Add to Cart</button><button class="btn btn-secondary" id="modalCheckout">Checkout</button></div><div class="product-feedback-box"><h3>Product comment</h3><p class="feedback-note" id="modalFeedbackNote">Sign in to leave a comment for the owner.</p><textarea id="modalFeedbackText" placeholder="Write your comment or feedback..." maxlength="1000"></textarea><button type="button" class="feedback-send" id="modalFeedbackSend">Send comment</button><div id="modalFeedbackReplies"></div></div></div></div>`;document.body.appendChild(modal);modal.addEventListener('click',e=>{if(e.target.closest('[data-close-product]'))close()})}
+    const img=modal.querySelector('#modalProductImg'); const source=card.querySelector('img').getAttribute('src'); img.src=source; img.alt=p.name;
+    const thumbs=[...modal.querySelectorAll('.modal-thumbnail-strip button')];
+    thumbs.forEach((thumb,index)=>{
+      thumb.style.backgroundImage=`url("${source}")`;
+      thumb.classList.toggle('active',index===0);
+      thumb.onclick=()=>{
+        thumbs.forEach(t=>t.classList.remove('active'));thumb.classList.add('active');
+        img.classList.remove('zoomed');
+        img.style.objectPosition=['center','35% 50%','65% 50%'][index];
+        img.style.filter=['none','saturate(1.08)','contrast(1.04) brightness(1.03)'][index];
+      };
+    });
+    const zoomButton=modal.querySelector('.modal-zoom-button');
+    zoomButton.onclick=()=>{
+      img.classList.toggle('zoomed');
+      modal.classList.toggle('is-zoomed',img.classList.contains('zoomed'));
+      zoomButton.textContent=img.classList.contains('zoomed')?'−':'⌕';
+    };
+    img.onclick=()=>zoomButton.click();
+    img.onpointermove=e=>{
+      if(!img.classList.contains('zoomed'))return;
+      const rect=img.getBoundingClientRect();
+      const x=((e.clientX-rect.left)/rect.width)*100;
+      const y=((e.clientY-rect.top)/rect.height)*100;
+      img.style.transformOrigin=`${x}% ${y}%`;
+    };
     modal.querySelector('#modalProductCategory').textContent=p.subcategory; modal.querySelector('#modalProductName').textContent=p.name; modal.querySelector('#modalProductRating').textContent=`★ ${p.rating.toFixed(1)} (${p.reviews} reviews)`; modal.querySelector('#modalProductDescription').textContent=p.description; modal.querySelector('#modalProductPrice').innerHTML=(p.oldPrice?`<span class="card-old-price">${money(p.oldPrice)}</span> `:'')+money(p.price);
     let qty=1; const qtyEl=modal.querySelector('#modalQty'); qtyEl.textContent=qty; const setQty=n=>{qty=Math.max(1,Math.min(p.stock,n));qtyEl.textContent=qty}; modal.querySelector('#modalQtyMinus').onclick=()=>setQty(qty-1); modal.querySelector('#modalQtyPlus').onclick=()=>setQty(qty+1);
     modal.querySelector('#modalAdd').onclick=async()=>{try{await apiAdd(p,qty);toast(`${p.name} added to cart.`)}catch(e){toast(e.message)}};
@@ -96,7 +121,17 @@
     }).catch(()=>{});
     fbSend.onclick=async()=>{if(!feedbackUser){fbNote.textContent='Please sign in first.';return}const comment=fbText.value.trim();if(!comment){fbNote.textContent='Please write a comment first.';return}fbSend.disabled=true;try{await fetch('api/product_feedback.php',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({product_id:p.id,comment})}).then(async r=>{const d=await r.json();if(!r.ok)throw Error(d.error||'Could not send comment');return d});fbText.value='';fbNote.textContent='Comment sent to the owner. Thank you!';}catch(e){fbNote.textContent=e.message}finally{fbSend.disabled=false}};
     modal.classList.add('open');document.body.classList.add('modal-open'); setTimeout(()=>modal.querySelector('.product-modal__close').focus(),100);
-    function close(){modal.classList.remove('open');document.body.classList.remove('modal-open')}
+    function close(){
+      modal.classList.remove('open');
+      modal.classList.remove('is-zoomed');
+      document.body.classList.remove('modal-open');
+      img.classList.remove('zoomed');
+      img.style.transformOrigin='50% 50%';
+      img.style.objectPosition='center';
+      img.style.filter='none';
+      const zoomButton=modal.querySelector('.modal-zoom-button');
+      if(zoomButton) zoomButton.textContent='⌕';
+    }
   }
   grid.addEventListener('click',e=>{
     const addBtn=e.target.closest('.product-add-btn');

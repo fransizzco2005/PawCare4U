@@ -314,3 +314,97 @@ body.owner-mode .main-nav a.active,body.owner-mode .nav-menu a.active{
 @media(max-width:760px){
   body.owner-session.owner-mode .site-header:before{display:none}
 }
+
+/* Final homepage composition: layered, editorial, and motion-rich. */
+body.home-page #shopView,
+body.home-page main#shopView{background:transparent!important}
+body.home-page #shopView .hero{
+  width:min(1240px,calc(100% - 32px));
+  min-height:610px;
+  margin:28px auto 50px;
+  grid-template-columns:minmax(0,54%) minmax(360px,46%);
+  border-radius:32px;
+  border:1px solid rgba(138,205,255,.18);
+  background:
+    radial-gradient(circle at 78% 40%,rgba(83,181,255,.16),transparent 22%),
+    linear-gradient(145deg,rgba(10,29,55,.96),rgba(5,13,27,.98))!important;
+  box-shadow:0 38px 100px rgba(0,9,28,.44),inset 0 1px rgba(255,255,255,.05)!important;
+  overflow:visible!important;
+  isolation:isolate;
+}
+body.home-page #shopView .hero-copy{padding:62px 58px!important}
+body.home-page #shopView .hero-copy h1{max-width:680px;font-size:clamp(42px,5vw,72px)!important;line-height:.98!important;letter-spacing:-.06em!important}
+body.home-page #shopView .hero-copy h1 em{color:#91d9ff;font-weight:700}
+body.home-page #shopView .hero-copy p{font-size:17px;max-width:570px;color:#afc4d9!important}
+body.home-page #shopView .eyebrow{width:max-content;padding:8px 12px;border-radius:999px;border:1px solid rgba(125,205,255,.24);background:rgba(82,164,255,.09);color:#bfeaff!important}
+body.home-page #shopView .hero-art{min-height:500px!important;margin:24px 24px 24px 0;border-radius:24px;border:1px solid rgba(145,210,255,.18);box-shadow:0 32px 80px rgba(0,8,24,.48)!important;transform:perspective(1200px) rotateY(-3deg);z-index:2}
+body.home-page #shopView .hero-art:before{content:"";position:absolute;z-index:2;left:-38px;bottom:42px;width:180px;height:68px;border-radius:18px;background:rgba(7,20,38,.78);border:1px solid rgba(145,210,255,.2);backdrop-filter:blur(14px);box-shadow:0 18px 40px rgba(0,0,0,.28);transform:translateZ(35px)}
+body.home-page #shopView .hero-art:after{background:linear-gradient(135deg,rgba(21,82,143,.08),transparent 58%,rgba(55,176,255,.18))}
+body.home-page #shopView .hero-art__caption{right:18px;bottom:18px;left:auto;z-index:3;border-radius:12px;background:rgba(5,16,31,.75)!important;backdrop-filter:blur(12px)}
+body.home-page #shopView .hero:before{content:"";position:absolute;z-index:-1;width:240px;height:240px;right:-28px;top:-34px;border-radius:50%;border:1px solid rgba(96,190,255,.12);box-shadow:0 0 70px rgba(74,166,255,.08),inset 0 0 50px rgba(74,166,255,.05);animation:homeOrbit 12s linear infinite}
+@keyframes homeOrbit{to{transform:rotate(360deg)}}
+body.home-page .hero-metrics{border-top:1px solid rgba(151,205,255,.12);padding-top:18px}
+body.home-page .hero-metrics strong{color:#9fe5ff!important}
+
+/* Dark, compact catalog shell matching a premium music/store interface. */
+body.page-dog,body.page-cat,body.page-bird,body.page-fish,body.page-rodent,body.page-small-pets{
+  background:#050b16!important;
+}
+body.page-dog .filters-grid,body.page-cat .filters-grid,body.page-bird .filters-grid,body.page-fish .filters-grid,body.page-rodent .filters-grid,body.page-small-pets .filters-grid{
+  width:min(1280px,calc(100% - 32px))!important;
+  margin:0 auto!important;
+  padding:10px!important;
+  grid-template-columns:220px minmax(0,1fr)!important;
+  gap:18px!important;
+  border-radius:24px;
+  background:rgba(7,16,31,.72)!important;
+  border:1px solid rgba(126,190,255,.12)!important;
+  box-shadow:0 28px 80px rgba(0,7,20,.28)!important;
+}
+body.page-dog .sidebar-filters,body.page-cat .sidebar-filters,body.page-bird .sidebar-filters,body.page-fish .sidebar-filters,body.page-rodent .sidebar-filters,body.page-small-pets .sidebar-filters{
+  min-height:620px!important;border-radius:18px!important;background:#081426!important;border:1px solid rgba(133,190,255,.12)!important;color:#dbeeff!important;padding:18px!important
+}
+.sidebar-filters label,.sidebar-filters .filter-option{color:#c7d8ea!important}
+.filter-save-btn{border-color:rgba(106,190,255,.22)!important;background:linear-gradient(135deg,#2769b8,#4e9bdc)!important;color:#fff!important}
+.products-section{border-radius:18px!important;background:rgba(8,18,34,.9)!important;border:1px solid rgba(133,190,255,.1)!important;padding:14px!important}
+.products-controls{border-bottom-color:rgba(132,190,255,.11)!important;color:#d9e8f8!important}
+.products-count{color:#eef7ff!important}.sort-control select{background:#0b1a30!important;color:#dbe9f8!important;border-color:rgba(132,190,255,.15)!important}
+.view-toggle,.view-btn{border-color:rgba(132,190,255,.13)!important;background:#091629!important;color:#8db7dc!important}
+.view-btn.active{background:#123d70!important;color:#fff!important}
+.products-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}
+.product-card{border-radius:16px!important;background:linear-gradient(145deg,#101e32,#091426)!important}
+.product-thumb{aspect-ratio:1.12!important;border-radius:12px!important;background:#0d1c31!important}
+.product-info{padding:12px!important}
+.product-name{font-size:14px!important;color:#f3f8ff!important}.product-category{color:#80baff!important}.product-rating{color:#9bb4cc!important}.product-price{color:#fff!important}
+
+/* Large product-detail gallery with thumbnails and zoom. */
+.product-modal__dialog{grid-template-columns:minmax(420px,58%) minmax(330px,42%)!important;background:#fff!important}
+.product-modal__media{position:relative!important;min-height:590px!important;height:auto!important;padding:64px 68px 78px!important;overflow:hidden!important;background:radial-gradient(circle,#f7fbff,#edf4fb)!important}
+.product-modal__media img{width:100%!important;height:470px!important;max-height:none!important;object-fit:contain!important;background:#fff!important;border:1px solid #e6eef7!important;box-shadow:0 18px 50px rgba(25,75,120,.12)!important;cursor:zoom-in!important;transition:transform .28s ease,filter .25s ease!important}
+.product-modal__media img.zoomed{transform:scale(2)!important;cursor:zoom-out!important;border-radius:0!important}
+.modal-zoom-button{position:absolute;z-index:5;right:16px;top:16px;width:42px;height:42px;border:1px solid #dbe7f2!important;border-radius:50%;background:rgba(255,255,255,.92)!important;color:#155b9b!important;font-size:21px!important;box-shadow:0 10px 28px rgba(31,77,120,.12)!important}
+.modal-thumbnail-strip{position:absolute;z-index:4;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:9px;padding:8px;border-radius:14px;background:rgba(255,255,255,.92)!important;border:1px solid #e5edf6;box-shadow:0 12px 30px rgba(31,77,120,.1)}
+.modal-thumbnail-strip button{width:48px;height:48px;border-radius:9px;border:2px solid transparent;background-color:#fff;background-position:center;background-size:cover;background-repeat:no-repeat;cursor:pointer}
+.modal-thumbnail-strip button.active{border-color:#397fe2!important;box-shadow:0 0 0 2px rgba(57,127,226,.12)}
+.product-modal.is-zoomed .modal-thumbnail-strip{opacity:.35}
+.product-modal__body{justify-content:flex-start!important;padding-top:48px!important}
+.product-modal__body h2{font-size:clamp(30px,3vw,44px)!important}
+.product-modal__body p{font-size:14px!important}
+.modal-actions{margin-top:4px}.modal-actions .btn{min-height:52px!important;border-radius:12px!important}
+.product-feedback-box{margin-top:20px!important}
+
+@media(max-width:1050px){
+  .products-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(max-width:760px){
+  body.home-page #shopView .hero{grid-template-columns:1fr!important;width:calc(100% - 20px);min-height:0;margin-top:14px;border-radius:22px}
+  body.home-page #shopView .hero-copy{padding:38px 24px!important}
+  body.home-page #shopView .hero-art{min-height:360px!important;margin:0 12px 12px!important;transform:none!important}
+  body.home-page #shopView .hero-copy h1{font-size:38px!important}
+  body.page-dog .filters-grid,body.page-cat .filters-grid,body.page-bird .filters-grid,body.page-fish .filters-grid,body.page-rodent .filters-grid,body.page-small-pets .filters-grid{grid-template-columns:1fr!important}
+  body.page-dog .sidebar-filters,body.page-cat .sidebar-filters,body.page-bird .sidebar-filters,body.page-fish .sidebar-filters,body.page-rodent .sidebar-filters,body.page-small-pets .sidebar-filters{min-height:auto!important}
+  .products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .product-modal__dialog{grid-template-columns:1fr!important}
+  .product-modal__media{min-height:330px!important;padding:48px 28px 74px!important}
+  .product-modal__media img{height:280px!important}
+}
