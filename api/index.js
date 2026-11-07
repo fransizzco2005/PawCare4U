@@ -56,6 +56,7 @@ async function body(req) {
   }
   if (!text) for await (const chunk of req) text += chunk;
   const contentType = String(req.headers['content-type'] || '');
+  console.error('BODY_DEBUG', JSON.stringify({ contentType, bodyType: typeof text, text: String(text).slice(0, 200) }));
   if (contentType.includes('application/json')) return text ? JSON.parse(text) : {};
   if (contentType.includes('multipart/form-data')) {
     const boundary = contentType.split('boundary=')[1]?.trim();
