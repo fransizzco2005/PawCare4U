@@ -28,7 +28,9 @@
         <button class="side-link active" data-section="profile">👤 <span>Profile</span></button>
         <button class="side-link" data-section="orders">📦 <span>My Orders</span></button>
         <button class="side-link" data-section="reservations">🗓️ <span>My Reservations</span></button>
-        <button class="side-link owner-only" data-section="feedback" hidden>💬 <span>Customer Feedback</span></button>
+        <button class="side-link" data-section="messages">💬 <span>Messages</span><span class="message-unread-badge" id="messageUnreadBadge" hidden>0</span></button>
+        <button class="side-link owner-only" data-section="inventory" hidden>📦 <span>Inventory</span></button>
+        <button class="side-link owner-only" data-section="feedback" hidden>⭐ <span>Customer Feedback</span></button>
         <button class="side-link owner-only" data-section="overview" hidden>📊 <span>Overview</span></button>
         <button class="side-link" id="signOutAccount">↪ <span>Sign out</span></button>
       </aside>
@@ -54,6 +56,10 @@
         </section>
         <section class="account-section" id="section-orders"><div id="accountOrders" class="account-orders-grid"><div class="account-loading">Loading orders...</div></div></section>
         <section class="account-section" id="section-reservations"><div id="accountReservations" class="account-reservations-grid"><div class="account-loading">Loading reservations...</div></div></section>
+        <section class="account-section" id="section-messages">
+          <div class="product-messages-layout"><div id="accountConversationList" class="product-conversation-list"><div class="account-loading">Loading messages...</div></div><div id="accountConversationThread" class="product-conversation-thread"><div class="account-loading">Select a conversation to view messages.</div></div></div>
+        </section>
+        <section class="account-section" id="section-inventory"><div id="accountInventory"><div class="account-loading">Loading inventory...</div></div></section>
         <section class="account-section" id="section-feedback"><div id="accountFeedback"><div class="account-loading">Loading feedback...</div></div></section>
         <section class="account-section" id="section-overview"><div id="accountOverview"><div class="account-loading">Loading overview...</div></div></section>
       </section>

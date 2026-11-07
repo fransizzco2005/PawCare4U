@@ -48,19 +48,18 @@ async function loadFeedback(){
   const d=await api('api/product_feedback.php');
   const arr=d.feedback||[];
   if(!arr.length){box.innerHTML='<div class="account-loading">No customer feedback yet.</div>';return;}
-  box.innerHTML=arr.map(f=>`<article class="owner-feedback-card">
-   <div class="meta"><b>${esc(f.product_name||'Product')}</b><span>by ${esc(f.sender_role==='owner'?'Owner':'Customer')} ${esc(f.user_name||'')}</span><span>${esc(new Date(f.created_at).toLocaleString())}</span></div>
-   <div class="feedback-entry-rating">${Number(f.rating)?`${'★'.repeat(Math.min(5,Number(f.rating)))}${'☆'.repeat(5-Math.min(5,Number(f.rating)))}`:'No rating'}</div>
-   <p>${esc(f.comment||'Rating only; no comment.')}</p>
-   ${f.owner_reply?`<div class="owner-replied"><b>Owner reply:</b> ${esc(f.owner_reply)}</div>`:`<textarea data-feedback-reply="${f.id}" placeholder="Write a reply to this customer..."></textarea><button type="button" data-send-feedback="${f.id}">Reply</button>`}
-  </article>`).join('');
-  box.querySelectorAll('[data-send-feedback]').forEach(btn=>btn.onclick=async()=>{
-   const ta=box.querySelector(`[data-feedback-reply="${btn.dataset.sendFeedback}"]`);
-   if(!ta||!ta.value.trim())return;
-   btn.disabled=true;
-   try{await api('api/product_feedback.php',{method:'PUT',body:JSON.stringify({id:btn.dataset.sendFeedback,owner_reply:ta.value.trim()})});loadFeedback();}
-   catch(e){alert(e.message);btn.disabled=false;}
-  });
+  const ratings=arr.filter(f=>f.sender_role!=='owner'&&Number(f.rating)>0);
+  const average=ratings.length?ratings.reduce((sum,f)=>sum+Number(f.rating),0)/ratings.length:0;
+  const groups=new Map();
+  ratings.forEach(f=>{const key=f.product_id;const current=groups.get(key)||{name:f.product_name||'Product',count:0,total:0};current.count++;current.total+=Number(f.rating);groups.set(key,current)});
+  box.innerHTML=`<div class="feedback-summary"><b>Overall customer rating</b><strong>${average.toFixed(2)} / 5</strong><span>${ratings.length} rating${ratings.length===1?'':'s'}</span><div class="feedback-summary-products">${[...groups.values()].map(g=>`<span>${esc(g.name)} · ${(g.total/g.count).toFixed(2)} / 5 (${g.count})</span>`).join('')}</div></div>`+
+   arr.map(f=>`<article class="owner-feedback-card">
+    <div class="meta"><b>${esc(f.product_name||'Product')}</b><span>by ${esc(f.user_name||'Customer')}</span><span>${esc(new Date(f.created_at).toLocaleString())}</span></div>
+    <div class="feedback-entry-rating">${Number(f.rating)?`${'★'.repeat(Math.min(5,Number(f.rating)))}${'☆'.repeat(5-Math.min(5,Number(f.rating)))}`:'No rating'}</div>
+    <p>${esc(f.comment||'Rating only; no comment.')}</p>
+    ${f.user_id&&f.comment?`<button type="button" class="open-customer-message" data-open-customer="${f.user_id}" data-product-id="${f.product_id}" data-feedback-id="${f.id}">Open customer messages</button>`:''}
+   </article>`).join('');
+  box.querySelectorAll('[data-open-customer]').forEach(btn=>btn.onclick=async()=>{await selectSection('messages');await loadMessages();});
  }catch(e){box.innerHTML=`<div class="account-loading">${esc(e.message)}</div>`}
 }
 
@@ -68,35 +67,64 @@ async function loadOverview(){
  const box=document.getElementById('accountOverview'); if(!box)return;
  box.innerHTML='<div class="account-loading">Loading overview...</div>';
  try{
-  const [ordersData,resData,feedbackData]=await Promise.all([
-   api('api/orders.php'),
-   api('api/appointments.php'),
-   api('api/product_feedback.php')
-  ]);
-  const orders=ordersData.orders||[], reservations=resData.appointments||[], feedback=feedbackData.feedback||[];
-  const counts={placed:0,processing:0,shipped:0,delivered:0,cancelled:0};
-  orders.forEach(o=>{if(counts[o.order_status]!==undefined)counts[o.order_status]++});
-  const pendingReservations=reservations.filter(a=>a.status==='pending').length;
-  const openFeedback=feedback.filter(f=>!f.owner_reply).length;
-  const revenue=orders.filter(o=>o.order_status!=='cancelled').reduce((sum,o)=>sum+Number(o.total||0),0);
+  const d=await api('api/owner_overview.php'),s=d.sales||{},r=d.ratings||{};
+  const months=(d.monthly||[]).map(m=>`<tr><td>${esc(m.month)}</td><td>${Number(m.orders||0)}</td><td>${money(m.sales)}</td></tr>`).join('');
+  const ratingMonths=(d.monthly_ratings||[]).map(m=>`<tr><td>${esc(m.month)}</td><td>${Number(m.count||0)}</td><td>${Number(m.average||0).toFixed(2)} / 5</td></tr>`).join('');
   box.innerHTML=`<div class="owner-account-panel">
-   <div class="owner-summary-grid">
-    <div><b>${orders.length}</b><span>Total orders</span></div>
-    <div><b>${pendingReservations}</b><span>Pending reservations</span></div>
-    <div><b>${openFeedback}</b><span>Unreplied feedback</span></div>
-    <div><b>${money(revenue)}</b><span>Order value</span></div>
-   </div>
-   <div class="owner-summary-grid" style="margin-top:12px">
-    <div><b>${counts.placed}</b><span>Order placed</span></div>
-    <div><b>${counts.processing}</b><span>Packed / processing</span></div>
-    <div><b>${counts.shipped}</b><span>On the way</span></div>
-    <div><b>${counts.delivered}</b><span>Delivered</span></div>
-   </div>
+   <h2>Overall performance</h2><div class="owner-summary-grid">
+    <div><b>${Number(s.orders||0)}</b><span>Completed and active orders</span></div><div><b>${money(s.sales)}</b><span>All-time sales</span></div>
+    <div><b>${Number(r.average||0).toFixed(2)} / 5</b><span>Overall customer rating (${Number(r.count||0)} ratings)</span></div>
+   </div><h2>This month</h2><div class="owner-summary-grid">
+    <div><b>${Number(s.month_orders||0)}</b><span>Orders</span></div><div><b>${money(s.month_sales)}</b><span>Sales</span></div>
+    <div><b>${Number(r.month_average||0).toFixed(2)} / 5</b><span>Customer rating (${Number(r.month_count||0)} ratings)</span></div>
+   </div><div class="overview-tables"><div><h3>Monthly sales</h3><table><thead><tr><th>Month</th><th>Orders</th><th>Sales</th></tr></thead><tbody>${months||'<tr><td colspan="3">No sales recorded.</td></tr>'}</tbody></table></div>
+   <div><h3>Monthly feedback</h3><table><thead><tr><th>Month</th><th>Ratings</th><th>Average</th></tr></thead><tbody>${ratingMonths||'<tr><td colspan="3">No ratings recorded.</td></tr>'}</tbody></table></div></div>
   </div>`;
  }catch(e){box.innerHTML=`<div class="account-loading">${esc(e.message)}</div>`}
 }
 
-function selectSection(name){document.querySelectorAll('.side-link[data-section]').forEach(b=>b.classList.toggle('active',b.dataset.section===name));document.querySelectorAll('.account-section').forEach(s=>s.classList.toggle('active',s.id==='section-'+name));const titles={profile:['Profile','Manage your PawCare profile and personal details.'],orders:[document.body.classList.contains('is-owner')?'Orders':'My Orders',document.body.classList.contains('is-owner')?'View customer orders and update delivery status.':'Track your deliveries from order placed to delivered.'],reservations:[document.body.classList.contains('is-owner')?'Reservations':'My Reservations',document.body.classList.contains('is-owner')?'View and manage customer service reservations.':'See the service you reserved and all the details you submitted.'],feedback:['Customer Feedback','Read customer product comments and reply.'],overview:['Overview','Quick view of customer orders and delivery status.']};const t=titles[name]||titles.profile;document.getElementById('accountTitle').textContent=t[0];document.getElementById('accountSubtitle').textContent=t[1];if(name==='orders')loadOrders();if(name==='reservations')loadReservations();if(name==='feedback')loadFeedback();if(name==='overview')loadOverview();history.replaceState(null,'','#'+name)}
+let selectedConversation=0;
+async function loadInventory(){
+ const box=document.getElementById('accountInventory');if(!box)return;box.innerHTML='<div class="account-loading">Loading product inventory...</div>';
+ try{const products=await api('api/products.php'),groups=new Map();products.forEach(p=>{const list=groups.get(p.category)||[];list.push(p);groups.set(p.category,list)});
+  box.innerHTML=[...groups.entries()].map(([category,items])=>`<section class="inventory-category"><h2>${esc(category)}</h2>${items.map(p=>`<form class="inventory-product" data-inventory-form="${p.id}"><div><b>${esc(p.name)}</b><small>${esc(p.subcategory||'Product')}</small><span class="${Number(p.stock)===0?'stock-empty':'stock-available'}">${Number(p.stock)===0?'Out of stock':`${Number(p.stock)} in stock`}</span></div><label>Price (₱)<input name="price" type="number" min="0.01" step="0.01" value="${Number(p.price).toFixed(2)}" required></label><label>Stock<input name="stock" type="number" min="0" max="1000000" step="1" value="${Number(p.stock)}" required></label><button type="submit">Save</button><span class="inventory-save-status" aria-live="polite"></span></form>`).join('')}</section>`).join('')||'<div class="account-loading">No products found.</div>';
+  box.querySelectorAll('[data-inventory-form]').forEach(form=>form.onsubmit=async e=>{e.preventDefault();const button=form.querySelector('button'),status=form.querySelector('.inventory-save-status'),data=new FormData(form);button.disabled=true;status.textContent='Saving...';try{await api('api/products.php',{method:'PUT',body:JSON.stringify({product_id:Number(form.dataset.inventoryForm),price:Number(data.get('price')),stock:Number(data.get('stock'))})});status.textContent='Saved';setTimeout(()=>{if(status.isConnected)status.textContent=''},1800)}catch(error){status.textContent=error.message}finally{button.disabled=false}});
+ }catch(e){box.innerHTML=`<div class="account-loading">${esc(e.message)}</div>`}
+}
+async function openConversation(id){
+ const thread=document.getElementById('accountConversationThread'),draft=thread.querySelector('[name="message"]')?.value||'';selectedConversation=Number(id);
+ try{const d=await api(`api/product_conversations.php?id=${selectedConversation}`),c=d.conversation,owner=d.role==='owner';
+  const messages=(d.messages||[]).map(m=>`<div class="product-message ${m.sender_role==='system'?'system':m.sender_role===d.role?'mine':'theirs'}"><b>${esc(m.sender_name||'PawCare')}</b><p>${esc(m.message)}</p><small>${esc(new Date(m.created_at).toLocaleString())}</small></div>`).join('');
+  const preorder=c.kind==='preorder'?`<div class="preorder-status">Preorder · ${esc(c.status)} · ${Number(c.preorder_qty)} requested</div>`:'';
+  const rating=c.feedback_rating?`<span class="conversation-rating">Customer rating: ${'★'.repeat(Number(c.feedback_rating))}${'☆'.repeat(5-Number(c.feedback_rating))}</span>`:'';
+  const approval=owner&&c.kind==='preorder'&&c.status==='pending'?`<div class="preorder-actions"><button type="button" data-preorder-status="approved">Approve request</button><button type="button" data-preorder-status="rejected">Decline</button></div>`:'';
+  thread.innerHTML=`<header><div><b>${esc(c.product_name)}</b><small>${owner?`Customer: ${esc(c.customer_name)}`:'PawCare customer support'} · ${money(c.price)} · ${Number(c.stock)} in stock</small>${rating}</div>${preorder}</header><div class="product-message-history">${messages||'<p>No messages yet.</p>'}</div>${approval}<div class="quick-replies"><span>Quick replies</span><button type="button" data-quick-reply="Thank you for reaching out! How can I help?">Thank you</button><button type="button" data-quick-reply="We are checking this for you and will follow up shortly.">We are checking</button></div><form class="product-message-compose"><textarea name="message" maxlength="1000" placeholder="Write a message..." required></textarea><button type="submit">Send message</button></form>`;
+  const history=thread.querySelector('.product-message-history');history.scrollTop=history.scrollHeight;
+  thread.querySelector('[name="message"]').value=draft;
+  thread.querySelectorAll('[data-quick-reply]').forEach(b=>b.onclick=()=>{thread.querySelector('[name="message"]').value=b.dataset.quickReply});
+  thread.querySelector('.product-message-compose').onsubmit=async e=>{e.preventDefault();const form=e.currentTarget,field=form.elements.message,button=form.querySelector('button[type="submit"]');if(!field.value.trim())return;button.disabled=true;try{await api('api/product_conversations.php',{method:'PUT',body:JSON.stringify({id:selectedConversation,conversation_id:selectedConversation,message:field.value.trim()})});await openConversation(selectedConversation);await loadMessages()}catch(err){alert(err.message);button.disabled=false}};
+  thread.querySelectorAll('[data-preorder-status]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await api('api/product_conversations.php',{method:'PATCH',body:JSON.stringify({id:selectedConversation,conversation_id:selectedConversation,status:b.dataset.preorderStatus})});await openConversation(selectedConversation);await loadMessages()}catch(err){alert(err.message);b.disabled=false}});
+  await loadMessages(false);
+ }catch(e){thread.innerHTML=`<div class="account-loading">${esc(e.message)}</div>`}
+}
+async function loadMessages(keepThread=true){
+ const list=document.getElementById('accountConversationList');if(!list)return;
+ try{const d=await api('api/product_conversations.php'),items=d.conversations||[],unread=items.reduce((sum,c)=>sum+Number(c.unread_count||0),0),badge=document.getElementById('messageUnreadBadge');badge.hidden=unread===0;badge.textContent=unread>99?'99+':String(unread);
+  list.innerHTML=items.map(c=>`<button type="button" class="product-conversation-item ${Number(c.id)===selectedConversation?'active':''}" data-conversation-id="${c.id}"><b>${esc(c.product_name)}${c.feedback_rating?` · ★ ${Number(c.feedback_rating)}/5`:''}</b><span>${d.role==='owner'?esc(c.customer_name):esc(c.kind==='preorder'?'Preorder request':'Product support')} · ${esc(c.status)}</span><small>${esc(c.last_message||'No messages')}</small>${Number(c.unread_count)>0?`<i>${Number(c.unread_count)}</i>`:''}</button>`).join('')||'<div class="account-loading">No messages yet. Product questions and reviews will appear here.</div>';
+  list.querySelectorAll('[data-conversation-id]').forEach(b=>b.onclick=()=>openConversation(b.dataset.conversationId));
+  if(keepThread&&selectedConversation&&items.some(c=>Number(c.id)===selectedConversation))await openConversation(selectedConversation);
+  return items;
+ }catch(e){list.innerHTML=`<div class="account-loading">${esc(e.message)}</div>`}
+}
+document.getElementById('accountFeedback')?.addEventListener('click',async event=>{
+ const button=event.target.closest('[data-open-customer]');if(!button)return;
+ await selectSection('messages');
+ const items=await loadMessages(false)||[];
+ let conversation=items.find(item=>Number(item.feedback_id)===Number(button.dataset.feedbackId));
+ if(!conversation){try{const created=await api('api/product_conversations.php',{method:'POST',body:JSON.stringify({feedback_id:Number(button.dataset.feedbackId)})});conversation={id:created.conversation_id}}catch(error){alert(error.message);return}}
+ await openConversation(conversation.id);
+});
+async function selectSection(name){document.querySelectorAll('.side-link[data-section]').forEach(b=>b.classList.toggle('active',b.dataset.section===name));document.querySelectorAll('.account-section').forEach(s=>s.classList.toggle('active',s.id==='section-'+name));const titles={profile:['Profile','Manage your PawCare profile and personal details.'],orders:[document.body.classList.contains('is-owner')?'Orders':'My Orders',document.body.classList.contains('is-owner')?'View customer orders and update delivery status.':'Track your deliveries from order placed to delivered.'],reservations:[document.body.classList.contains('is-owner')?'Reservations':'My Reservations',document.body.classList.contains('is-owner')?'View and manage customer service reservations.':'See the service you reserved and all the details you submitted.'],messages:['Messages','Product questions, ratings, replies, and preorder updates.'],inventory:['Product Inventory','Edit prices and stock. Products at zero stock can be requested as preorders.'],feedback:['Customer Feedback','Review customer comments, ratings, and monthly scores.'],overview:['Business Overview','Monthly and all-time sales and rating summaries.']};const t=titles[name]||titles.profile;document.getElementById('accountTitle').textContent=t[0];document.getElementById('accountSubtitle').textContent=t[1];if(name==='orders')loadOrders();if(name==='reservations')loadReservations();if(name==='messages')loadMessages();if(name==='inventory')loadInventory();if(name==='feedback')loadFeedback();if(name==='overview')loadOverview();history.replaceState(null,'','#'+name)}
 document.querySelectorAll('.side-link[data-section]').forEach(b=>b.addEventListener('click',()=>selectSection(b.dataset.section)));
 document.getElementById('avatarInput').addEventListener('change',e=>{
  const f=e.target.files[0];if(!f)return;
@@ -145,5 +173,6 @@ document.getElementById('profileForm').addEventListener('submit',async e=>{
 });
 document.getElementById('signOutAccount').addEventListener('click',async()=>{await api('api/logout.php',{method:'POST'}).catch(()=>{});location.href='index.html'});
 loadProfile().catch(e=>document.getElementById('profileMessage').textContent=e.message);
-const hash=location.hash.replace('#','');if(['profile','orders','reservations','feedback','overview'].includes(hash))selectSection(hash);else selectSection('profile');
+const hash=location.hash.replace('#','');if(['profile','orders','reservations','messages','inventory','feedback','overview'].includes(hash))selectSection(hash);else selectSection('profile');
+setInterval(()=>{const active=document.getElementById('section-messages')?.classList.contains('active');loadMessages(active)},8000);
 })();

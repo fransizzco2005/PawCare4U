@@ -53,7 +53,7 @@ async function body(req) {
     if (Buffer.isBuffer(req.body)) text = req.body.toString();
     else if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) {
       const keys = Object.keys(req.body);
-      if (keys.some(key => ['name','email','password','nickname','phone','avatar_data','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id'].includes(key))) {
+      if (keys.some(key => ['name','email','password','nickname','phone','avatar_data','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id','conversation_id','kind','quantity','price','stock','feedback_id'].includes(key))) {
         if (!text) return req.body;
       }
     }
@@ -71,7 +71,7 @@ async function body(req) {
       return parsed && typeof parsed === 'object' ? parsed : {};
     } catch (_) {
       const result = {};
-      for (const key of ['name','email','password','nickname','phone','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id']) {
+      for (const key of ['name','email','password','nickname','phone','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id','conversation_id','kind','quantity','price','stock','feedback_id']) {
         const match = text.match(new RegExp('"' + key + '"\\s*:\\s*(?:"([^"]*)"|([^,}\\s]+))'));
         if (match) result[key] = match[1] !== undefined ? match[1] : match[2];
       }
@@ -142,6 +142,22 @@ module.exports = async function handler(req, res) {
         return json(res, 200, { ok: true, profile: { ...result.rows[0], role: 'user' } });
       }
       return json(res, 405, { error: 'Method not allowed.' });
+    }
+    if (pathname === 'products' && req.method === 'PUT') {
+      if (!session || session.role !== 'owner') return json(res, 403, { error: 'Owner access only.' });
+      const input = await body(req);
+      const productId = Number(input.product_id || 0);
+      const price = Number(input.price);
+      const stock = Number(input.stock);
+      if (!productId || !Number.isFinite(price) || price <= 0 || !Number.isInteger(stock) || stock < 0 || stock > 1000000) {
+        return json(res, 422, { error: 'Enter a valid product, positive price, and stock from 0 to 1,000,000.' });
+      }
+      const updated = await pool.query(
+        'UPDATE products SET price=$1,stock=$2 WHERE id=$3 RETURNING id,name,category,subcategory,price,stock',
+        [price, stock, productId]
+      );
+      if (!updated.rows[0]) return json(res, 404, { error: 'Product not found.' });
+      return json(res, 200, { ok: true, product: updated.rows[0] });
     }
     if (pathname === 'products' && req.method === 'GET') {
       const category = url.searchParams.get('category') || 'all';
@@ -214,7 +230,7 @@ module.exports = async function handler(req, res) {
       const ownerValue = session && session.role === 'user' ? session.id : guest;
       const cartRows = async () => {
         const result = await pool.query(
-          `SELECT c.product_id, c.qty, p.name, p.price, p.icon, p.category, p.image_url FROM cart_items c JOIN products p ON p.id = c.product_id WHERE c.${ownerClause}`,
+          `SELECT c.product_id, c.qty, p.name, p.price, p.stock, p.icon, p.category, p.image_url FROM cart_items c JOIN products p ON p.id = c.product_id WHERE c.${ownerClause}`,
           [ownerValue]
         );
         return result.rows;
@@ -232,11 +248,16 @@ module.exports = async function handler(req, res) {
         const input = await body(req);
         const productId = Number(input.product_id || 0);
         if (!productId) return json(res, 422, { error: 'product_id is required.' });
+        const product = await pool.query('SELECT name,stock FROM products WHERE id=$1', [productId]);
+        if (!product.rows[0]) return json(res, 404, { error: 'Product not found.' });
         const existingClause = ownerClause.replace('$1', '$2');
         const existing = await pool.query(`SELECT id, qty FROM cart_items WHERE product_id = $1 AND ${existingClause}`, [productId, ownerValue]);
         const qty = Number.isFinite(Number(input.qty)) ? Number(input.qty) : existing.rows[0]
           ? existing.rows[0].qty + (Number(input.delta) || 1)
           : 1;
+        if (!Number.isInteger(qty) || qty < 0 || qty > Number(product.rows[0].stock)) {
+          return json(res, 422, { error: `Only ${product.rows[0].stock} left of ${product.rows[0].name}.` });
+        }
         if (existing.rows[0]) {
           if (qty <= 0) await pool.query('DELETE FROM cart_items WHERE id = $1', [existing.rows[0].id]);
           else await pool.query('UPDATE cart_items SET qty = $1 WHERE id = $2', [qty, existing.rows[0].id]);
@@ -328,6 +349,37 @@ module.exports = async function handler(req, res) {
         order.messages = messages.rows;
       }
       return json(res, 200, { orders: result.rows, role: session.role });
+    }
+    if (pathname === 'owner_overview' && req.method === 'GET') {
+      if (!session || session.role !== 'owner') return json(res, 403, { error: 'Owner access only.' });
+      const [sales, ratings] = await Promise.all([
+        pool.query(
+          `SELECT COUNT(*) FILTER (WHERE order_status <> 'cancelled')::int AS orders,
+                  COALESCE(SUM(total) FILTER (WHERE order_status <> 'cancelled'),0)::numeric AS sales,
+                  COUNT(*) FILTER (WHERE order_status <> 'cancelled' AND date_trunc('month',created_at)=date_trunc('month',NOW()))::int AS month_orders,
+                  COALESCE(SUM(total) FILTER (WHERE order_status <> 'cancelled' AND date_trunc('month',created_at)=date_trunc('month',NOW())),0)::numeric AS month_sales
+           FROM orders`
+        ),
+        pool.query(
+          `SELECT COUNT(*)::int AS count,COALESCE(AVG(rating),0)::numeric(3,2) AS average,
+                  COUNT(*) FILTER (WHERE date_trunc('month',created_at)=date_trunc('month',NOW()))::int AS month_count,
+                  COALESCE(AVG(rating) FILTER (WHERE date_trunc('month',created_at)=date_trunc('month',NOW())),0)::numeric(3,2) AS month_average
+           FROM product_feedback WHERE user_id IS NOT NULL AND rating IS NOT NULL`
+        )
+      ]);
+      const monthly = await pool.query(
+        `SELECT to_char(date_trunc('month',created_at),'YYYY-MM') AS month,
+                COUNT(*) FILTER (WHERE order_status <> 'cancelled')::int AS orders,
+                COALESCE(SUM(total) FILTER (WHERE order_status <> 'cancelled'),0)::numeric AS sales
+         FROM orders GROUP BY date_trunc('month',created_at) ORDER BY date_trunc('month',created_at) DESC LIMIT 12`
+      );
+      const monthlyRatings = await pool.query(
+        `SELECT to_char(date_trunc('month',created_at),'YYYY-MM') AS month,
+                COUNT(*)::int AS count,COALESCE(AVG(rating),0)::numeric(3,2) AS average
+         FROM product_feedback WHERE user_id IS NOT NULL AND rating IS NOT NULL
+         GROUP BY date_trunc('month',created_at) ORDER BY date_trunc('month',created_at) DESC LIMIT 12`
+      );
+      return json(res, 200, { sales: sales.rows[0], ratings: ratings.rows[0], monthly: monthly.rows, monthly_ratings: monthlyRatings.rows });
     }
     if (pathname === 'owner_orders' && req.method === 'POST') {
       if (!session || session.role !== 'owner') return json(res, 403, { error: 'Owner access only.' });
@@ -430,15 +482,23 @@ module.exports = async function handler(req, res) {
         const productId = Number(url.searchParams.get('product_id') || 0);
         if (session?.role === 'owner') {
           const result = productId
-            ? await pool.query("SELECT f.*,COALESCE(u.name,o.name) AS user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END AS sender_role,p.name AS product_name FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id JOIN products p ON p.id=f.product_id WHERE f.product_id=$1 ORDER BY f.created_at DESC", [productId])
-            : await pool.query("SELECT f.*,COALESCE(u.name,o.name) AS user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END AS sender_role,p.name AS product_name FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id JOIN products p ON p.id=f.product_id ORDER BY f.created_at DESC");
-          return json(res, 200, { feedback: result.rows, role: 'owner' });
+            ? await pool.query("SELECT f.*,COALESCE(u.name,o.name) AS user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END AS sender_role,p.name AS product_name FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id JOIN products p ON p.id=f.product_id WHERE f.product_id=$1 AND f.user_id IS NOT NULL ORDER BY f.created_at DESC", [productId])
+            : await pool.query("SELECT f.*,COALESCE(u.name,o.name) AS user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END AS sender_role,p.name AS product_name FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id JOIN products p ON p.id=f.product_id WHERE f.user_id IS NOT NULL ORDER BY f.created_at DESC");
+          const stats = productId
+            ? await pool.query("SELECT COUNT(rating)::int AS count,COALESCE(AVG(rating),0)::numeric(3,2) AS average FROM product_feedback WHERE product_id=$1 AND user_id IS NOT NULL", [productId])
+            : null;
+          return json(res, 200, { feedback: result.rows, summary: stats?.rows[0] || null, role: 'owner' });
         }
         if (!productId) return json(res, 422, { error: 'product_id is required.' });
-        const result = session?.role === 'user'
-          ? await pool.query("SELECT f.id,f.rating,f.comment,f.owner_reply,f.created_at,f.replied_at,COALESCE(u.name,o.name) AS user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END AS sender_role FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id WHERE f.product_id=$1 AND f.user_id=$2 ORDER BY f.created_at DESC", [productId, session.id])
-          : await pool.query("SELECT f.id,f.rating,f.comment,f.owner_reply,f.created_at,f.replied_at,COALESCE(u.name,o.name) AS user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END AS sender_role FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id WHERE f.product_id=$1 ORDER BY f.created_at DESC", [productId]);
-        return json(res, 200, { feedback: result.rows, role: session?.role || 'guest' });
+        const result = await pool.query(
+          "SELECT f.id,f.rating,f.comment,f.created_at,u.name AS user_name FROM product_feedback f JOIN users u ON u.id=f.user_id WHERE f.product_id=$1 AND f.user_id IS NOT NULL ORDER BY f.created_at DESC LIMIT 50",
+          [productId]
+        );
+        const stats = await pool.query(
+          "SELECT COUNT(rating)::int AS count,COALESCE(AVG(rating),0)::numeric(3,2) AS average FROM product_feedback WHERE product_id=$1 AND user_id IS NOT NULL",
+          [productId]
+        );
+        return json(res, 200, { feedback: result.rows, summary: stats.rows[0], role: session?.role || 'guest' });
       }
       if (req.method === 'POST') {
         if (!session || !['user', 'owner'].includes(session.role)) return json(res, 403, { error: 'Please sign in to leave product feedback.' });
@@ -450,8 +510,30 @@ module.exports = async function handler(req, res) {
         const product = await pool.query('SELECT id FROM products WHERE id=$1', [productId]);
         if (!product.rows[0]) return json(res, 404, { error: 'Product not found.' });
         const senderColumn = session.role === 'owner' ? 'owner_id' : 'user_id';
-        const created = await pool.query(`INSERT INTO product_feedback(product_id,${senderColumn},rating,comment) VALUES($1,$2,$3,$4) RETURNING id`, [productId, session.id, rating, comment || null]);
-        return json(res, 200, { ok: true, id: created.rows[0].id });
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
+          const created = await client.query(`INSERT INTO product_feedback(product_id,${senderColumn},rating,comment) VALUES($1,$2,$3,$4) RETURNING id`, [productId, session.id, rating, comment || null]);
+          let conversationId = null;
+          if (session.role === 'user' && comment) {
+            const conversation = await client.query(
+              "INSERT INTO product_conversations(user_id,product_id,feedback_id,kind,status,user_read_at) VALUES($1,$2,$3,'product','open',NOW()) RETURNING id",
+              [session.id, productId, created.rows[0].id]
+            );
+            conversationId = conversation.rows[0].id;
+            await client.query(
+              "INSERT INTO product_messages(conversation_id,sender_role,sender_id,message) VALUES($1,'user',$2,$3)",
+              [conversationId, session.id, comment]
+            );
+          }
+          await client.query('COMMIT');
+          return json(res, 200, { ok: true, id: created.rows[0].id, conversation_id: conversationId });
+        } catch (error) {
+          await client.query('ROLLBACK');
+          throw error;
+        } finally {
+          client.release();
+        }
       }
       if (req.method === 'PUT') {
         if (!session || session.role !== 'owner') return json(res, 403, { error: 'Owner access only.' });
@@ -461,6 +543,176 @@ module.exports = async function handler(req, res) {
         if (!id || !reply) return json(res, 422, { error: 'Feedback id and reply are required.' });
         await pool.query('UPDATE product_feedback SET owner_reply=$1,replied_at=NOW() WHERE id=$2', [reply, id]);
         return json(res, 200, { ok: true });
+      }
+      return json(res, 405, { error: 'Method not allowed.' });
+    }
+    if (pathname === 'product_conversations') {
+      if (!session) return json(res, 401, { error: 'Please sign in to open product messages.' });
+      if (req.method === 'GET') {
+        const conversationId = Number(url.searchParams.get('id') || 0);
+        const readColumn = session.role === 'owner' ? 'owner_read_at' : 'user_read_at';
+        if (conversationId) {
+          const values = session.role === 'owner' ? [conversationId] : [session.id, conversationId];
+          const idParam = session.role === 'owner' ? '$1' : '$2';
+          const found = await pool.query(
+            `SELECT c.id,c.user_id,c.product_id,c.feedback_id,c.kind,c.status,c.preorder_qty,c.created_at,c.updated_at,p.name AS product_name,p.price,p.stock,u.name AS customer_name,f.rating AS feedback_rating
+             FROM product_conversations c JOIN products p ON p.id=c.product_id JOIN users u ON u.id=c.user_id
+             LEFT JOIN product_feedback f ON f.id=c.feedback_id
+             WHERE c.id=${idParam} ${session.role === 'owner' ? '' : 'AND c.user_id=$1'}`,
+            values
+          );
+          if (!found.rows[0]) return json(res, 404, { error: 'Conversation not found.' });
+          await pool.query(`UPDATE product_conversations SET ${readColumn}=NOW() WHERE id=$1`, [conversationId]);
+          const messages = await pool.query(
+            `SELECT m.id,m.sender_role,m.message,m.created_at,
+                    CASE WHEN m.sender_role='owner' THEN o.name WHEN m.sender_role='user' THEN u.name ELSE 'PawCare' END AS sender_name
+             FROM product_messages m
+             LEFT JOIN owners o ON m.sender_role='owner' AND o.id=m.sender_id
+             LEFT JOIN users u ON m.sender_role='user' AND u.id=m.sender_id
+             WHERE m.conversation_id=$1 ORDER BY m.created_at,m.id`,
+            [conversationId]
+          );
+          return json(res, 200, { conversation: found.rows[0], messages: messages.rows, role: session.role });
+        }
+        const userFilter = session.role === 'owner' ? '' : 'WHERE c.user_id=$1';
+        const values = session.role === 'owner' ? [] : [session.id];
+        const list = await pool.query(
+          `SELECT c.id,c.user_id,c.feedback_id,c.product_id,c.kind,c.status,c.preorder_qty,c.updated_at,p.name AS product_name,f.rating AS feedback_rating,
+                  u.name AS customer_name,latest.message AS last_message,latest.created_at AS last_message_at,
+                  (SELECT COUNT(*)::int FROM product_messages unread WHERE unread.conversation_id=c.id AND unread.sender_role<>$${values.length + 1} AND unread.created_at>COALESCE(c.${readColumn},'epoch'::timestamptz)) AS unread_count
+           FROM product_conversations c JOIN products p ON p.id=c.product_id JOIN users u ON u.id=c.user_id
+           LEFT JOIN product_feedback f ON f.id=c.feedback_id
+           LEFT JOIN LATERAL (SELECT message,created_at FROM product_messages WHERE conversation_id=c.id ORDER BY created_at DESC,id DESC LIMIT 1) latest ON TRUE
+           ${userFilter} ORDER BY c.updated_at DESC LIMIT 100`,
+          [...values, session.role]
+        );
+        return json(res, 200, { conversations: list.rows, role: session.role });
+      }
+      if (req.method === 'POST') {
+        const input = await body(req);
+        if (session.role === 'owner') {
+          const feedbackId = Number(input.feedback_id || 0);
+          if (!feedbackId) return json(res, 422, { error: 'A customer feedback entry is required.' });
+          const client = await pool.connect();
+          try {
+            await client.query('BEGIN');
+            const feedback = await client.query(
+              'SELECT id,user_id,product_id FROM product_feedback WHERE id=$1 AND user_id IS NOT NULL FOR UPDATE',
+              [feedbackId]
+            );
+            if (!feedback.rows[0]) {
+              await client.query('ROLLBACK');
+              return json(res, 404, { error: 'Customer feedback not found.' });
+            }
+            const existing = await client.query('SELECT id FROM product_conversations WHERE feedback_id=$1', [feedbackId]);
+            if (existing.rows[0]) {
+              await client.query('COMMIT');
+              return json(res, 200, { ok: true, conversation_id: existing.rows[0].id });
+            }
+            const created = await client.query(
+              "INSERT INTO product_conversations(user_id,product_id,feedback_id,kind,status,owner_read_at) VALUES($1,$2,$3,'product','open',NOW()) RETURNING id",
+              [feedback.rows[0].user_id, feedback.rows[0].product_id, feedbackId]
+            );
+            await client.query('COMMIT');
+            return json(res, 200, { ok: true, conversation_id: created.rows[0].id });
+          } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+          } finally {
+            client.release();
+          }
+        }
+        if (session.role !== 'user') return json(res, 403, { error: 'Only customers can start a product conversation.' });
+        const productId = Number(input.product_id || 0);
+        const kind = input.kind === 'preorder' ? 'preorder' : 'product';
+        const quantity = Number(input.quantity || 1);
+        const message = String(input.message || '').trim();
+        if (!productId || !Number.isInteger(quantity) || quantity < 1 || quantity > 100) {
+          return json(res, 422, { error: 'Choose a product and a quantity from 1 to 100.' });
+        }
+        if (message.length > 1000) return json(res, 422, { error: 'Message is too long.' });
+        const product = await pool.query('SELECT id,name,stock FROM products WHERE id=$1', [productId]);
+        if (!product.rows[0]) return json(res, 404, { error: 'Product not found.' });
+        if (kind === 'preorder' && Number(product.rows[0].stock) > 0) {
+          return json(res, 409, { error: 'This product is in stock and can be added to your cart.' });
+        }
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
+          const created = await client.query(
+            'INSERT INTO product_conversations(user_id,product_id,kind,status,preorder_qty,user_read_at) VALUES($1,$2,$3,$4,$5,NOW()) RETURNING id',
+            [session.id, productId, kind, kind === 'preorder' ? 'pending' : 'open', kind === 'preorder' ? quantity : null]
+          );
+          const initialMessage = message || (kind === 'preorder'
+            ? `I would like to preorder ${quantity} × ${product.rows[0].name}. Please let me know when it can be fulfilled.`
+            : `I have a question about ${product.rows[0].name}.`);
+          await client.query(
+            "INSERT INTO product_messages(conversation_id,sender_role,sender_id,message) VALUES($1,'user',$2,$3)",
+            [created.rows[0].id, session.id, initialMessage]
+          );
+          await client.query('COMMIT');
+          return json(res, 200, { ok: true, conversation_id: created.rows[0].id });
+        } catch (error) {
+          await client.query('ROLLBACK');
+          throw error;
+        } finally {
+          client.release();
+        }
+      }
+      if (req.method === 'PUT') {
+        if (session.role !== 'user' && session.role !== 'owner') return json(res, 403, { error: 'Account access only.' });
+        const input = await body(req);
+        const conversationId = Number(input.conversation_id || 0);
+        const message = String(input.message || '').trim();
+        if (!conversationId || !message || message.length > 1000) return json(res, 422, { error: 'Conversation and a message up to 1000 characters are required.' });
+        const conversation = await pool.query(
+          `SELECT id,user_id FROM product_conversations WHERE id=$1 ${session.role === 'user' ? 'AND user_id=$2' : ''}`,
+          session.role === 'user' ? [conversationId, session.id] : [conversationId]
+        );
+        if (!conversation.rows[0]) return json(res, 404, { error: 'Conversation not found.' });
+        await pool.query(
+          `INSERT INTO product_messages(conversation_id,sender_role,sender_id,message) VALUES($1,$2,$3,$4)`,
+          [conversationId, session.role, session.id, message]
+        );
+        await pool.query(
+          `UPDATE product_conversations SET updated_at=NOW(),${session.role === 'owner' ? 'owner_read_at' : 'user_read_at'}=NOW() WHERE id=$1`,
+          [conversationId]
+        );
+        return json(res, 200, { ok: true });
+      }
+      if (req.method === 'PATCH') {
+        if (session.role !== 'owner') return json(res, 403, { error: 'Owner access only.' });
+        const input = await body(req);
+        const conversationId = Number(input.conversation_id || 0);
+        const status = String(input.status || '');
+        if (!conversationId || !['approved','rejected'].includes(status)) return json(res, 422, { error: 'Select an approval or rejection status.' });
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
+          const updated = await client.query(
+            "UPDATE product_conversations SET status=$1,updated_at=NOW(),owner_read_at=NOW() WHERE id=$2 AND kind='preorder' AND status='pending' RETURNING id,preorder_qty,product_id",
+            [status, conversationId]
+          );
+          if (!updated.rows[0]) {
+            await client.query('ROLLBACK');
+            return json(res, 404, { error: 'Pending preorder request not found.' });
+          }
+          const product = await client.query('SELECT name FROM products WHERE id=$1', [updated.rows[0].product_id]);
+          const message = status === 'approved'
+            ? `Your preorder request for ${updated.rows[0].preorder_qty} × ${product.rows[0].name} is approved. The owner will message you when fulfillment is ready; no payment or stock has been taken yet.`
+            : `Your preorder request for ${product.rows[0].name} was declined. Please message the owner if you have questions.`;
+          await client.query(
+            "INSERT INTO product_messages(conversation_id,sender_role,sender_id,message) VALUES($1,'system',NULL,$2)",
+            [conversationId, message]
+          );
+          await client.query('COMMIT');
+          return json(res, 200, { ok: true, status });
+        } catch (error) {
+          await client.query('ROLLBACK');
+          throw error;
+        } finally {
+          client.release();
+        }
       }
       return json(res, 405, { error: 'Method not allowed.' });
     }

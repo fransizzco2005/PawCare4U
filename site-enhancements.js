@@ -251,9 +251,10 @@
     document.getElementById('openSignIn')?.addEventListener('click',e=>{e.stopPropagation();openAuth('signin')});
     document.getElementById('openSignUp')?.addEventListener('click',e=>{e.stopPropagation();openAuth('signup')});
     document.getElementById('logoutBtn')?.addEventListener('click',async e=>{e.stopPropagation();try{await api('api/logout.php',{method:'POST'})}catch(_){}setAccount(null);closeMenu();document.querySelectorAll('.icon-badge').forEach(x=>x.textContent='0');toast('Signed out.')});
-    document.getElementById('viewAccountBtn')?.addEventListener('click',()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.php#profile';});
-    document.getElementById('accountOrdersMenuBtn')?.addEventListener('click',()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.php#orders';});
-    document.getElementById('accountReservationsMenuBtn')?.addEventListener('click',()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.php#reservations';});
+    document.getElementById('viewAccountBtn')?.addEventListener('click',()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.html#profile';});
+    document.getElementById('accountOrdersMenuBtn')?.addEventListener('click',()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.html#orders';});
+    document.getElementById('accountReservationsMenuBtn')?.addEventListener('click',()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.html#reservations';});
+    document.getElementById('accountMessagesMenuBtn')?.addEventListener('click',()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.html#messages';});
   }
   window.toggleAuth=()=>{if(menu){menu.hidden=!menu.hidden}else openAuth('signin')};
 
@@ -444,10 +445,13 @@
   function addButtons(user){
     const signedIn=document.getElementById('accountSignedIn'); if(!signedIn)return;
     if(!document.getElementById('pawcareOrdersBtn') && !document.getElementById('accountOrdersMenuBtn')){
-      const b=document.createElement('button');b.id='pawcareOrdersBtn';b.className='account-menu-btn';b.type='button';b.textContent=user&&user.role==='owner'?'📦 All Orders':'📦 My Orders';b.onclick=()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.php#orders'};signedIn.insertBefore(b,signedIn.firstChild);
+      const b=document.createElement('button');b.id='pawcareOrdersBtn';b.className='account-menu-btn';b.type='button';b.textContent=user&&user.role==='owner'?'📦 All Orders':'📦 My Orders';b.onclick=()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.html#orders'};signedIn.insertBefore(b,signedIn.firstChild);
     }
     if(!document.getElementById('pawcareReservationsBtn') && !document.getElementById('accountReservationsMenuBtn')){
-      const b=document.createElement('button');b.id='pawcareReservationsBtn';b.className='account-menu-btn';b.type='button';b.textContent=user&&user.role==='owner'?'🗓️ All Reservations':'🗓️ My Reservations';b.onclick=()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.php#reservations'};signedIn.insertBefore(b,signedIn.firstChild);
+      const b=document.createElement('button');b.id='pawcareReservationsBtn';b.className='account-menu-btn';b.type='button';b.textContent=user&&user.role==='owner'?'🗓️ All Reservations':'🗓️ My Reservations';b.onclick=()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.html#reservations'};signedIn.insertBefore(b,signedIn.firstChild);
+    }
+    if(!document.getElementById('accountMessagesMenuBtn')){
+      const b=document.createElement('button');b.id='accountMessagesMenuBtn';b.className='account-menu-btn';b.type='button';b.textContent='💬 Product Messages';b.onclick=()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='account.html#messages'};signedIn.insertBefore(b,signedIn.firstChild);
     }
     if(user&&user.role==='owner'){
       document.body.classList.add('owner-session');

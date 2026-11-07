@@ -40,7 +40,7 @@
   let active='All categories', query='';
 
   function money(n){return '₱'+Number(n||0).toLocaleString('en-PH',{maximumFractionDigits:0});}
-  function data(card){return {id:Number(card.dataset.productId),name:card.dataset.name,price:Number(card.dataset.price),oldPrice:card.dataset.oldPrice?Number(card.dataset.oldPrice):null,rating:Number(card.dataset.rating||4.5),reviews:Number(card.dataset.reviews||0),description:card.dataset.description||'A practical PawCare essential for everyday pet care.',category:animalKey,subcategory:card.dataset.subcategory,stock:Number(card.dataset.stock||100),image:card.querySelector('img')?.getAttribute('src')||''};}
+  function data(card){return {id:Number(card.dataset.productId),name:card.dataset.name,price:Number(card.dataset.price),oldPrice:card.dataset.oldPrice?Number(card.dataset.oldPrice):null,rating:Number(card.dataset.rating||4.5),reviews:Number(card.dataset.reviews||0),description:card.dataset.description||'A practical PawCare essential for everyday pet care.',category:animalKey,subcategory:card.dataset.subcategory,stock:Number(card.dataset.stock??100),image:card.querySelector('img')?.getAttribute('src')||''};}
   function renderSidebar(){
     if(!sidebar) return;
     sidebar.innerHTML='';
@@ -66,6 +66,19 @@
     if(count) count.textContent=`Showing ${list.length} product${list.length===1?'':'s'}`;
   }
   function toast(msg){let t=document.getElementById('catalogToast');if(!t){t=document.createElement('div');t.id='catalogToast';t.className='catalog-toast';document.body.appendChild(t)}t.textContent=msg;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2200)}
+  function syncCatalog(){
+    fetch('api/products.php',{credentials:'same-origin'}).then(async response=>{if(!response.ok)throw Error('Could not refresh product stock and prices.');return response.json()}).then(products=>{
+      const byId=new Map(products.map(product=>[Number(product.id),product]));
+      cards.forEach(card=>{
+        const product=byId.get(Number(card.dataset.productId));if(!product)return;
+        card.dataset.price=product.price;card.dataset.stock=product.stock;card.dataset.name=product.name;card.dataset.oldPrice=product.oldPrice||'';
+        const price=card.querySelector('.product-price');if(price)price.innerHTML=(product.oldPrice?`<span class="card-old-price">${money(product.oldPrice)}</span> `:'')+money(product.price);
+        let stockNote=card.querySelector('.product-stock-note');
+        if(!stockNote){stockNote=document.createElement('small');stockNote.className='product-stock-note';price?.after(stockNote)}
+        if(stockNote){stockNote.textContent=Number(product.stock)>0?`${Number(product.stock)} left in stock`:'Out of stock · preorder available';stockNote.classList.toggle('is-out-of-stock',Number(product.stock)<=0)}
+      });
+    }).catch(error=>toast(error.message));
+  }
   async function apiAdd(product,qty){
     const payload={product_id:product.id,qty,product:{name:product.name,category:product.category,subcategory:product.subcategory,price:product.price,old_price:product.oldPrice,rating:product.rating,reviews:product.reviews,tag:'',stock:product.stock,image_url:product.image}};
     const r=await fetch('api/cart.php',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
@@ -75,7 +88,18 @@
   }
   function openDetails(card){
     const p=data(card); let modal=document.getElementById('productModal');
-    if(!modal){modal=document.createElement('div');modal.id='productModal';modal.className='product-modal';modal.innerHTML=`<div class="product-modal__backdrop" data-close-product></div><div class="product-modal__dialog" role="dialog" aria-modal="true" aria-label="Product details"><button class="product-modal__close" type="button" data-close-product aria-label="Close">×</button><div class="product-modal__media"><button class="modal-zoom-button" type="button" aria-label="Zoom product image">⌕</button><img id="modalProductImg" alt=""><div class="modal-thumbnail-strip" aria-label="Product image views"><button class="active" type="button" data-view="0"></button><button type="button" data-view="1"></button><button type="button" data-view="2"></button></div></div><div class="product-modal__body"><div class="modal-product-category" id="modalProductCategory"></div><h2 id="modalProductName"></h2><div id="modalProductRating" class="product-rating"></div><p id="modalProductDescription"></p><div id="modalProductPrice" class="product-price"></div><div class="modal-qty"><button type="button" id="modalQtyMinus">−</button><span id="modalQty">1</span><button type="button" id="modalQtyPlus">+</button></div><div class="modal-actions"><button class="btn btn-primary" id="modalAdd">Add to Cart</button><button class="btn btn-secondary" id="modalCheckout">Checkout</button></div><div class="product-feedback-box"><h3>Rate and review</h3><p class="feedback-note" id="modalFeedbackNote">Sign in to rate or comment for the owner.</p><div class="feedback-rating"><span>Choose a rating</span><div class="feedback-stars" id="modalFeedbackStars" role="radiogroup" aria-label="Product rating"></div><span class="feedback-rating-label" id="modalFeedbackRatingLabel">Select 1 to 5 stars</span></div><textarea id="modalFeedbackText" placeholder="Add an optional comment..." maxlength="1000" aria-label="Optional product comment"></textarea><button type="button" class="feedback-send" id="modalFeedbackSend">Send rating</button><div id="modalFeedbackReplies"></div></div></div></div>`;document.body.appendChild(modal);modal.addEventListener('click',e=>{if(e.target.closest('[data-close-product]'))close()})}
+    if(!modal){
+      modal=document.createElement('div');modal.id='productModal';modal.className='product-modal';
+      modal.innerHTML=`<div class="product-modal__backdrop" data-close-product></div><div class="product-modal__dialog" role="dialog" aria-modal="true" aria-label="Product details">
+        <button class="product-modal__close" type="button" data-close-product aria-label="Close">×</button>
+        <div class="product-modal__media"><button class="modal-zoom-button" type="button" aria-label="Zoom product image">⌕</button><img id="modalProductImg" alt=""><div class="modal-thumbnail-strip" aria-label="Product image views"><button class="active" type="button" data-view="0"></button><button type="button" data-view="1"></button><button type="button" data-view="2"></button></div></div>
+        <div class="product-modal__body"><div class="modal-product-category" id="modalProductCategory"></div><h2 id="modalProductName"></h2><div id="modalProductRating" class="product-rating"></div><p id="modalProductDescription"></p><div class="modal-stock-label" id="modalProductStock"></div><div id="modalProductPrice" class="product-price"></div>
+          <div class="modal-qty"><button type="button" id="modalQtyMinus" aria-label="Decrease quantity">−</button><span id="modalQty">1</span><button type="button" id="modalQtyPlus" aria-label="Increase quantity">+</button></div>
+          <div class="modal-actions"><button class="btn btn-primary" id="modalAdd">Add to Cart</button><button class="btn btn-secondary" id="modalCheckout">Checkout</button><button class="btn btn-secondary" id="modalPreorder" hidden>Request preorder</button></div>
+          <div class="product-feedback-box"><h3>Rate and review</h3><p class="feedback-note" id="modalFeedbackNote">Sign in to rate or comment for the owner.</p><div class="feedback-rating"><span>Choose a rating</span><div class="feedback-stars" id="modalFeedbackStars" role="radiogroup" aria-label="Product rating"></div><span class="feedback-rating-label" id="modalFeedbackRatingLabel">Select 1 to 5 stars</span></div><textarea id="modalFeedbackText" placeholder="Add an optional comment..." maxlength="1000" aria-label="Optional product comment"></textarea><button type="button" class="feedback-send" id="modalFeedbackSend">Send rating</button></div>
+        </div><aside class="product-modal__reviews"><div id="modalReviewSummary"></div><div id="modalProductReviews" class="modal-product-reviews"></div></aside></div>`;
+      document.body.appendChild(modal);modal.addEventListener('click',e=>{if(e.target.closest('[data-close-product]'))close()});
+    }
     const img=modal.querySelector('#modalProductImg'); const source=card.querySelector('img').getAttribute('src'); img.src=source; img.alt=p.name;
     const thumbs=[...modal.querySelectorAll('.modal-thumbnail-strip button')];
     thumbs.forEach((thumb,index)=>{
@@ -103,11 +127,21 @@
       img.style.transformOrigin=`${x}% ${y}%`;
     };
     modal.querySelector('#modalProductCategory').textContent=p.subcategory; modal.querySelector('#modalProductName').textContent=p.name; modal.querySelector('#modalProductRating').textContent=`★ ${p.rating.toFixed(1)} (${p.reviews} reviews)`; modal.querySelector('#modalProductDescription').textContent=p.description; modal.querySelector('#modalProductPrice').innerHTML=(p.oldPrice?`<span class="card-old-price">${money(p.oldPrice)}</span> `:'')+money(p.price);
+    const outOfStock=p.stock<=0,stockLabel=modal.querySelector('#modalProductStock');
+    stockLabel.textContent=outOfStock?'Out of stock · request a preorder':`${p.stock} left in stock`;
+    stockLabel.classList.toggle('is-out-of-stock',outOfStock);
+    modal.querySelector('#modalAdd').hidden=outOfStock;modal.querySelector('#modalCheckout').hidden=outOfStock;modal.querySelector('#modalPreorder').hidden=!outOfStock;
     let qty=1; const qtyEl=modal.querySelector('#modalQty'); qtyEl.textContent=qty; const setQty=n=>{qty=Math.max(1,Math.min(p.stock,n));qtyEl.textContent=qty}; modal.querySelector('#modalQtyMinus').onclick=()=>setQty(qty-1); modal.querySelector('#modalQtyPlus').onclick=()=>setQty(qty+1);
     modal.querySelector('#modalAdd').onclick=async()=>{try{await apiAdd(p,qty);toast(`${p.name} added to cart.`)}catch(e){toast(e.message)}};
     modal.querySelector('#modalCheckout').onclick=async()=>{try{await apiAdd(p,qty);close();sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='index.html#cart'}catch(e){toast(e.message)}};
-    const fbNote=modal.querySelector('#modalFeedbackNote'),fbText=modal.querySelector('#modalFeedbackText'),fbSend=modal.querySelector('#modalFeedbackSend'),fbReplies=modal.querySelector('#modalFeedbackReplies'),fbStars=modal.querySelector('#modalFeedbackStars'),fbRatingLabel=modal.querySelector('#modalFeedbackRatingLabel');
-    fbText.value=''; fbReplies.innerHTML='';
+    modal.querySelector('#modalPreorder').onclick=async()=>{try{const response=await fetch('api/product_conversations.php',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({product_id:p.id,kind:'preorder',quantity:qty})});const result=await response.json();if(!response.ok)throw Error(result.error||'Could not submit preorder request.');toast('Preorder request sent to the owner.');}catch(e){toast(e.message)}};
+    const fbNote=modal.querySelector('#modalFeedbackNote'),fbText=modal.querySelector('#modalFeedbackText'),fbSend=modal.querySelector('#modalFeedbackSend'),fbStars=modal.querySelector('#modalFeedbackStars'),fbRatingLabel=modal.querySelector('#modalFeedbackRatingLabel');
+    fbText.value='';
+    const renderReviews=response=>{
+      const summary=response.summary||{},reviewList=modal.querySelector('#modalProductReviews');
+      modal.querySelector('#modalReviewSummary').innerHTML=`<h3>Customer reviews</h3><strong>★ ${Number(summary.average||0).toFixed(2)} / 5</strong><span>${Number(summary.count||0)} ratings</span>`;
+      reviewList.innerHTML=(response.feedback||[]).map(x=>`<article class="modal-review"><b>${escapeHtml(x.user_name||'Customer')}</b><span class="feedback-entry-rating">${x.rating?`${'★'.repeat(Number(x.rating))}${'☆'.repeat(5-Number(x.rating))}`:'No rating'}</span><p>${escapeHtml(x.comment||'Rating only; no comment.')}</p><small>${escapeHtml(new Date(x.created_at).toLocaleDateString())}</small></article>`).join('')||'<p class="modal-review-empty">No customer reviews yet.</p>';
+    };
     let selectedRating=0;
     fbStars.innerHTML=Array.from({length:5},(_,i)=>`<button type="button" class="feedback-star" role="radio" aria-checked="false" aria-label="${i+1} star${i?'s':''}" data-rating="${i+1}">★</button>`).join('');
     const setRating=value=>{
@@ -127,10 +161,10 @@
       fbNote.textContent=isOwner?'Your owner review will be visible in the dashboard.':feedbackUser?'Your rating and optional comment will be sent to the PawCare owner.':'Sign in to leave a rating or comment for the owner.';
       fbText.disabled=!feedbackUser; fbSend.disabled=!feedbackUser;
       fbStars.querySelectorAll('button').forEach(star=>star.disabled=!feedbackUser);
-      if(feedbackUser||isOwner) return fetch('api/product_feedback.php?product_id='+encodeURIComponent(p.id),{credentials:'same-origin'}).then(r=>r.json()).then(x=>{x.__owner=isOwner;return x});
+      return fetch('api/product_feedback.php?product_id='+encodeURIComponent(p.id),{credentials:'same-origin'}).then(async r=>{const x=await r.json();if(!r.ok)throw Error(x.error||'Could not load product feedback.');return x});
     }).then(d=>{
       if(!d||!d.feedback)return;
-      fbReplies.innerHTML=d.feedback.map(x=>`<div class="feedback-note feedback-entry"><b>${d.__owner?`${x.sender_role==='owner'?'Owner':'Customer'}: ${escapeHtml(x.user_name||'Customer')}`:'Your review:'}</b><span class="feedback-entry-rating">${x.rating?`${'★'.repeat(Number(x.rating))}${'☆'.repeat(5-Number(x.rating))}`:'No rating'}</span><p>${escapeHtml(x.comment||'Rating only; no comment.')}</p>${x.owner_reply?`<p><b>Owner reply:</b> ${escapeHtml(x.owner_reply)}</p>`:''}</div>`).join('');
+      renderReviews(d);
     }).catch(error=>{fbNote.textContent=error.message||'Could not load product feedback.'});
     fbSend.onclick=async()=>{
       if(!feedbackUser){fbNote.textContent='Please sign in first to add a rating.';return}
@@ -147,7 +181,7 @@
         const refreshed=await fetch(`api/product_feedback.php?product_id=${encodeURIComponent(p.id)}&v=${Date.now()}`,{credentials:'same-origin',cache:'no-store',headers:{'Accept':'application/json'}});
         const refreshedData=await refreshed.json();
         if(!refreshed.ok)throw new Error(refreshedData.error||'Could not reload product feedback.');
-        if(refreshedData.feedback) fbReplies.innerHTML=refreshedData.feedback.map(x=>`<div class="feedback-note feedback-entry"><b>${d.__owner?`${x.sender_role==='owner'?'Owner':'Customer'}: ${escapeHtml(x.user_name||'Customer')}`:'Your review:'}</b><span class="feedback-entry-rating">${x.rating?`${'★'.repeat(Number(x.rating))}${'☆'.repeat(5-Number(x.rating))}`:'No rating'}</span><p>${escapeHtml(x.comment||'Rating only; no comment.')}</p>${x.owner_reply?`<p><b>Owner reply:</b> ${escapeHtml(x.owner_reply)}</p>`:''}</div>`).join('');
+        if(refreshedData.feedback)renderReviews(refreshedData);
         selectedRating=0;
         fbStars.querySelectorAll('.feedback-star').forEach(star=>{star.classList.remove('is-selected');star.setAttribute('aria-checked','false')});
         fbRatingLabel.textContent='Select 1 to 5 stars';
@@ -168,6 +202,8 @@
     }
   }
   function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));}
+  syncCatalog();
+  setInterval(syncCatalog,30000);
   grid.addEventListener('click',e=>{
     const addBtn=e.target.closest('.product-add-btn');
     if(addBtn){
@@ -176,6 +212,7 @@
       const card=addBtn.closest('.product-card');
       if(!card)return;
       const p=data(card);
+      if(p.stock<=0){openDetails(card);return}
       apiAdd(p,1).then(()=>toast(`${p.name} added to cart.`)).catch(err=>toast(err.message));
       return;
     }

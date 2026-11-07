@@ -13,11 +13,20 @@ if ($method==='GET') {
         if ($productId) $stmt->execute([$productId]);
         echo json_encode(['feedback'=>$stmt->fetchAll()]); exit;
     }
-    if (!$user || $user['role']!=='user') { http_response_code(401); die(json_encode(['error'=>'Please sign in first.'])); }
     if (!$productId) { http_response_code(422); die(json_encode(['error'=>'product_id is required.'])); }
-    $stmt=$pdo->prepare("SELECT f.id,f.rating,f.comment,f.owner_reply,f.created_at,f.replied_at,u.name user_name FROM product_feedback f JOIN users u ON u.id=f.user_id WHERE f.product_id=? AND f.user_id=? ORDER BY f.created_at DESC");
-    $stmt->execute([$productId,$user['id']]);
-    echo json_encode(['feedback'=>$stmt->fetchAll()]); exit;
+    if (!$user || $user['role']!=='user') {
+        $stmt=$pdo->prepare("SELECT f.id,f.rating,f.comment,f.created_at,u.name user_name FROM product_feedback f JOIN users u ON u.id=f.user_id WHERE f.product_id=? AND f.user_id IS NOT NULL ORDER BY f.created_at DESC LIMIT 50");
+        $stmt->execute([$productId]);
+        $feedback=$stmt->fetchAll();
+        $summaryStmt=$pdo->prepare('SELECT COUNT(rating) count,COALESCE(AVG(rating),0) average FROM product_feedback WHERE product_id=? AND user_id IS NOT NULL');
+        $summaryStmt->execute([$productId]);
+        echo json_encode(['feedback'=>$feedback,'summary'=>$summaryStmt->fetch(),'role'=>'guest']); exit;
+    }
+    $stmt=$pdo->prepare("SELECT f.id,f.rating,f.comment,f.created_at,u.name user_name FROM product_feedback f JOIN users u ON u.id=f.user_id WHERE f.product_id=? AND f.user_id IS NOT NULL ORDER BY f.created_at DESC LIMIT 50");
+    $stmt->execute([$productId]);
+    $summaryStmt=$pdo->prepare('SELECT COUNT(rating) count,COALESCE(AVG(rating),0) average FROM product_feedback WHERE product_id=? AND user_id IS NOT NULL');
+    $summaryStmt->execute([$productId]);
+    echo json_encode(['feedback'=>$stmt->fetchAll(),'summary'=>$summaryStmt->fetch(),'role'=>'user']); exit;
 }
 
 if (!$user) { http_response_code(401); die(json_encode(['error'=>'Please sign in first.'])); }
@@ -31,9 +40,25 @@ if ($method==='POST') {
     $check=$pdo->prepare('SELECT id FROM products WHERE id=?');$check->execute([$productId]);
     if(!$check->fetchColumn()){http_response_code(404);die(json_encode(['error'=>'Product not found.']));}
     $senderColumn=$user['role']==='owner'?'owner_id':'user_id';
-    $stmt=$pdo->prepare("INSERT INTO product_feedback(product_id,$senderColumn,rating,comment) VALUES(?,?,?,?) RETURNING id");
-    $stmt->execute([$productId,$user['id'],$rating,$comment!==''?$comment:null]);
-    echo json_encode(['ok'=>true,'id'=>(int)$stmt->fetchColumn()]); exit;
+    $pdo->beginTransaction();
+    try {
+        $stmt=$pdo->prepare("INSERT INTO product_feedback(product_id,$senderColumn,rating,comment) VALUES(?,?,?,?) RETURNING id");
+        $stmt->execute([$productId,$user['id'],$rating,$comment!==''?$comment:null]);
+        $feedbackId=(int)$stmt->fetchColumn();
+        $conversationId=null;
+        if ($user['role']==='user' && $comment!=='') {
+            $conversation=$pdo->prepare("INSERT INTO product_conversations(user_id,product_id,feedback_id,kind,status,user_read_at) VALUES(?,?,?,'product','open',NOW()) RETURNING id");
+            $conversation->execute([$user['id'],$productId,$feedbackId]);
+            $conversationId=(int)$conversation->fetchColumn();
+            $message=$pdo->prepare("INSERT INTO product_messages(conversation_id,sender_role,sender_id,message) VALUES(?,'user',?,?)");
+            $message->execute([$conversationId,$user['id'],$comment]);
+        }
+        $pdo->commit();
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+    echo json_encode(['ok'=>true,'id'=>$feedbackId,'conversation_id'=>$conversationId]); exit;
 }
 
 if ($method==='PUT') {

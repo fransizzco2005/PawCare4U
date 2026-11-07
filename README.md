@@ -19,8 +19,9 @@
 3. Apply `supabase/migrations/20261107090000_init_pawcare.sql` in the Supabase SQL Editor.
 4. Apply `supabase/migrations/20261107150000_product_feedback_ratings.sql` to add five-star product ratings and allow rating-only feedback.
 5. Apply `supabase/migrations/20261107200000_product_feedback_owner_sender.sql` to support owner-authored product feedback.
-6. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
-7. The application keeps the existing PHP sessions, login, cart, orders, appointments, feedback, and owner features; all data is stored in Supabase PostgreSQL.
+6. Apply `supabase/migrations/20261108090000_product_messages_inventory.sql` for customer/owner product messaging and preorder requests.
+7. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
+8. For the alternate MySQL schema, import `schema.sql` (or `database/pawcare.sql`); apply `database/migration_product_messages_inventory.sql` to an existing MySQL schema.
 
 ## PHP hosting requirement
 PawCare must run on a host that executes PHP and POST requests. A static-only host will return HTTP 405 because login, registration, cart, checkout, and owner APIs use PHP endpoints.
@@ -62,14 +63,17 @@ Added:
 - Separate **Owner Dashboard** with Orders, Product Feedback, and Overview tabs.
 - Owner can update an order status.
 - Product detail/maximize window supports a one-to-five-star rating with an optional comment.
-- Owner can read customer product ratings and comments in the dashboard and send a reply.
+- Owner and customers can exchange product messages in the account inbox; new messages show unread counts, and owners can use quick replies.
+- Owner can see the monthly and all-time sales and rating overview, as well as a per-month rating summary.
+- Owner can update product price and stock. Out-of-stock items cannot be added to cart; customers can submit preorder requests for owner review without payment or inventory being taken.
+- Product details display the aggregate rating and customer reviews next to product information.
 - Owner login has a distinct dark/gold owner interface and `OWNER ACCOUNT` indicator.
 
 For production, change the demo owner password or create a proper owner account before deployment.
 
 ## Account / Owner mode
-- `account.php` is the shared My Account page for both customers and owners.
+- `account.html` is the shared My Account page for both customers and owners.
 - Customers see their profile and order tracking (Placed → Packed/Processing → On the way → Delivered).
 - Customers can change their nickname and profile photo; their login username/name and email remain unchanged.
-- Owners use the same PawCare site and account page, but get OWNER MODE, all customer orders, status controls, customer feedback/replies, and overview.
+- Owners use the same PawCare site and account page, but get OWNER MODE, all customer orders, status controls, customer feedback, product messages, inventory controls, and overview.
 - The Supabase initialization migration also adds the profile fields, so no separate profile migration is required.

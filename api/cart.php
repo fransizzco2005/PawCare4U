@@ -6,7 +6,7 @@ $user  = current_user();
 $owner = $user ? ['user_id = ?', $user['id']] : ['guest_token = ?', guest_token()];
 
 function cart_rows(PDO $pdo, array $owner): array {
-    $sql = "SELECT c.product_id, c.qty, p.name, p.price, p.icon, p.category, p.image_url
+    $sql = "SELECT c.product_id, c.qty, p.name, p.price, p.stock, p.icon, p.category, p.image_url
             FROM cart_items c JOIN products p ON p.id = c.product_id
             WHERE c.$owner[0]";
     $stmt = $pdo->prepare($sql);
@@ -48,12 +48,20 @@ if ($method === 'POST') {
         ]);
     }
 
+    $product = $pdo->prepare('SELECT id,stock FROM products WHERE id=?');
+    $product->execute([$productId]);
+    $available = $product->fetch();
+    if (!$available) { http_response_code(404); die(json_encode(['error'=>'Product not found.'])); }
+
     $find = $pdo->prepare("SELECT id, qty FROM cart_items WHERE product_id = ? AND $owner[0]");
     $find->execute([$productId, $owner[1]]);
     $existing = $find->fetch();
 
     if ($existing) {
         $newQty = $setQty !== null ? $setQty : $existing['qty'] + ($delta ?? 1);
+        if ($newQty > (int)$available['stock']) {
+            http_response_code(422); die(json_encode(['error'=>(int)$available['stock'] > 0 ? "Only {$available['stock']} left in stock." : 'This product is out of stock. You can preorder it from the product details.']));
+        }
         if ($newQty <= 0) {
             $pdo->prepare('DELETE FROM cart_items WHERE id = ?')->execute([$existing['id']]);
         } else {
@@ -62,6 +70,9 @@ if ($method === 'POST') {
     } else {
         $newQty = $setQty ?? 1;
         if ($newQty > 0) {
+            if ($newQty > (int)$available['stock']) {
+                http_response_code(422); die(json_encode(['error'=>(int)$available['stock'] > 0 ? "Only {$available['stock']} left in stock." : 'This product is out of stock. You can preorder it from the product details.']));
+            }
             $col = ($user && $user['role'] === 'user') ? 'user_id' : 'guest_token';
             $pdo->prepare("INSERT INTO cart_items (product_id, qty, $col) VALUES (?, ?, ?)")
                 ->execute([$productId, $newQty, $owner[1]]);

@@ -23,32 +23,25 @@ if (!in_array($method, ['cod', 'gcash', 'card'], true)) {
     die(json_encode(['error' => 'Unknown payment method.']));
 }
 
-// 1. Load the cart
-$cartStmt = $pdo->prepare(
-    'SELECT c.product_id, c.qty, p.name, p.price, p.stock
-     FROM cart_items c JOIN products p ON p.id = c.product_id
-     WHERE c.user_id = ?'
-);
-$cartStmt->execute([$user['id']]);
-$items = $cartStmt->fetchAll();
-
-if (!$items) {
-    http_response_code(422);
-    die(json_encode(['error' => 'Your cart is empty.']));
-}
-foreach ($items as $it) {
-    if ($it['qty'] > $it['stock']) {
-        http_response_code(422);
-        die(json_encode(['error' => "Only {$it['stock']} left of {$it['name']}."]));
-    }
-}
-
-$subtotal    = array_sum(array_map(fn($i) => $i['price'] * $i['qty'], $items));
-$shippingFee = $subtotal >= 50 ? 0 : 4.99;
-$total       = $subtotal + $shippingFee;
-
 $pdo->beginTransaction();
 try {
+    // Lock the cart/product rows while validating and decrementing stock.
+    $cartStmt = $pdo->prepare(
+        'SELECT c.product_id, c.qty, p.name, p.price, p.stock
+         FROM cart_items c JOIN products p ON p.id = c.product_id
+         WHERE c.user_id = ? FOR UPDATE'
+    );
+    $cartStmt->execute([$user['id']]);
+    $items = $cartStmt->fetchAll();
+    if (!$items) throw new DomainException('Your cart is empty.');
+    foreach ($items as $it) {
+        if ($it['qty'] > $it['stock']) throw new DomainException("Only {$it['stock']} left of {$it['name']}.");
+    }
+
+    $subtotal    = array_sum(array_map(fn($i) => $i['price'] * $i['qty'], $items));
+    $shippingFee = $subtotal >= 50 ? 0 : 4.99;
+    $total       = $subtotal + $shippingFee;
+
     // 2. Save the delivery address
     $addressStmt = $pdo->prepare(
         'INSERT INTO addresses (user_id, full_name, line1, city, province, postal_code, phone)
@@ -84,8 +77,12 @@ try {
     $pdo->prepare('DELETE FROM cart_items WHERE user_id = ?')->execute([$user['id']]);
 
     $pdo->commit();
-} catch (Exception $e) {
-    $pdo->rollBack();
+} catch (Throwable $e) {
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    if ($e instanceof DomainException) {
+        http_response_code(422);
+        die(json_encode(['error' => $e->getMessage()]));
+    }
     http_response_code(500);
     die(json_encode(['error' => 'Could not place the order. Please try again.']));
 }
