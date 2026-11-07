@@ -251,14 +251,16 @@ CREATE TABLE IF NOT EXISTS order_status_history (
 CREATE TABLE IF NOT EXISTS product_feedback (
   id BIGSERIAL PRIMARY KEY,
   product_id BIGINT NOT NULL,
-  user_id BIGINT NOT NULL,
+  user_id BIGINT DEFAULT NULL,
+  owner_id BIGINT DEFAULT NULL,
   rating SMALLINT CHECK (rating IS NULL OR rating BETWEEN 1 AND 5),
   comment TEXT DEFAULT NULL,
   owner_reply TEXT DEFAULT NULL,
   replied_at TIMESTAMPTZ DEFAULT NULL,
   created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (owner_id) REFERENCES owners(id) ON DELETE CASCADE
 );
 
 -- Demo owner account. Change this password after installation.

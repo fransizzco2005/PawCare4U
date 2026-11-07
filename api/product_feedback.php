@@ -8,8 +8,8 @@ if ($method==='GET') {
     $productId=(int)($_GET['product_id']??0);
     if ($user && $user['role']==='owner') {
         $stmt=$productId
-          ? $pdo->prepare("SELECT f.*,u.name user_name,p.name product_name FROM product_feedback f JOIN users u ON u.id=f.user_id JOIN products p ON p.id=f.product_id WHERE f.product_id=? ORDER BY f.created_at DESC")
-          : $pdo->query("SELECT f.*,u.name user_name,p.name product_name FROM product_feedback f JOIN users u ON u.id=f.user_id JOIN products p ON p.id=f.product_id ORDER BY f.created_at DESC");
+          ? $pdo->prepare("SELECT f.*,COALESCE(u.name,o.name) user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END sender_role,p.name product_name FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id JOIN products p ON p.id=f.product_id WHERE f.product_id=? ORDER BY f.created_at DESC")
+          : $pdo->query("SELECT f.*,COALESCE(u.name,o.name) user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END sender_role,p.name product_name FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id JOIN products p ON p.id=f.product_id ORDER BY f.created_at DESC");
         if ($productId) $stmt->execute([$productId]);
         echo json_encode(['feedback'=>$stmt->fetchAll()]); exit;
     }
@@ -24,13 +24,14 @@ if (!$user) { http_response_code(401); die(json_encode(['error'=>'Please sign in
 $in=json_input();
 
 if ($method==='POST') {
-    if ($user['role']!=='user') { http_response_code(403); die(json_encode(['error'=>'Customers only.'])); }
+    if (!in_array($user['role'],['user','owner'],true)) { http_response_code(403); die(json_encode(['error'=>'Please sign in to leave product feedback.'])); }
     $productId=(int)($in['product_id']??0); $rating=filter_var($in['rating']??null,FILTER_VALIDATE_INT); $comment=trim((string)($in['comment']??''));
     $commentLength=preg_match_all('/./us',$comment);
     if(!$productId||$rating===false||$rating===null||$rating<1||$rating>5||$commentLength===false||$commentLength>1000){http_response_code(422);die(json_encode(['error'=>'A product and a 1–5 star rating are required; comments may be up to 1000 characters.']));}
     $check=$pdo->prepare('SELECT id FROM products WHERE id=?');$check->execute([$productId]);
     if(!$check->fetchColumn()){http_response_code(404);die(json_encode(['error'=>'Product not found.']));}
-    $stmt=$pdo->prepare('INSERT INTO product_feedback(product_id,user_id,rating,comment) VALUES(?,?,?,?) RETURNING id');
+    $senderColumn=$user['role']==='owner'?'owner_id':'user_id';
+    $stmt=$pdo->prepare("INSERT INTO product_feedback(product_id,$senderColumn,rating,comment) VALUES(?,?,?,?) RETURNING id");
     $stmt->execute([$productId,$user['id'],$rating,$comment!==''?$comment:null]);
     echo json_encode(['ok'=>true,'id'=>(int)$stmt->fetchColumn()]); exit;
 }

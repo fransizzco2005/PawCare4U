@@ -122,15 +122,15 @@
     fbStars.querySelectorAll('.feedback-star').forEach(star=>star.addEventListener('click',()=>setRating(Number(star.dataset.rating))));
     let feedbackUser=false;
     fetch('api/session.php',{credentials:'same-origin'}).then(r=>r.json()).then(d=>{
-      feedbackUser=!!(d.user&&d.user.role==='user');
+      feedbackUser=!!(d.user&&(d.user.role==='user'||d.user.role==='owner'));
       const isOwner=!!(d.user&&d.user.role==='owner');
-      fbNote.textContent=isOwner?'Owner view: customer feedback for this product.':feedbackUser?'Your rating and optional comment will be sent to the PawCare owner.':'Sign in to leave a rating or comment for the owner.';
+      fbNote.textContent=isOwner?'Your owner review will be visible in the dashboard.':feedbackUser?'Your rating and optional comment will be sent to the PawCare owner.':'Sign in to leave a rating or comment for the owner.';
       fbText.disabled=!feedbackUser; fbSend.disabled=!feedbackUser;
       fbStars.querySelectorAll('button').forEach(star=>star.disabled=!feedbackUser);
       if(feedbackUser||isOwner) return fetch('api/product_feedback.php?product_id='+encodeURIComponent(p.id),{credentials:'same-origin'}).then(r=>r.json()).then(x=>{x.__owner=isOwner;return x});
     }).then(d=>{
       if(!d||!d.feedback)return;
-      fbReplies.innerHTML=d.feedback.map(x=>`<div class="feedback-note feedback-entry"><b>${d.__owner?'Customer: '+escapeHtml(x.user_name||'Customer'):'Your review:'}</b><span class="feedback-entry-rating">${x.rating?`${'★'.repeat(Number(x.rating))}${'☆'.repeat(5-Number(x.rating))}`:'No rating'}</span><p>${escapeHtml(x.comment||'Rating only; no comment.')}</p>${x.owner_reply?`<p><b>Owner reply:</b> ${escapeHtml(x.owner_reply)}</p>`:''}</div>`).join('');
+      fbReplies.innerHTML=d.feedback.map(x=>`<div class="feedback-note feedback-entry"><b>${d.__owner?`${x.sender_role==='owner'?'Owner':'Customer'}: ${escapeHtml(x.user_name||'Customer')}`:'Your review:'}</b><span class="feedback-entry-rating">${x.rating?`${'★'.repeat(Number(x.rating))}${'☆'.repeat(5-Number(x.rating))}`:'No rating'}</span><p>${escapeHtml(x.comment||'Rating only; no comment.')}</p>${x.owner_reply?`<p><b>Owner reply:</b> ${escapeHtml(x.owner_reply)}</p>`:''}</div>`).join('');
     }).catch(error=>{fbNote.textContent=error.message||'Could not load product feedback.'});
     fbSend.onclick=async()=>{
       if(!feedbackUser){fbNote.textContent='Please sign in first to add a rating.';return}
@@ -147,7 +147,7 @@
         const refreshed=await fetch(`api/product_feedback.php?product_id=${encodeURIComponent(p.id)}&v=${Date.now()}`,{credentials:'same-origin',cache:'no-store',headers:{'Accept':'application/json'}});
         const refreshedData=await refreshed.json();
         if(!refreshed.ok)throw new Error(refreshedData.error||'Could not reload product feedback.');
-        if(refreshedData.feedback) fbReplies.innerHTML=refreshedData.feedback.map(x=>`<div class="feedback-note feedback-entry"><b>Your review:</b><span class="feedback-entry-rating">${x.rating?`${'★'.repeat(Number(x.rating))}${'☆'.repeat(5-Number(x.rating))}`:'No rating'}</span><p>${escapeHtml(x.comment||'Rating only; no comment.')}</p>${x.owner_reply?`<p><b>Owner reply:</b> ${escapeHtml(x.owner_reply)}</p>`:''}</div>`).join('');
+        if(refreshedData.feedback) fbReplies.innerHTML=refreshedData.feedback.map(x=>`<div class="feedback-note feedback-entry"><b>${d.__owner?`${x.sender_role==='owner'?'Owner':'Customer'}: ${escapeHtml(x.user_name||'Customer')}`:'Your review:'}</b><span class="feedback-entry-rating">${x.rating?`${'★'.repeat(Number(x.rating))}${'☆'.repeat(5-Number(x.rating))}`:'No rating'}</span><p>${escapeHtml(x.comment||'Rating only; no comment.')}</p>${x.owner_reply?`<p><b>Owner reply:</b> ${escapeHtml(x.owner_reply)}</p>`:''}</div>`).join('');
         selectedRating=0;
         fbStars.querySelectorAll('.feedback-star').forEach(star=>{star.classList.remove('is-selected');star.setAttribute('aria-checked','false')});
         fbRatingLabel.textContent='Select 1 to 5 stars';

@@ -18,8 +18,9 @@
 2. Copy `.env.example` to `.env` and set `SUPABASE_DB_PASSWORD` to the Supabase database password.
 3. Apply `supabase/migrations/20261107090000_init_pawcare.sql` in the Supabase SQL Editor.
 4. Apply `supabase/migrations/20261107150000_product_feedback_ratings.sql` to add five-star product ratings and allow rating-only feedback.
-5. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
-6. The application keeps the existing PHP sessions, login, cart, orders, appointments, feedback, and owner features; all data is stored in Supabase PostgreSQL.
+5. Apply `supabase/migrations/20261107200000_product_feedback_owner_sender.sql` to support owner-authored product feedback.
+6. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
+7. The application keeps the existing PHP sessions, login, cart, orders, appointments, feedback, and owner features; all data is stored in Supabase PostgreSQL.
 
 ## PHP hosting requirement
 PawCare must run on a host that executes PHP and POST requests. A static-only host will return HTTP 405 because login, registration, cart, checkout, and owner APIs use PHP endpoints.
@@ -48,6 +49,7 @@ PawCare must run on a host that executes PHP and POST requests. A static-only ho
 ## New owner / order / feedback features
 
 Apply the Supabase initialization migration. It includes owner accounts, order tracking, feedback, profiles, and order messages.
+Apply the later product-feedback migrations as well when setting up a new or existing database.
 
 Demo owner login:
 - Email: `owner@pawcare.ph`

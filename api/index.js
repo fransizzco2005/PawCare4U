@@ -430,25 +430,27 @@ module.exports = async function handler(req, res) {
         const productId = Number(url.searchParams.get('product_id') || 0);
         if (session?.role === 'owner') {
           const result = productId
-            ? await pool.query('SELECT f.*,u.name AS user_name,p.name AS product_name FROM product_feedback f JOIN users u ON u.id=f.user_id JOIN products p ON p.id=f.product_id WHERE f.product_id=$1 ORDER BY f.created_at DESC', [productId])
-            : await pool.query('SELECT f.*,u.name AS user_name,p.name AS product_name FROM product_feedback f JOIN users u ON u.id=f.user_id JOIN products p ON p.id=f.product_id ORDER BY f.created_at DESC');
+            ? await pool.query("SELECT f.*,COALESCE(u.name,o.name) AS user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END AS sender_role,p.name AS product_name FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id JOIN products p ON p.id=f.product_id WHERE f.product_id=$1 ORDER BY f.created_at DESC", [productId])
+            : await pool.query("SELECT f.*,COALESCE(u.name,o.name) AS user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END AS sender_role,p.name AS product_name FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id JOIN products p ON p.id=f.product_id ORDER BY f.created_at DESC");
           return json(res, 200, { feedback: result.rows, role: 'owner' });
         }
         if (!productId) return json(res, 422, { error: 'product_id is required.' });
         const result = session?.role === 'user'
-          ? await pool.query('SELECT f.id,f.comment,f.owner_reply,f.created_at,f.replied_at,u.name AS user_name FROM product_feedback f JOIN users u ON u.id=f.user_id WHERE f.product_id=$1 AND f.user_id=$2 ORDER BY f.created_at DESC', [productId, session.id])
-          : await pool.query('SELECT f.id,f.comment,f.owner_reply,f.created_at,f.replied_at,u.name AS user_name FROM product_feedback f JOIN users u ON u.id=f.user_id WHERE f.product_id=$1 ORDER BY f.created_at DESC', [productId]);
+          ? await pool.query("SELECT f.id,f.rating,f.comment,f.owner_reply,f.created_at,f.replied_at,COALESCE(u.name,o.name) AS user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END AS sender_role FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id WHERE f.product_id=$1 AND f.user_id=$2 ORDER BY f.created_at DESC", [productId, session.id])
+          : await pool.query("SELECT f.id,f.rating,f.comment,f.owner_reply,f.created_at,f.replied_at,COALESCE(u.name,o.name) AS user_name,CASE WHEN f.owner_id IS NOT NULL THEN 'owner' ELSE 'user' END AS sender_role FROM product_feedback f LEFT JOIN users u ON u.id=f.user_id LEFT JOIN owners o ON o.id=f.owner_id WHERE f.product_id=$1 ORDER BY f.created_at DESC", [productId]);
         return json(res, 200, { feedback: result.rows, role: session?.role || 'guest' });
       }
       if (req.method === 'POST') {
-        if (!session || session.role !== 'user') return json(res, 403, { error: 'Customers only.' });
+        if (!session || !['user', 'owner'].includes(session.role)) return json(res, 403, { error: 'Please sign in to leave product feedback.' });
         const input = await body(req);
         const productId = Number(input.product_id || 0);
         const comment = String(input.comment || '').trim();
-        if (!productId || !comment) return json(res, 422, { error: 'Product and comment are required.' });
+        const rating = Number(input.rating);
+        if (!productId || !Number.isInteger(rating) || rating < 1 || rating > 5 || Array.from(comment).length > 1000) return json(res, 422, { error: 'A product and a 1–5 star rating are required; comments may be up to 1000 characters.' });
         const product = await pool.query('SELECT id FROM products WHERE id=$1', [productId]);
         if (!product.rows[0]) return json(res, 404, { error: 'Product not found.' });
-        const created = await pool.query('INSERT INTO product_feedback(product_id,user_id,comment) VALUES($1,$2,$3) RETURNING id', [productId, session.id, comment]);
+        const senderColumn = session.role === 'owner' ? 'owner_id' : 'user_id';
+        const created = await pool.query(`INSERT INTO product_feedback(product_id,${senderColumn},rating,comment) VALUES($1,$2,$3,$4) RETURNING id`, [productId, session.id, rating, comment || null]);
         return json(res, 200, { ok: true, id: created.rows[0].id });
       }
       if (req.method === 'PUT') {

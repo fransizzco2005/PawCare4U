@@ -253,14 +253,16 @@ CREATE TABLE IF NOT EXISTS order_status_history (
 CREATE TABLE IF NOT EXISTS product_feedback (
   id INT AUTO_INCREMENT PRIMARY KEY,
   product_id INT NOT NULL,
-  user_id INT NOT NULL,
+  user_id INT DEFAULT NULL,
+  owner_id INT DEFAULT NULL,
   rating TINYINT UNSIGNED DEFAULT NULL CHECK (rating IS NULL OR rating BETWEEN 1 AND 5),
   comment TEXT DEFAULT NULL,
   owner_reply TEXT DEFAULT NULL,
   replied_at DATETIME DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (owner_id) REFERENCES owners(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Demo owner account. Change this password after installation.

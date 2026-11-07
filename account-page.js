@@ -49,8 +49,9 @@ async function loadFeedback(){
   const arr=d.feedback||[];
   if(!arr.length){box.innerHTML='<div class="account-loading">No customer feedback yet.</div>';return;}
   box.innerHTML=arr.map(f=>`<article class="owner-feedback-card">
-   <div class="meta"><b>${esc(f.product_name||'Product')}</b><span>by ${esc(f.user_name||'Customer')}</span><span>${esc(new Date(f.created_at).toLocaleString())}</span></div>
-   <p>${esc(f.comment)}</p>
+   <div class="meta"><b>${esc(f.product_name||'Product')}</b><span>by ${esc(f.sender_role==='owner'?'Owner':'Customer')} ${esc(f.user_name||'')}</span><span>${esc(new Date(f.created_at).toLocaleString())}</span></div>
+   <div class="feedback-entry-rating">${Number(f.rating)?`${'★'.repeat(Math.min(5,Number(f.rating)))}${'☆'.repeat(5-Math.min(5,Number(f.rating)))}`:'No rating'}</div>
+   <p>${esc(f.comment||'Rating only; no comment.')}</p>
    ${f.owner_reply?`<div class="owner-replied"><b>Owner reply:</b> ${esc(f.owner_reply)}</div>`:`<textarea data-feedback-reply="${f.id}" placeholder="Write a reply to this customer..."></textarea><button type="button" data-send-feedback="${f.id}">Reply</button>`}
   </article>`).join('');
   box.querySelectorAll('[data-send-feedback]').forEach(btn=>btn.onclick=async()=>{

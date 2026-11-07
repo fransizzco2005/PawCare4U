@@ -1,0 +1,5 @@
+ALTER TABLE product_feedback
+  ADD COLUMN IF NOT EXISTS owner_id BIGINT REFERENCES owners(id) ON DELETE CASCADE;
+
+ALTER TABLE product_feedback
+  ALTER COLUMN user_id DROP NOT NULL;

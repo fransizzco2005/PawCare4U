@@ -80,6 +80,16 @@ body.page-home,body.home-page{background:#050b16!important;background-image:radi
 .footer-logo-mark svg,
 .account-brand-mark svg{display:none!important}
 .paw-logo-mark,.account-brand-mark{font-size:0!important}
+body.home-page .page-loader-mark{
+  animation:pcLoaderLogoAlign 1.7s ease-in-out infinite!important;
+}
+@keyframes pcLoaderLogoAlign{
+  0%,100%{transform:translateY(13px) scale(1)}
+  50%{transform:translateY(13px) scale(1.07)}
+}
+@media(min-width:761px){
+  body.home-page .search-wrap{width:220px!important;flex:0 0 220px!important}
+}
 
 /* Catalog presentation: bright reading contrast, compact cards, and a premium
    animal showcase that stays distinct on every species page. */
@@ -222,17 +232,19 @@ body.page-home,body.home-page{background:#050b16!important;background-image:radi
 
 .product-modal{z-index:10050!important;padding:18px!important;backdrop-filter:blur(10px)}
 .product-modal__dialog{
-  width:min(980px,calc(100vw - 36px))!important;
-  max-height:min(760px,calc(100vh - 36px))!important;
-  grid-template-columns:minmax(300px,42%) minmax(0,58%)!important;
+  width:min(1120px,calc(100vw - 48px))!important;
+  height:min(760px,calc(100vh - 48px))!important;
+  max-height:calc(100vh - 48px)!important;
+  grid-template-columns:minmax(0,54%) minmax(0,46%)!important;
+  grid-template-rows:minmax(0,1fr)!important;
   border-radius:18px!important;
   overflow:hidden!important;
   background:#fff!important;
   box-shadow:0 30px 100px rgba(0,18,48,.42)!important;
 }
-.product-modal__media{min-height:520px!important;padding:24px!important;background:radial-gradient(circle,#eef8ff,#e9f2fa)!important}
-.product-modal__media img{max-height:470px!important;object-fit:contain!important;border-radius:12px}
-.product-modal__body{padding:26px 30px!important;color:#17253a!important;overflow:auto}
+.product-modal__media{min-width:0!important;min-height:0!important;height:100%!important;padding:48px 40px 74px!important;background:radial-gradient(circle,#f7fbff,#e9f2fa)!important}
+.product-modal__media img{width:100%!important;height:100%!important;max-height:none!important;object-fit:contain!important;border-radius:18px}
+.product-modal__body{min-width:0!important;min-height:0!important;height:100%!important;max-height:100%!important;padding:36px 32px 28px!important;color:#17253a!important;overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;scrollbar-gutter:stable}
 .product-modal__body h2{color:#11233a!important;margin-top:5px!important;line-height:1.2!important}
 .product-modal__body p{color:#5a6980!important;line-height:1.65!important}
 .product-modal__body .modal-product-category{color:#177bcf!important;font-weight:800!important}
@@ -633,15 +645,21 @@ body.page-dog .product-thumb img,body.page-cat .product-thumb img,body.page-bird
   body.page-dog .filters-grid,body.page-cat .filters-grid,body.page-bird .filters-grid,body.page-fish .filters-grid,body.page-rodent .filters-grid,body.page-small-pets .filters-grid{grid-template-columns:1fr!important}
   body.page-dog .sidebar-filters,body.page-cat .sidebar-filters,body.page-bird .sidebar-filters,body.page-fish .sidebar-filters,body.page-rodent .sidebar-filters,body.page-small-pets .sidebar-filters{min-height:auto!important}
   .products-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .product-modal__dialog{grid-template-columns:1fr!important}
-  .product-modal__media{min-height:330px!important;padding:48px 28px 74px!important}
-  .product-modal__media img{height:280px!important}
+  .product-modal__dialog{grid-template-columns:1fr!important;grid-template-rows:minmax(240px,40%) minmax(0,1fr)!important;height:min(820px,calc(100vh - 28px))!important;max-height:calc(100vh - 28px)!important}
+  .product-modal__media{min-height:0!important;height:auto!important;padding:36px 28px 64px!important}
+  .product-modal__media img{height:100%!important;max-height:none!important}
+  .product-modal__body{height:auto!important;max-height:none!important;padding:24px!important}
   body.page-dog .hero,body.page-cat .hero,body.page-bird .hero,body.page-fish .hero,body.page-rodent .hero,body.page-small-pets .hero{
     height:auto!important;
     min-height:210px!important;
     padding:26px 20px!important;
     grid-template-columns:1fr!important;
     grid-template-rows:auto auto auto!important;
+  }
+  body.page-rodent .hero{
+    width:min(1200px,calc(100% - 48px))!important;
+    margin:0 auto 30px!important;
+    box-sizing:border-box!important;
   }
   body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-fish .hero h1,body.page-rodent .hero h1,body.page-small-pets .hero h1{grid-column:1!important;grid-row:1!important;align-self:start!important;margin:0 0 10px!important;font-size:26px!important}
   body.page-dog .hero p,body.page-cat .hero p,body.page-bird .hero p,body.page-fish .hero p,body.page-rodent .hero p,body.page-small-pets .hero p{grid-column:1!important;grid-row:2!important;max-width:none!important}
@@ -1320,6 +1338,7 @@ body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-
   margin:0 0 4px!important;
   line-height:1.12!important;
 }
+body.page-rodent .hero h1{max-width:420px!important}
 body.page-dog .hero p,body.page-cat .hero p,body.page-bird .hero p,body.page-fish .hero p,body.page-rodent .hero p,body.page-small-pets .hero p{
   grid-column:1!important;
   grid-row:2!important;
@@ -1360,6 +1379,18 @@ body.page-dog .catalog-hero-visual,body.page-cat .catalog-hero-visual,body.page-
 .product-modal #modalCheckout{background:#fff!important;color:#163557!important;border:1px solid #bfd4e8!important}
 .product-modal #modalCheckout:hover{background:#edf5fc!important}
 .cart-drawer #checkoutBtn{color:#fff!important}
+.product-modal__body .product-modal-category{margin-bottom:7px!important}
+.product-modal__body h2{font-size:clamp(25px,2.4vw,36px)!important;margin-bottom:8px!important}
+.product-modal__body #modalProductRating{margin:0 0 10px!important;color:#d99a18!important}
+.product-modal__body #modalProductDescription{margin:8px 0 12px!important;font-size:13px!important}
+.product-modal__body .product-price{margin:4px 0 12px!important}
+.product-modal__body .modal-qty{margin-bottom:12px!important}
+.product-modal__body .modal-actions .btn{min-height:46px!important}
+.product-feedback-box{margin-top:16px!important;padding:16px!important;border-radius:14px!important}
+.product-feedback-box h3{margin:0 0 8px!important}
+.product-feedback-box .feedback-note{margin:0 0 10px!important}
+.product-feedback-box .feedback-send{margin-top:10px}
+.product-feedback-box textarea:disabled{opacity:.68;cursor:not-allowed}
 .inner-cart-error{margin:0 20px 14px;color:#b42318;font-size:13px}
 .inner-cart-item{align-items:flex-start!important}
 .inner-cart-item__details{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px;color:#17283d}
@@ -1378,6 +1409,7 @@ body.page-dog .catalog-hero-visual,body.page-cat .catalog-hero-visual,body.page-
     gap:10px!important;
     padding:24px 20px!important;
   }
+  body.page-rodent .hero{width:calc(100% - 28px)!important;margin:0 auto 24px!important}
   body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-fish .hero h1,body.page-rodent .hero h1,body.page-small-pets .hero h1{
     grid-column:1!important;grid-row:1!important;margin:0!important;text-align:left!important;font-size:26px!important;
   }
@@ -1392,5 +1424,67 @@ body.page-dog .catalog-hero-visual,body.page-cat .catalog-hero-visual,body.page-
 }
 @media(prefers-reduced-motion:reduce){
   .topbar:before{animation:none}
+  body.home-page .page-loader-mark{animation:none!important;transform:translateY(13px)}
   body.home-page .business-cta:after{display:none}
+}
+
+body.page-rodent .hero{
+  width:min(1200px,calc(100% - 48px))!important;
+  margin:0 auto 30px!important;
+  box-sizing:border-box!important;
+}
+body.page-rodent .hero h1{max-width:420px!important}
+
+.product-modal__dialog{
+  width:min(1120px,calc(100vw - 48px))!important;
+  height:min(760px,calc(100vh - 48px))!important;
+  max-height:calc(100vh - 48px)!important;
+  grid-template-columns:minmax(0,54%) minmax(0,46%)!important;
+  grid-template-rows:minmax(0,1fr)!important;
+  overflow:hidden!important;
+}
+.product-modal__media{
+  min-width:0!important;
+  min-height:0!important;
+  height:100%!important;
+  padding:48px 40px 74px!important;
+}
+.product-modal__media img{width:100%!important;height:100%!important;max-height:none!important;object-fit:contain!important}
+.product-modal__body{
+  min-width:0!important;
+  min-height:0!important;
+  height:100%!important;
+  max-height:100%!important;
+  padding:36px 32px 28px!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+.product-modal__body h2{font-size:clamp(25px,2.4vw,36px)!important;margin:5px 0 8px!important}
+.product-modal__body #modalProductRating{margin:0 0 10px!important}
+.product-modal__body #modalProductDescription{margin:8px 0 12px!important;font-size:13px!important}
+.product-modal__body .product-price{margin:4px 0 12px!important}
+.product-modal__body .modal-qty{margin-bottom:12px!important}
+.product-feedback-box{margin-top:16px!important;padding:16px!important;border-radius:14px!important}
+.product-feedback-box textarea{min-height:88px!important;resize:vertical!important}
+
+@media(max-width:1050px){
+  .product-modal__dialog{grid-template-columns:minmax(0,52%) minmax(0,48%)!important}
+  .product-modal__media{padding:42px 28px 68px!important}
+  .product-modal__body{padding:30px 24px 24px!important}
+}
+@media(max-width:760px){
+  body.page-rodent .hero{width:calc(100% - 28px)!important;margin:0 auto 24px!important}
+  .product-modal__dialog{
+    width:calc(100vw - 20px)!important;
+    height:calc(100vh - 20px)!important;
+    max-height:calc(100vh - 20px)!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:minmax(190px,34%) minmax(0,1fr)!important;
+  }
+  .product-modal__media{height:auto!important;min-height:0!important;padding:28px 20px 58px!important}
+  .product-modal__media img{height:100%!important;max-height:none!important}
+  .product-modal__body{height:auto!important;max-height:none!important;padding:22px!important}
+  .product-modal__body h2{font-size:26px!important}
 }
