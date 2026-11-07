@@ -24,9 +24,9 @@ if ($stmt->fetch()) {
 }
 
 $hash = password_hash($pass, PASSWORD_DEFAULT);
-$stmt = $pdo->prepare('INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)');
+$stmt = $pdo->prepare('INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?) RETURNING id');
 $stmt->execute([$name, $email, $hash]);
-$userId = (int)$pdo->lastInsertId();
+$userId = (int)$stmt->fetchColumn();
 
 // Log the new user straight in
 $_SESSION['user_id'] = $userId;

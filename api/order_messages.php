@@ -22,7 +22,7 @@ if ($method==='POST') {
   if(!$orderId||$message===''){http_response_code(422);die(json_encode(['error'=>'Order and message are required.']));}
   if(mb_strlen($message)>1000){http_response_code(422);die(json_encode(['error'=>'Message is too long.']));}
   $check=$pdo->prepare('SELECT id FROM orders WHERE id=?');$check->execute([$orderId]); if(!$check->fetchColumn()){http_response_code(404);die(json_encode(['error'=>'Order not found.']));}
-  $q=$pdo->prepare('INSERT INTO order_messages(order_id,owner_id,message) VALUES(?,?,?)');$q->execute([$orderId,$owner['id'],$message]);
-  echo json_encode(['ok'=>true,'id'=>(int)$pdo->lastInsertId()]); exit;
+  $q=$pdo->prepare('INSERT INTO order_messages(order_id,owner_id,message) VALUES(?,?,?) RETURNING id');$q->execute([$orderId,$owner['id'],$message]);
+  echo json_encode(['ok'=>true,'id'=>(int)$q->fetchColumn()]); exit;
 }
 http_response_code(405); echo json_encode(['error'=>'Method not allowed.']);

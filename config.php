@@ -5,11 +5,33 @@
  * NEVER commit real secret keys to a public repo.
  */
 
-// --- Database ---
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'pawcare');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+// --- Database (Supabase PostgreSQL) ---
+// Local credentials are loaded from .env. Keep the real .env out of Git.
+$envFile = __DIR__ . '/.env';
+if (is_readable($envFile)) {
+    foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $envLine) {
+        $envLine = trim($envLine);
+        if ($envLine === '' || str_starts_with($envLine, '#') || !str_contains($envLine, '=')) {
+            continue;
+        }
+        [$envName, $envValue] = explode('=', $envLine, 2);
+        $envName = trim($envName);
+        $envValue = trim($envValue);
+        if (strlen($envValue) >= 2 && (($envValue[0] === '"' && str_ends_with($envValue, '"')) || ($envValue[0] === "'" && str_ends_with($envValue, "'")))) {
+            $envValue = substr($envValue, 1, -1);
+        }
+        if (getenv($envName) === false) {
+            putenv($envName . '=' . $envValue);
+        }
+    }
+}
+
+define('DB_HOST', getenv('SUPABASE_DB_HOST') ?: 'aws-0-ap-southeast-1.pooler.supabase.com');
+define('DB_PORT', getenv('SUPABASE_DB_PORT') ?: '5432');
+define('DB_NAME', getenv('SUPABASE_DB_NAME') ?: 'postgres');
+define('DB_USER', getenv('SUPABASE_DB_USER') ?: 'postgres.nbickxvumjpvqvmiiznj');
+define('DB_PASS', getenv('SUPABASE_DB_PASSWORD') ?: '');
+define('SUPABASE_URL', getenv('SUPABASE_URL') ?: 'https://nbickxvumjpvqvmiiznj.supabase.co');
 
 // --- PayMongo (Philippines: cards, GCash, Maya) ---
 // Get these from https://dashboard.paymongo.com/developers  (start in TEST mode)

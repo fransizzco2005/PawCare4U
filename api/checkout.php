@@ -50,22 +50,24 @@ $total       = $subtotal + $shippingFee;
 $pdo->beginTransaction();
 try {
     // 2. Save the delivery address
-    $pdo->prepare(
+    $addressStmt = $pdo->prepare(
         'INSERT INTO addresses (user_id, full_name, line1, city, province, postal_code, phone)
-         VALUES (?, ?, ?, ?, ?, ?, ?)'
-    )->execute([$user['id'], $fullName, $line1, $city, $province, $postal, $phone]);
-    $addressId = (int)$pdo->lastInsertId();
+         VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id'
+    );
+    $addressStmt->execute([$user['id'], $fullName, $line1, $city, $province, $postal, $phone]);
+    $addressId = (int)$addressStmt->fetchColumn();
 
     // 3. Create the order
-    $pdo->prepare(
+    $orderStmt = $pdo->prepare(
         'INSERT INTO orders (user_id, address_id, subtotal, shipping_fee, total, payment_method, payment_status, order_status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-    )->execute([
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id'
+    );
+    $orderStmt->execute([
         $user['id'], $addressId, $subtotal, $shippingFee, $total, $method,
         $method === 'cod' ? 'pending' : 'pending',
         'placed',
     ]);
-    $orderId = (int)$pdo->lastInsertId();
+    $orderId = (int)$orderStmt->fetchColumn();
     $pdo->prepare('INSERT INTO order_status_history (order_id,status,note) VALUES (?, ?, ?)')->execute([$orderId, 'placed', 'Order placed']);
 
     // 4. Snapshot the line items + decrement stock

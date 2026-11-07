@@ -29,9 +29,9 @@ if ($method==='POST') {
     if(!$productId||$comment===''){http_response_code(422);die(json_encode(['error'=>'Product and comment are required.']));}
     $check=$pdo->prepare('SELECT id FROM products WHERE id=?');$check->execute([$productId]);
     if(!$check->fetchColumn()){http_response_code(404);die(json_encode(['error'=>'Product not found.']));}
-    $stmt=$pdo->prepare('INSERT INTO product_feedback(product_id,user_id,comment) VALUES(?,?,?)');
+    $stmt=$pdo->prepare('INSERT INTO product_feedback(product_id,user_id,comment) VALUES(?,?,?) RETURNING id');
     $stmt->execute([$productId,$user['id'],$comment]);
-    echo json_encode(['ok'=>true,'id'=>(int)$pdo->lastInsertId()]); exit;
+    echo json_encode(['ok'=>true,'id'=>(int)$stmt->fetchColumn()]); exit;
 }
 
 if ($method==='PUT') {

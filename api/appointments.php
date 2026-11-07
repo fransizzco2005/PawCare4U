@@ -10,10 +10,10 @@ try {
             exit;
         }
         if ($user['role'] === 'owner') {
-            $stmt = $pdo->query('SELECT a.id, CONCAT("PC-", LPAD(a.id, 6, "0")) AS reference, s.name AS service_name, a.branch, a.appointment_date, a.appointment_time, a.customer_name, a.email, a.phone, a.pet_name, a.pet_type, a.pet_age, a.notes, a.status, a.created_at FROM appointments a JOIN services s ON s.id = a.service_id ORDER BY a.appointment_date ASC, a.appointment_time ASC, a.id DESC');
+            $stmt = $pdo->query("SELECT a.id, CONCAT('PC-', LPAD(a.id::text, 6, '0')) AS reference, s.name AS service_name, a.branch, a.appointment_date, a.appointment_time, a.customer_name, a.email, a.phone, a.pet_name, a.pet_type, a.pet_age, a.notes, a.status, a.created_at FROM appointments a JOIN services s ON s.id = a.service_id ORDER BY a.appointment_date ASC, a.appointment_time ASC, a.id DESC");
             echo json_encode(['appointments' => $stmt->fetchAll(), 'role' => 'owner']);
         } else {
-            $stmt = $pdo->prepare('SELECT a.id, CONCAT("PC-", LPAD(a.id, 6, "0")) AS reference, s.name AS service_name, a.branch, a.appointment_date, a.appointment_time, a.customer_name, a.email, a.phone, a.pet_name, a.pet_type, a.pet_age, a.notes, a.status, a.created_at FROM appointments a JOIN services s ON s.id = a.service_id WHERE a.user_id = ? ORDER BY a.appointment_date ASC, a.appointment_time ASC, a.id DESC');
+            $stmt = $pdo->prepare("SELECT a.id, CONCAT('PC-', LPAD(a.id::text, 6, '0')) AS reference, s.name AS service_name, a.branch, a.appointment_date, a.appointment_time, a.customer_name, a.email, a.phone, a.pet_name, a.pet_type, a.pet_age, a.notes, a.status, a.created_at FROM appointments a JOIN services s ON s.id = a.service_id WHERE a.user_id = ? ORDER BY a.appointment_date ASC, a.appointment_time ASC, a.id DESC");
             $stmt->execute([$user['id']]);
             echo json_encode(['appointments' => $stmt->fetchAll(), 'role' => 'user']);
         }
@@ -102,9 +102,9 @@ try {
 
     $user = current_user();
     $userId = $user['id'] ?? null;
-    $stmt = $pdo->prepare('INSERT INTO appointments (user_id, service_id, branch, appointment_date, appointment_time, customer_name, email, phone, pet_name, pet_type, pet_age, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "pending")');
+    $stmt = $pdo->prepare('INSERT INTO appointments (user_id, service_id, branch, appointment_date, appointment_time, customer_name, email, phone, pet_name, pet_type, pet_age, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \'pending\') RETURNING id');
     $stmt->execute([$userId, $serviceId, $branch, $date, $time, $name, $email, $phone, $petName, $petType, $petAge ?: null, $notes ?: null]);
-    $id = (int)$pdo->lastInsertId();
+    $id = (int)$stmt->fetchColumn();
 
     echo json_encode([
         'success' => true,
@@ -119,7 +119,7 @@ try {
         ]
     ]);
 } catch (PDOException $e) {
-    if ((int)$e->errorInfo[1] === 1062) {
+    if (($e->errorInfo[0] ?? '') === '23505') {
         http_response_code(409);
         echo json_encode(['error' => 'That appointment slot was just taken. Please choose another time.']);
         exit;
