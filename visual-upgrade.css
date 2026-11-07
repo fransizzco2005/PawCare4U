@@ -1136,10 +1136,16 @@ body.home-page .business-cta{
   padding:42px!important;
 }
 body.home-page .business-cta a{width:min(290px,100%)!important;text-align:center!important}
+body.home-page .business-cta .btn-secondary{
+  background:linear-gradient(135deg,#1680ff,#0d58cf)!important;
+  border-color:#248cff!important;
+  color:#fff!important;
+  box-shadow:0 9px 24px rgba(13,88,207,.24)!important;
+}
 
 /* Keep homepage section labels readable on the light and dark surfaces. */
 body.home-page .section-eyebrow{
-  color:#4d86c4!important;
+  color:#fff!important;
   text-shadow:none!important;
 }
 body.home-page .section-head h2,
