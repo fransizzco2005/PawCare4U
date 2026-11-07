@@ -48,9 +48,13 @@ function verify(value) {
 
 async function body(req) {
   let text = '';
-  if (req.body && typeof req.body === 'object') return req.body;
-  if (typeof req.body === 'string') text = req.body;
-  else for await (const chunk of req) text += chunk;
+  try {
+    if (req.body && typeof req.body === 'object') return req.body;
+    if (typeof req.body === 'string') text = req.body;
+  } catch (_) {
+    // Vercel's Node adapter may expose req.body as a throwing getter.
+  }
+  if (!text) for await (const chunk of req) text += chunk;
   const contentType = String(req.headers['content-type'] || '');
   if (contentType.includes('application/json')) return text ? JSON.parse(text) : {};
   if (contentType.includes('multipart/form-data')) {
