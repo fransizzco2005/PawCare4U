@@ -470,9 +470,9 @@ body.page-dog .hero,body.page-cat .hero,body.page-bird .hero,body.page-fish .her
 body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-fish .hero h1,body.page-rodent .hero h1,body.page-small-pets .hero h1{
   grid-column:1!important;
   grid-row:1!important;
-  align-self:end!important;
+  align-self:start!important;
   max-width:520px!important;
-  margin:0 0 42px!important;
+  margin:0!important;
   font-size:clamp(28px,2.5vw,38px)!important;
   line-height:1.08!important;
   color:#f7fbff!important;
@@ -994,6 +994,50 @@ body.home-page #shopView > section:not(.hero).pc-reveal-ready.pc-is-visible{
 }
 body.home-page #shopView > section:not(.hero):nth-of-type(even){
   transition-delay:.06s;
+}
+
+/* Services reveal consistently on both scroll directions */
+body.page-services .pc-service-reveal{
+  opacity:0;
+  transform:translateY(58px) scale(.975);
+  filter:blur(5px);
+  transition:
+    opacity .72s cubic-bezier(.2,.75,.25,1) var(--pc-service-delay,0s),
+    transform .72s cubic-bezier(.2,.75,.25,1) var(--pc-service-delay,0s),
+    filter .72s cubic-bezier(.2,.75,.25,1) var(--pc-service-delay,0s),
+    box-shadow .32s ease;
+  will-change:transform,opacity,filter;
+}
+body.page-services .pc-service-reveal.pc-service-visible{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  filter:none;
+}
+
+/* Removed homepage section labels leave clean, balanced content grids. */
+body.home-page .shop-by-needs>.section-head,
+body.home-page .life-stage-section>.section-head,
+body.home-page .services-section>.section-head{display:none!important}
+body.home-page .shop-by-needs,
+body.home-page .life-stage-section,
+body.home-page .services-section{padding-top:28px!important}
+body.home-page .business-cta{
+  justify-content:center!important;
+  text-align:center!important;
+  min-height:180px!important;
+}
+body.home-page .business-cta .btn-primary{margin:0 auto!important}
+body.home-page .promo-strip{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  justify-items:center!important;
+}
+body.home-page .promo-strip>.promo-card{
+  width:100%!important;
+  max-width:520px!important;
+  text-align:center!important;
+  align-items:center!important;
+  justify-content:center!important;
 }
 /* Persistent 3D depth for homepage content boxes */
 body.home-page #shopView .feature-card,

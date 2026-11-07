@@ -82,6 +82,23 @@
     });
   }
 
+  if (document.body.classList.contains('page-services')) {
+    const serviceTargets=[...document.querySelectorAll(
+      '.services-modern > section,.service-feature-card,.service-type-card,.service-appointment-card,.service-faq-item'
+    )];
+    serviceTargets.forEach((target,index)=>{
+      target.classList.add('pc-service-reveal');
+      target.style.setProperty('--pc-service-delay',`${Math.min(index%4*.07,.21)}s`);
+    });
+    const serviceObserver=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting) entry.target.classList.add('pc-service-visible');
+        else entry.target.classList.remove('pc-service-visible');
+      });
+    },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+    serviceTargets.forEach(target=>serviceObserver.observe(target));
+  }
+
   if (document.body.classList.contains('home-page') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const shop=document.getElementById('shopView');
     const hero=shop?.querySelector('.hero');

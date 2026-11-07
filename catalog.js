@@ -6,7 +6,7 @@
       'page-dog':{label:'DOGS',src:'https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=900&q=85'},
       'page-cat':{label:'CATS',src:'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=900&q=85'},
       'page-bird':{label:'BIRDS',src:'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=900&q=85'},
-      'page-fish':{label:'FISH',src:'https://images.unsplash.com/photo-1522069169874-c58ec4b4bb49?auto=format&fit=crop&w=900&q=85'},
+      'page-fish':{label:'FISH',src:'https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&w=900&q=88'},
       'page-rodent':{label:'SMALL PETS',src:'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?auto=format&fit=crop&w=900&q=85'}
     };
     const animal=Object.keys(animalMap).find(name=>document.body.classList.contains(name));
