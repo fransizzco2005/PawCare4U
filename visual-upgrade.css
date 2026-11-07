@@ -72,7 +72,7 @@ body.page-home,body.home-page{background:#050b16!important;background-image:radi
   overflow:hidden!important;
   border-radius:50%!important;
   border:1px solid rgba(124,204,255,.28)!important;
-  background:#fff url('pawcare-logo.png') center/contain no-repeat!important;
+  background:transparent url('pawcare-logo-removebg.png') center/86% no-repeat!important;
   box-shadow:0 8px 22px rgba(30,113,180,.22)!important;
 }
 .logo-mark svg,
@@ -995,12 +995,6 @@ body.home-page #shopView > section:not(.hero).pc-reveal-ready.pc-is-visible{
 body.home-page #shopView > section:not(.hero):nth-of-type(even){
   transition-delay:.06s;
 }
-body.home-page #shopView > section:not(.hero).pc-seen{
-  opacity:1!important;
-  clip-path:inset(0 0 0 0)!important;
-  filter:none!important;
-}
-
 /* Persistent 3D depth for homepage content boxes */
 body.home-page #shopView .feature-card,
 body.home-page #shopView .need-card,

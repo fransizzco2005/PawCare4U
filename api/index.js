@@ -107,10 +107,10 @@ module.exports = async function handler(req, res) {
     if (pathname === 'session') {
       if (!session) return json(res, 200, { user: null });
       if (session.role === 'owner') {
-        const result = await pool.query('SELECT id, name, email FROM owners WHERE id = $1', [session.id]);
+        const result = await pool.query('SELECT id, name, email, avatar_url FROM owners WHERE id = $1', [session.id]);
         return json(res, 200, { user: result.rows[0] ? { ...result.rows[0], role: 'owner' } : null });
       }
-      const result = await pool.query('SELECT id, name, email, phone FROM users WHERE id = $1', [session.id]);
+      const result = await pool.query('SELECT id, name, email, phone, avatar_url FROM users WHERE id = $1', [session.id]);
       return json(res, 200, { user: result.rows[0] ? { ...result.rows[0], role: 'user' } : null });
     }
     if (pathname === 'profile') {
@@ -127,13 +127,17 @@ module.exports = async function handler(req, res) {
         if (session.role === 'owner') {
           const name = String(input.name || '').trim() || session.name;
           const nickname = String(input.nickname || '').trim();
-          await pool.query('UPDATE owners SET name=$1, profile_name=$2 WHERE id=$3', [name, nickname, session.id]);
+          const avatarData = String(input.avatar_data || '').trim();
+          if (avatarData) await pool.query('UPDATE owners SET name=$1, profile_name=$2, avatar_url=$3 WHERE id=$4', [name, nickname, avatarData, session.id]);
+          else await pool.query('UPDATE owners SET name=$1, profile_name=$2 WHERE id=$3', [name, nickname, session.id]);
           const result = await pool.query('SELECT id,name,email,profile_name,avatar_url FROM owners WHERE id=$1', [session.id]);
           return json(res, 200, { ok: true, profile: { ...result.rows[0], role: 'owner' } });
         }
         const nickname = String(input.nickname || '').trim();
         if (nickname.length > 80) return json(res, 422, { error: 'Nickname is too long.' });
-        await pool.query('UPDATE users SET nickname=$1 WHERE id=$2', [nickname, session.id]);
+        const avatarData = String(input.avatar_data || '').trim();
+        if (avatarData) await pool.query('UPDATE users SET nickname=$1, avatar_url=$2 WHERE id=$3', [nickname, avatarData, session.id]);
+        else await pool.query('UPDATE users SET nickname=$1 WHERE id=$2', [nickname, session.id]);
         const result = await pool.query('SELECT id,name,email,phone,nickname,avatar_url FROM users WHERE id=$1', [session.id]);
         return json(res, 200, { ok: true, profile: { ...result.rows[0], role: 'user' } });
       }

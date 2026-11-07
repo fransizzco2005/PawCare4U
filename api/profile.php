@@ -26,15 +26,26 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405); die(json_encode(['error'=>'Method not allowed.']));
 }
 
-$nickname = trim((string)($_POST['nickname'] ?? ''));
-$name = trim((string)($_POST['name'] ?? ''));
+$input = [];
+if (strpos((string)($_SERVER['CONTENT_TYPE'] ?? ''), 'application/json') !== false) {
+    $input = json_decode((string)file_get_contents('php://input'), true) ?: [];
+}
+$nickname = trim((string)($input['nickname'] ?? $_POST['nickname'] ?? ''));
+$name = trim((string)($input['name'] ?? $_POST['name'] ?? ''));
+$avatarData = trim((string)($input['avatar_data'] ?? ''));
 
 if ($user['role'] === 'owner') {
     // Owner display name is editable too, but the login email/identity stays separate.
     if ($name === '') $name = $user['name'];
     if (mb_strlen($name) > 120) { http_response_code(422); die(json_encode(['error'=>'Name is too long.'])); }
     $avatar = null;
-    if (!empty($_FILES['avatar']['tmp_name'])) $avatar = save_avatar($_FILES['avatar'], $uploadDir, $publicDir, 'owner_'.$user['id']);
+    if ($avatarData !== '') {
+        if (strlen($avatarData) > 700000) { http_response_code(422); die(json_encode(['error'=>'Profile image is too large.'])); }
+        if (!preg_match('/^data:image\/(jpeg|png|webp|gif);base64,/i', $avatarData)) { http_response_code(422); die(json_encode(['error'=>'Please upload a valid image.'])); }
+        $avatar = $avatarData;
+    } elseif (!empty($_FILES['avatar']['tmp_name'])) {
+        $avatar = save_avatar($_FILES['avatar'], $uploadDir, $publicDir, 'owner_'.$user['id']);
+    }
     if ($avatar !== null) {
         $pdo->prepare('UPDATE owners SET name=?, profile_name=?, avatar_url=? WHERE id=?')->execute([$name, $nickname, $avatar, $user['id']]);
     } else {
@@ -44,7 +55,13 @@ if ($user['role'] === 'owner') {
     if ($nickname === '') $nickname = $user['name'];
     if (mb_strlen($nickname) > 80) { http_response_code(422); die(json_encode(['error'=>'Nickname is too long.'])); }
     $avatar = null;
-    if (!empty($_FILES['avatar']['tmp_name'])) $avatar = save_avatar($_FILES['avatar'], $uploadDir, $publicDir, 'user_'.$user['id']);
+    if ($avatarData !== '') {
+        if (strlen($avatarData) > 700000) { http_response_code(422); die(json_encode(['error'=>'Profile image is too large.'])); }
+        if (!preg_match('/^data:image\/(jpeg|png|webp|gif);base64,/i', $avatarData)) { http_response_code(422); die(json_encode(['error'=>'Please upload a valid image.'])); }
+        $avatar = $avatarData;
+    } elseif (!empty($_FILES['avatar']['tmp_name'])) {
+        $avatar = save_avatar($_FILES['avatar'], $uploadDir, $publicDir, 'user_'.$user['id']);
+    }
     if ($avatar !== null) {
         $pdo->prepare('UPDATE users SET nickname=?, avatar_url=? WHERE id=?')->execute([$nickname, $avatar, $user['id']]);
     } else {

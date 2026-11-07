@@ -28,7 +28,7 @@
     font-size:11px;
     color:#a8bdd2!important;
 }
-.paw-logo-mark{display:grid!important;place-items:center!important;background:linear-gradient(135deg,#197cff,#4e9cff)!important;border-radius:10px!important;}
+.paw-logo-mark{display:grid!important;place-items:center!important;background:transparent!important;border-radius:50%!important;}
 .paw-logo-mark svg{width:18px;height:18px;fill:currentColor;color:#fff;}
 .avatar,.avatar img{border-radius:50%!important;aspect-ratio:1/1!important;}
 .order-messages{margin-top:16px;padding:14px;border:1px solid rgba(255,196,74,.18);border-radius:15px;background:rgba(255,196,74,.055);}

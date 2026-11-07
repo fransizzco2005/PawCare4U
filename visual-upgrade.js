@@ -105,10 +105,11 @@
       entries.forEach(entry=>{
         if(entry.isIntersecting){
           entry.target.classList.add('pc-is-visible');
-          entry.target.classList.add('pc-seen');
+        }else{
+          entry.target.classList.remove('pc-is-visible');
         }
       });
-    },{threshold:.08,rootMargin:'0px 0px -2% 0px'});
+    },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
     revealed.forEach(section=>revealObserver.observe(section));
 
     const depthTargets=document.querySelectorAll(

@@ -97,8 +97,48 @@ async function loadOverview(){
 
 function selectSection(name){document.querySelectorAll('.side-link[data-section]').forEach(b=>b.classList.toggle('active',b.dataset.section===name));document.querySelectorAll('.account-section').forEach(s=>s.classList.toggle('active',s.id==='section-'+name));const titles={profile:['Profile','Manage your PawCare profile and personal details.'],orders:[document.body.classList.contains('is-owner')?'Orders':'My Orders',document.body.classList.contains('is-owner')?'View customer orders and update delivery status.':'Track your deliveries from order placed to delivered.'],reservations:[document.body.classList.contains('is-owner')?'Reservations':'My Reservations',document.body.classList.contains('is-owner')?'View and manage customer service reservations.':'See the service you reserved and all the details you submitted.'],feedback:['Customer Feedback','Read customer product comments and reply.'],overview:['Overview','Quick view of customer orders and delivery status.']};const t=titles[name]||titles.profile;document.getElementById('accountTitle').textContent=t[0];document.getElementById('accountSubtitle').textContent=t[1];if(name==='orders')loadOrders();if(name==='reservations')loadReservations();if(name==='feedback')loadFeedback();if(name==='overview')loadOverview();history.replaceState(null,'','#'+name)}
 document.querySelectorAll('.side-link[data-section]').forEach(b=>b.addEventListener('click',()=>selectSection(b.dataset.section)));
-document.getElementById('avatarInput').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);document.getElementById('profileAvatarImg').src=url;document.getElementById('profileAvatarImg').hidden=false;document.getElementById('profileInitials').hidden=true});
-document.getElementById('profileForm').addEventListener('submit',async e=>{e.preventDefault();const msg=document.getElementById('profileMessage'),fd=new FormData(e.target);const f=document.getElementById('avatarInput').files[0];if(f)fd.set('avatar',f);msg.textContent='Saving...';try{const d=await fetch('api/profile.php',{method:'POST',credentials:'same-origin',body:fd});const j=await d.json();if(!d.ok)throw Error(j.error||'Could not save profile.');profile=j.profile;msg.textContent='Saved.';await loadProfile();window.dispatchEvent(new CustomEvent('pawcare:profile-updated',{detail:profile}));setTimeout(()=>msg.textContent='',1800)}catch(err){msg.textContent=err.message}});
+document.getElementById('avatarInput').addEventListener('change',e=>{
+ const f=e.target.files[0];if(!f)return;
+ if(!/^image\/(png|jpeg|webp|gif)$/.test(f.type)){document.getElementById('profileMessage').textContent='Use JPG, PNG, WEBP, or GIF.';e.target.value='';return}
+ if(f.size>4*1024*1024){document.getElementById('profileMessage').textContent='Profile image must be 4MB or smaller.';e.target.value='';return}
+ const url=URL.createObjectURL(f),img=document.getElementById('profileAvatarImg');
+ img.src=url;img.hidden=false;document.getElementById('profileInitials').hidden=true;
+ img.onload=()=>URL.revokeObjectURL(url);
+});
+function resizeAvatar(file){
+ return new Promise((resolve,reject)=>{
+  const reader=new FileReader();
+  reader.onerror=()=>reject(Error('Could not read the selected image.'));
+  reader.onload=()=>{
+   const img=new Image();
+   img.onerror=()=>reject(Error('Please select a valid image.'));
+   img.onload=()=>{
+    const size=512,canvas=document.createElement('canvas');
+    canvas.width=size;canvas.height=size;
+    const ctx=canvas.getContext('2d'),scale=Math.max(size/img.width,size/img.height);
+    const width=img.width*scale,height=img.height*scale;
+    ctx.drawImage(img,(size-width)/2,(size-height)/2,width,height);
+    resolve(canvas.toDataURL('image/jpeg',0.86));
+   };
+   img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+ });
+}
+document.getElementById('profileForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const msg=document.getElementById('profileMessage'),fd=new FormData(e.target),f=document.getElementById('avatarInput').files[0];
+ const payload={nickname:fd.get('nickname')||''};
+ msg.textContent='Saving...';
+ try{
+  if(f)payload.avatar_data=await resizeAvatar(f);
+  const d=await fetch('api/profile.php',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  const j=await d.json();if(!d.ok)throw Error(j.error||'Could not save profile.');
+  profile=j.profile;msg.textContent='Saved.';await loadProfile();
+  window.dispatchEvent(new CustomEvent('pawcare:profile-updated',{detail:profile}));
+  setTimeout(()=>msg.textContent='',1800);
+ }catch(err){msg.textContent=err.message}
+});
 document.getElementById('signOutAccount').addEventListener('click',async()=>{await api('api/logout.php',{method:'POST'}).catch(()=>{});location.href='index.html'});
 loadProfile().catch(e=>document.getElementById('profileMessage').textContent=e.message);
 const hash=location.hash.replace('#','');if(['profile','orders','reservations','feedback','overview'].includes(hash))selectSection(hash);else selectSection('profile');

@@ -5,7 +5,7 @@ require_once __DIR__ . '/db.php';
 function current_user(): ?array {
     global $pdo;
     if (!empty($_SESSION['owner_id'])) {
-        $stmt = $pdo->prepare('SELECT id, name, email FROM owners WHERE id = ?');
+        $stmt = $pdo->prepare('SELECT id, name, email, avatar_url FROM owners WHERE id = ?');
         $stmt->execute([$_SESSION['owner_id']]);
         $owner = $stmt->fetch();
         if ($owner) {
@@ -14,7 +14,7 @@ function current_user(): ?array {
         }
     }
     if (empty($_SESSION['user_id'])) return null;
-    $stmt = $pdo->prepare('SELECT id, name, email, phone FROM users WHERE id = ?');
+    $stmt = $pdo->prepare('SELECT id, name, email, phone, avatar_url FROM users WHERE id = ?');
     $stmt->execute([$_SESSION['user_id']]);
     $user = $stmt->fetch();
     if ($user) $user['role'] = 'user';
@@ -24,7 +24,7 @@ function current_user(): ?array {
 function current_owner(): ?array {
     global $pdo;
     if (empty($_SESSION['owner_id'])) return null;
-    $stmt = $pdo->prepare('SELECT id, name, email FROM owners WHERE id = ?');
+    $stmt = $pdo->prepare('SELECT id, name, email, avatar_url FROM owners WHERE id = ?');
     $stmt->execute([$_SESSION['owner_id']]);
     $owner = $stmt->fetch();
     if ($owner) $owner['role'] = 'owner';
