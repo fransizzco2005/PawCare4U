@@ -147,7 +147,12 @@ async function api(path, options = {}) {
     console.error(`[PawCare] ${path} did not return valid JSON:`, raw);
     throw new Error(`Server error calling ${path} (see console for details).`);
   }
-  if (!res.ok) throw new Error(data.error || `Something went wrong (HTTP ${res.status}).`);
+  if (!res.ok) {
+    const error = res.status === 405
+      ? 'The server rejected this login request. Deploy PawCare on a PHP host (or enable PHP on the current host).'
+      : (data.error || `Something went wrong (HTTP ${res.status}).`);
+    throw new Error(error);
+  }
   return data;
 }
 

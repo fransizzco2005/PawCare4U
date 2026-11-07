@@ -20,6 +20,9 @@
 4. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
 5. The application keeps the existing PHP sessions, login, cart, orders, appointments, feedback, and owner features; all data is stored in Supabase PostgreSQL.
 
+## PHP hosting requirement
+PawCare must run on a host that executes PHP and POST requests. A static-only host will return HTTP 405 because login, registration, cart, checkout, and owner APIs use PHP endpoints.
+
 
 ## Appointment booking
 - Services now have a real appointment form on `services.html`.

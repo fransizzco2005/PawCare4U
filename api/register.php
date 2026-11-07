@@ -2,6 +2,12 @@
 require_once __DIR__ . '/../includes/auth.php';
 header('Content-Type: application/json');
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    die(json_encode(['error' => 'Method not allowed. Use POST to create an account.']));
+}
+
 $in = json_input();
 $name  = trim($in['name']  ?? '');
 $email = trim(strtolower($in['email'] ?? ''));
