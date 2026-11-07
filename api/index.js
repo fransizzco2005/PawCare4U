@@ -49,8 +49,9 @@ function verify(value) {
 async function body(req) {
   let text = '';
   try {
+    if (typeof req.rawBody === 'string') text = req.rawBody;
     if (req.body && typeof req.body === 'object') return req.body;
-    if (typeof req.body === 'string') text = req.body;
+    if (!text && typeof req.body === 'string') text = req.body;
   } catch (_) {
     // Vercel's Node adapter may expose req.body as a throwing getter.
   }
