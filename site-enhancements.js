@@ -114,13 +114,22 @@
 
   /* ONLY these top-nav links can trigger the 2-second page loader. */
   const navLinks=[...document.querySelectorAll('.main-nav a, .nav-menu a')];
-  navLinks.forEach(a=>a.addEventListener('click',e=>{
+  navLinks.forEach(a=>a.addEventListener('click',async e=>{
     if(e.defaultPrevented||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target==='_blank')return;
     const href=a.getAttribute('href'); if(!href||href.startsWith('#')||href.startsWith('mailto:')||href.startsWith('tel:'))return;
     try{const u=new URL(href,location.href);if(u.origin!==location.origin)return;if(u.pathname===location.pathname&&!u.hash)return}catch(_){return}
     const shopPage=/^(dogs|cats|birds|fish|smallpets)\.html$/i.test(new URL(href,location.href).pathname.split('/').pop()||'');
     if(shopPage && !currentUser){
       e.preventDefault();
+      try{
+        const session=await api('api/session.php');
+        if(session.user){
+          setAccount(session.user);
+          sessionStorage.setItem('pawcareTabNavigation','1');
+          location.assign(href);
+          return;
+        }
+      }catch(_){}
       openAuth('signin');
       toast('Please sign in or create an account to access the shop.');
       return;
