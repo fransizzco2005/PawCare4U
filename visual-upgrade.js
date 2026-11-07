@@ -81,4 +81,51 @@
       card.addEventListener('pointerleave',()=>card.style.transform='');
     });
   }
+
+  if (document.body.classList.contains('home-page') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const shop=document.getElementById('shopView');
+    const hero=shop?.querySelector('.hero');
+    if (hero && !hero.querySelector('.homepage-scroll-cue')) {
+      const next=hero.nextElementSibling;
+      const cue=document.createElement('a');
+      cue.className='homepage-scroll-cue';
+      cue.href='#';
+      cue.setAttribute('aria-label','Scroll to discover more PawCare care');
+      cue.innerHTML='<span>Scroll to discover</span><span aria-hidden="true">↓</span>';
+      cue.addEventListener('click',event=>{
+        event.preventDefault();
+        (next||shop)?.scrollIntoView({behavior:'smooth',block:'start'});
+      });
+      hero.appendChild(cue);
+    }
+
+    const revealed=[...document.querySelectorAll('#shopView > section:not(.hero)')];
+    revealed.forEach(section=>section.classList.add('pc-reveal-ready'));
+    const revealObserver=new IntersectionObserver(entries=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('pc-is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    },{threshold:.12,rootMargin:'0px 0px -4% 0px'});
+    revealed.forEach(section=>revealObserver.observe(section));
+
+    let ticking=false;
+    const updateHero=()=>{
+      ticking=false;
+      if(!hero) return;
+      const rect=hero.getBoundingClientRect();
+      if(rect.bottom>0 && rect.top<innerHeight){
+        const progress=Math.max(0,Math.min(1,(innerHeight-rect.top)/(innerHeight+rect.height)));
+        hero.style.setProperty('--pc-hero-parallax',`${(progress-.25)*18}px`);
+      }
+    };
+    addEventListener('scroll',()=>{
+      if(!ticking){ticking=true;requestAnimationFrame(updateHero)}
+    },{passive:true});
+    updateHero();
+  } else if (document.body.classList.contains('home-page')) {
+    document.querySelectorAll('#shopView > section:not(.hero)').forEach(section=>section.classList.add('pc-is-visible'));
+  }
 })();
