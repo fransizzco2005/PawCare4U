@@ -5,5 +5,9 @@
       "runtime": "vercel-php@0.7.4",
       "maxDuration": 10
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/api/router.php" },
+    { "source": "/:path*.php", "destination": "/api/router.php" }
+  ]
 }
