@@ -427,6 +427,6 @@ module.exports = async function handler(req, res) {
     return json(res, 404, { error: 'API endpoint not found.' });
   } catch (error) {
     console.error(error);
-    return json(res, 500, { error: 'Server request failed.' });
+    return json(res, 500, { error: error && error.message ? error.message : 'Server request failed.' });
   }
 };
