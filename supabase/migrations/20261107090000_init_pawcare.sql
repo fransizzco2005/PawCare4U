@@ -263,7 +263,7 @@ CREATE TABLE IF NOT EXISTS product_feedback (
 -- Demo owner account. Change this password after installation.
 -- Email: owner@pawcare.ph | Password: owner123
 INSERT INTO owners (name,email,password_hash)
-VALUES ('PawCare Owner','owner@pawcare.ph','$2y$12$GaRF0/1JiK4CDI2Lc36pDOkO/SHiCvFg/5sHfMXe64uu6UAGdLriu')
+VALUES ('PawCare Owner','owner@pawcare.ph','$2b$12$VSIpE75dS9S9Btk15h1TruJZZ8iO6pXpr/VQhqYiJo30AW6B1bhvS')
 ON CONFLICT (email) DO UPDATE SET
   name = EXCLUDED.name,
   password_hash = EXCLUDED.password_hash;

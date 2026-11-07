@@ -3412,3 +3412,9 @@ body.modal-open{overflow:hidden;}
 .account-btn.has-profile-photo{border-radius:50%!important;}
 .account-menu{overflow:hidden!important;}
 @media(max-width:700px){.header-role-indicator{display:none!important}.account-wrap{gap:5px!important}}
+
+/* Live store map */
+.store-map-modern{position:relative;background:#e9eef0}
+.store-map-modern iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.store-map-modern .map-controls{position:absolute;z-index:3;right:16px;top:16px}
+.store-map-modern .map-credit{position:absolute;z-index:3;right:12px;bottom:10px;color:#fff;background:#17324a;padding:5px 8px;border-radius:4px;font-size:10px}

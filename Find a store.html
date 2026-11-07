@@ -106,11 +106,9 @@
         </div>
       </aside>
       <div class="store-map-modern" id="storeMap" aria-label="Stylized map showing PawCare locations">
-        <div class="map-grid-lines"></div><div class="map-road road-a"></div><div class="map-road road-b"></div><div class="map-road road-c"></div><div class="map-water"></div>
-        <span class="map-place place-a">BGC</span><span class="map-place place-b">Makati</span><span class="map-place place-c">Quezon City</span><span class="map-place place-d">Manila</span>
-        <button class="map-pin pin-a" onclick="selectStore(1)">1</button><button class="map-pin pin-b" onclick="selectStore(2)">2</button><button class="map-pin pin-c" onclick="selectStore(3)">3</button><button class="map-pin pin-d" onclick="selectStore(4)">4</button>
+        <iframe id="googleMapFrame" title="Google Map showing PawCare locations" src="https://www.google.com/maps?q=PawCare%20BGC%20Taguig%20Philippines&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <div class="map-controls"><button onclick="mapZoom(1)">+</button><button onclick="mapZoom(-1)">−</button></div>
-        <div class="map-credit">PawCare Store Locator · Demo map</div>
+        <div class="map-credit">Live Google Maps</div>
       </div>
     </section>
   </main>
@@ -149,10 +147,10 @@
 
   <script>
     const storeData = [
-      {id:1,type:'petshop',name:'PawCare Manila BGC',address:'Unit 123, The Fort Mall, BGC, Taguig'},
-      {id:2,type:'vet',name:'PawCare Veterinary Clinic — Makati',address:'Makati Medical Center Complex, Makati City'},
-      {id:3,type:'grooming',name:'PawCare Grooming Studio — Quezon City',address:'EDSA, Quezon City'},
-      {id:4,type:'petshop',name:'PawCare Cebu City',address:'Ayala Center Cebu, Cebu City'}
+      {id:1,type:'petshop',name:'PawCare Manila BGC',address:'Unit 123, The Fort Mall, BGC, Taguig',lat:14.5522,lng:121.0500},
+      {id:2,type:'vet',name:'PawCare Veterinary Clinic — Makati',address:'Makati Medical Center Complex, Makati City',lat:14.5566,lng:121.0217},
+      {id:3,type:'grooming',name:'PawCare Grooming Studio — Quezon City',address:'EDSA, Quezon City',lat:14.6760,lng:121.0437},
+      {id:4,type:'petshop',name:'PawCare Cebu City',address:'Ayala Center Cebu, Cebu City',lat:10.3181,lng:123.9051}
     ];
     function filterStores(type){
       document.querySelectorAll('.store-filter-row button').forEach(b=>b.classList.toggle('active', b.textContent.toLowerCase().includes(type==='all'?'all':type)));
@@ -167,10 +165,46 @@
       document.querySelectorAll('.store-result-card').forEach(card=>card.hidden=!!q && !card.textContent.toLowerCase().includes(q));
       document.getElementById('storeResultCount').textContent=[...document.querySelectorAll('.store-result-card')].filter(x=>!x.hidden).length;
     }
-    function locateMe(){ alert('Location demo: enable browser location permissions to connect this to a live map service.'); }
-    function selectStore(id){ document.querySelectorAll('.map-pin').forEach(p=>p.classList.remove('selected')); document.querySelector('.pin-'+String.fromCharCode(96+id))?.classList.add('selected'); }
-    function openDirections(id){ alert('Directions demo for PawCare location #' + id + '. Connect this action to Google Maps or your map provider.'); }
-    function mapZoom(delta){ document.getElementById('storeMap').style.setProperty('--map-scale', Math.max(.85,Math.min(1.25,(parseFloat(getComputedStyle(document.getElementById('storeMap')).getPropertyValue('--map-scale'))||1)+delta*.08))); }
+    let currentPosition = null;
+    function distanceKm(lat1,lng1,lat2,lng2){
+      const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+      const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+      return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+    }
+    function locateMe(){
+      if(!navigator.geolocation){ alert('Geolocation is not supported by this browser.'); return; }
+      navigator.geolocation.getCurrentPosition(pos=>{
+        currentPosition=pos.coords;
+        const origin=`${currentPosition.latitude},${currentPosition.longitude}`;
+        document.getElementById('googleMapFrame').src=`https://www.google.com/maps?q=${encodeURIComponent(origin)}&z=12&output=embed`;
+        storeData.forEach(store=>{
+          const km=distanceKm(currentPosition.latitude,currentPosition.longitude,store.lat,store.lng);
+          const card=[...document.querySelectorAll('.store-result-card')].find(x=>x.querySelector('h3')?.textContent===store.name);
+          if(card){const badge=card.querySelector('.store-distance'); if(badge) badge.textContent=km<1?`${Math.round(km*1000)} m`:`${km.toFixed(1)} km`;}
+        });
+      },err=>{
+        alert(err.code===1?'Location permission was denied. Allow location access and try again.':'Your current location could not be determined. Please check location services.');
+      },{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+    }
+    function selectStore(id){
+      const store=storeData.find(x=>x.id===id); if(!store) return;
+      document.querySelectorAll('.store-result-card').forEach(card=>card.classList.toggle('selected',card.querySelector('h3')?.textContent===store.name));
+      document.getElementById('googleMapFrame').src=`https://www.google.com/maps?q=${encodeURIComponent(store.address)}&output=embed`;
+    }
+    function openDirections(id){
+      const store=storeData.find(x=>x.id===id); if(!store) return;
+      const origin=currentPosition?`${currentPosition.latitude},${currentPosition.longitude}`:'';
+      const url=`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(store.address)}${origin?`&origin=${encodeURIComponent(origin)}`:''}&travelmode=driving`;
+      window.open(url,'_blank','noopener,noreferrer');
+    }
+    function mapZoom(delta){
+      const frame=document.getElementById('googleMapFrame');
+      try {
+        const url=new URL(frame.src);
+        const z=Math.max(8,Math.min(20,(Number(url.searchParams.get('z'))||12)+delta));
+        url.searchParams.set('z',z); frame.src=url.toString();
+      } catch(_) {}
+    }
   </script>
   <script src="site-enhancements.js"></script>
 </body>
