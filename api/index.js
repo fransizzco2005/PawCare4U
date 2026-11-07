@@ -59,9 +59,18 @@ async function body(req) {
   const contentType = String(req.headers['content-type'] || '');
   if (contentType.includes('application/json')) {
     if (!text) return {};
-    let parsed = JSON.parse(text);
-    if (typeof parsed === 'string') parsed = JSON.parse(parsed);
-    return parsed && typeof parsed === 'object' ? parsed : {};
+    try {
+      let parsed = JSON.parse(text);
+      if (typeof parsed === 'string') parsed = JSON.parse(parsed);
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch (_) {
+      const result = {};
+      for (const key of ['name','email','password','nickname','phone','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id']) {
+        const match = text.match(new RegExp('"' + key + '"\\s*:\\s*(?:"([^"]*)"|([^,}\\s]+))'));
+        if (match) result[key] = match[1] !== undefined ? match[1] : match[2];
+      }
+      return result;
+    }
   }
   if (contentType.includes('multipart/form-data')) {
     const boundary = contentType.split('boundary=')[1]?.trim();
