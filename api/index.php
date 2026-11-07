@@ -1,6 +1,11 @@
 <?php
 
 $requestUri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+if ($requestUri === '/api/ping.php') {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['ok' => true, 'runtime' => 'php', 'router' => 'index.php']);
+    exit;
+}
 if (preg_match('#^/api/(.+\.php)$#', $requestUri, $matches)) {
     $apiFile = __DIR__ . '/' . basename($matches[1]);
     if (is_file($apiFile)) {
