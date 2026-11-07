@@ -393,24 +393,75 @@ body.page-dog .sidebar-filters,body.page-cat .sidebar-filters,body.page-bird .si
 .modal-actions{margin-top:4px}.modal-actions .btn{min-height:52px!important;border-radius:12px!important}
 .product-feedback-box{margin-top:20px!important}
 
+/* Bright navigation and menu surfaces with deliberate contrast. */
+.nav-menu,.main-nav{
+  gap:5px!important;
+  padding:5px!important;
+  border-radius:14px!important;
+  background:rgba(4,15,31,.72)!important;
+  border:1px solid rgba(139,196,242,.15)!important;
+  backdrop-filter:blur(14px)!important;
+}
+.nav-menu a,.main-nav a{
+  color:#c8dced!important;
+  border-radius:9px!important;
+  font-size:11.5px!important;
+  white-space:nowrap;
+}
+.nav-menu a.active,.main-nav a.active{
+  color:#fff!important;
+  background:linear-gradient(135deg,#5aa7ee,#397fe2)!important;
+  box-shadow:0 7px 18px rgba(57,127,226,.28)!important;
+}
+.account-menu{
+  color:#182b43!important;
+  background:#fff!important;
+  border:1px solid #d7e3ef!important;
+  box-shadow:0 24px 70px rgba(7,28,54,.22)!important;
+}
+.account-menu__hello,.account-menu__loyalty,.account-menu-btn{color:#17283d!important}
+.account-menu-btn{background:#f4f8fc!important;border:1px solid #dde7f1!important}
+.account-menu-btn:hover{background:#eaf3fb!important;color:#155a9b!important}
+.search-box input,.search-wrap input{color:#18304a!important;background:#fff!important;border-color:#d9e5ef!important;caret-color:#397fe2}
+.search-box input::placeholder,.search-wrap input::placeholder{color:#8292a5!important}
+
 /* Catalog artwork corrections */
 body.page-dog .hero,body.page-cat .hero,body.page-bird .hero,body.page-fish .hero,body.page-rodent .hero,body.page-small-pets .hero{
-  min-height:230px!important;
-  height:230px!important;
-  padding-top:28px!important;
-  padding-bottom:28px!important;
+  min-height:210px!important;
+  height:210px!important;
+  grid-template-columns:minmax(320px,1fr) minmax(220px,.8fr) 250px!important;
+  align-content:center!important;
+  gap:24px!important;
+  padding:24px 30px!important;
   margin-bottom:22px!important;
 }
 body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-fish .hero h1,body.page-rodent .hero h1,body.page-small-pets .hero h1{
-  font-size:clamp(28px,3vw,42px)!important;
+  align-self:center!important;
+  grid-column:1!important;
+  grid-row:1!important;
+  max-width:520px!important;
+  margin:0!important;
+  font-size:clamp(28px,2.5vw,38px)!important;
+  line-height:1.08!important;
+}
+body.page-dog .hero p,body.page-cat .hero p,body.page-bird .hero p,body.page-fish .hero p,body.page-rodent .hero p,body.page-small-pets .hero p{
+  align-self:center!important;
+  grid-column:2!important;
+  grid-row:1!important;
+  max-width:310px!important;
+  margin:0!important;
+  font-size:14px!important;
+  line-height:1.45!important;
 }
 body.page-dog .catalog-hero-visual,body.page-cat .catalog-hero-visual,body.page-bird .catalog-hero-visual,body.page-fish .catalog-hero-visual,body.page-rodent .catalog-hero-visual,body.page-small-pets .catalog-hero-visual{
   width:250px!important;
-  height:170px!important;
+  height:160px!important;
+  grid-column:3!important;
+  grid-row:1!important;
 }
 body.page-dog .catalog-hero-frame,body.page-cat .catalog-hero-frame,body.page-bird .catalog-hero-frame,body.page-fish .catalog-hero-frame,body.page-rodent .catalog-hero-frame,body.page-small-pets .catalog-hero-frame{
   inset:0 6px!important;
-  max-height:170px!important;
+  max-height:160px!important;
 }
 body.page-dog .catalog-hero-frame img,body.page-cat .catalog-hero-frame img,body.page-bird .catalog-hero-frame img,body.page-fish .catalog-hero-frame img,body.page-rodent .catalog-hero-frame img,body.page-small-pets .catalog-hero-frame img{
   object-position:center 42%!important;
@@ -424,10 +475,62 @@ body.page-dog .product-thumb,body.page-cat .product-thumb,body.page-bird .produc
 body.page-dog .product-thumb img,body.page-cat .product-thumb img,body.page-bird .product-thumb img,body.page-fish .product-thumb img,body.page-rodent .product-thumb img,body.page-small-pets .product-thumb img{
   width:100%!important;
   height:100%!important;
-  object-fit:cover!important;
+  object-fit:contain!important;
   padding:0!important;
   mix-blend-mode:normal!important;
   filter:none!important;
+}
+
+/* Compact shop cards and organized product details. */
+.product-card{
+  background:#fff!important;
+  border-color:#dbe7f1!important;
+  box-shadow:0 8px 24px rgba(13,48,82,.08)!important;
+  color:#17283d!important;
+}
+.product-card:hover{
+  border-color:#9fcaf2!important;
+  box-shadow:0 14px 32px rgba(20,91,150,.14)!important;
+}
+.product-card .product-category{color:#66809c!important}
+.product-card .product-name{min-height:38px!important;color:#17283d!important;font-size:13px!important;line-height:1.35!important}
+.product-card .product-rating{color:#af7410!important}
+.product-card .product-price{color:#155d9d!important;font-weight:900!important}
+.product-card .product-actions{margin-top:8px!important}
+.product-card .product-actions .btn{
+  min-height:36px!important;
+  font-size:11px!important;
+  border-radius:8px!important;
+}
+.product-modal__dialog{
+  width:min(860px,94vw)!important;
+  max-height:min(680px,92vh)!important;
+}
+.product-modal__media{
+  min-height:520px!important;
+  max-height:680px!important;
+  padding:52px 52px 72px!important;
+}
+.product-modal__media img{
+  width:min(100%,390px)!important;
+  height:390px!important;
+  object-fit:contain!important;
+  background:#fff!important;
+}
+.product-modal__media img.zoomed{
+  transform:scale(1.22)!important;
+  object-fit:contain!important;
+}
+.product-modal__body{
+  padding:38px 30px 28px!important;
+}
+.product-modal__body h2{
+  max-width:390px!important;
+  font-size:32px!important;
+}
+.product-modal__body p{
+  margin:12px 0 14px!important;
+  font-size:13px!important;
 }
 .catalog-scroll-cue{
   position:absolute;
@@ -482,10 +585,16 @@ body.page-dog .product-thumb img,body.page-cat .product-thumb img,body.page-bird
     height:auto!important;
     min-height:210px!important;
     padding:26px 20px!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto auto auto!important;
   }
+  body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-fish .hero h1,body.page-rodent .hero h1,body.page-small-pets .hero h1{grid-column:1!important;grid-row:1!important;font-size:26px!important}
+  body.page-dog .hero p,body.page-cat .hero p,body.page-bird .hero p,body.page-fish .hero p,body.page-rodent .hero p,body.page-small-pets .hero p{grid-column:1!important;grid-row:2!important;max-width:none!important}
   body.page-dog .catalog-hero-visual,body.page-cat .catalog-hero-visual,body.page-bird .catalog-hero-visual,body.page-fish .catalog-hero-visual,body.page-rodent .catalog-hero-visual,body.page-small-pets .catalog-hero-visual{
     width:min(240px,72vw)!important;
     height:150px!important;
+    grid-column:1!important;
+    grid-row:3!important;
   }
   .catalog-scroll-cue{right:12px;bottom:10px;font-size:9px}
 }
