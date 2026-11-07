@@ -8,7 +8,7 @@
 - Cart items added while signed in are stored under that user's `user_id` and reloaded from Supabase PostgreSQL after refresh/login.
 - Cart API now returns `image_url` for cart thumbnails.
 - Product-page Checkout no longer triggers the Home galaxy entrance. It moves to the Home cart using a skip flag.
-- Inner-page Cart also opens the Home cart without the Home galaxy entrance.
+- Inner-page Cart opens a cart drawer in place; Checkout hands off to the existing Home checkout form.
 - The Home galaxy entrance remains only for a fresh/reloaded Home page.
 - Top navigation tabs remain the only actions that use the 2-second page loading GUI.
 - Add to Cart, product details, sign-in, cart, and checkout do not start a page transition.
@@ -17,8 +17,9 @@
 1. Start Apache in XAMPP; PHP must have the PostgreSQL PDO extension enabled (`pdo_pgsql`).
 2. Copy `.env.example` to `.env` and set `SUPABASE_DB_PASSWORD` to the Supabase database password.
 3. Apply `supabase/migrations/20261107090000_init_pawcare.sql` in the Supabase SQL Editor.
-4. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
-5. The application keeps the existing PHP sessions, login, cart, orders, appointments, feedback, and owner features; all data is stored in Supabase PostgreSQL.
+4. Apply `supabase/migrations/20261107150000_product_feedback_ratings.sql` to add five-star product ratings and allow rating-only feedback.
+5. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
+6. The application keeps the existing PHP sessions, login, cart, orders, appointments, feedback, and owner features; all data is stored in Supabase PostgreSQL.
 
 ## PHP hosting requirement
 PawCare must run on a host that executes PHP and POST requests. A static-only host will return HTTP 405 because login, registration, cart, checkout, and owner APIs use PHP endpoints.
@@ -58,8 +59,8 @@ Added:
 - Customer **My Orders** page with order tracking: placed, processing/packed, shipped/on the way, delivered, or cancelled.
 - Separate **Owner Dashboard** with Orders, Product Feedback, and Overview tabs.
 - Owner can update an order status.
-- Product detail/maximize window now has a customer comment box.
-- Owner can read customer product feedback and send a reply.
+- Product detail/maximize window supports a one-to-five-star rating with an optional comment.
+- Owner can read customer product ratings and comments in the dashboard and send a reply.
 - Owner login has a distinct dark/gold owner interface and `OWNER ACCOUNT` indicator.
 
 For production, change the demo owner password or create a proper owner account before deployment.

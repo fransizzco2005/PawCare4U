@@ -75,7 +75,7 @@
   }
   function openDetails(card){
     const p=data(card); let modal=document.getElementById('productModal');
-    if(!modal){modal=document.createElement('div');modal.id='productModal';modal.className='product-modal';modal.innerHTML=`<div class="product-modal__backdrop" data-close-product></div><div class="product-modal__dialog" role="dialog" aria-modal="true" aria-label="Product details"><button class="product-modal__close" type="button" data-close-product aria-label="Close">×</button><div class="product-modal__media"><button class="modal-zoom-button" type="button" aria-label="Zoom product image">⌕</button><img id="modalProductImg" alt=""><div class="modal-thumbnail-strip" aria-label="Product image views"><button class="active" type="button" data-view="0"></button><button type="button" data-view="1"></button><button type="button" data-view="2"></button></div></div><div class="product-modal__body"><div class="modal-product-category" id="modalProductCategory"></div><h2 id="modalProductName"></h2><div id="modalProductRating" class="product-rating"></div><p id="modalProductDescription"></p><div id="modalProductPrice" class="product-price"></div><div class="modal-qty"><button type="button" id="modalQtyMinus">−</button><span id="modalQty">1</span><button type="button" id="modalQtyPlus">+</button></div><div class="modal-actions"><button class="btn btn-primary" id="modalAdd">Add to Cart</button><button class="btn btn-secondary" id="modalCheckout">Checkout</button></div><div class="product-feedback-box"><h3>Product comment</h3><p class="feedback-note" id="modalFeedbackNote">Sign in to leave a comment for the owner.</p><textarea id="modalFeedbackText" placeholder="Write your comment or feedback..." maxlength="1000"></textarea><button type="button" class="feedback-send" id="modalFeedbackSend">Send comment</button><div id="modalFeedbackReplies"></div></div></div></div>`;document.body.appendChild(modal);modal.addEventListener('click',e=>{if(e.target.closest('[data-close-product]'))close()})}
+    if(!modal){modal=document.createElement('div');modal.id='productModal';modal.className='product-modal';modal.innerHTML=`<div class="product-modal__backdrop" data-close-product></div><div class="product-modal__dialog" role="dialog" aria-modal="true" aria-label="Product details"><button class="product-modal__close" type="button" data-close-product aria-label="Close">×</button><div class="product-modal__media"><button class="modal-zoom-button" type="button" aria-label="Zoom product image">⌕</button><img id="modalProductImg" alt=""><div class="modal-thumbnail-strip" aria-label="Product image views"><button class="active" type="button" data-view="0"></button><button type="button" data-view="1"></button><button type="button" data-view="2"></button></div></div><div class="product-modal__body"><div class="modal-product-category" id="modalProductCategory"></div><h2 id="modalProductName"></h2><div id="modalProductRating" class="product-rating"></div><p id="modalProductDescription"></p><div id="modalProductPrice" class="product-price"></div><div class="modal-qty"><button type="button" id="modalQtyMinus">−</button><span id="modalQty">1</span><button type="button" id="modalQtyPlus">+</button></div><div class="modal-actions"><button class="btn btn-primary" id="modalAdd">Add to Cart</button><button class="btn btn-secondary" id="modalCheckout">Checkout</button></div><div class="product-feedback-box"><h3>Rate and review</h3><p class="feedback-note" id="modalFeedbackNote">Sign in to rate or comment for the owner.</p><div class="feedback-rating"><span>Choose a rating</span><div class="feedback-stars" id="modalFeedbackStars" role="radiogroup" aria-label="Product rating"></div><span class="feedback-rating-label" id="modalFeedbackRatingLabel">Select 1 to 5 stars</span></div><textarea id="modalFeedbackText" placeholder="Add an optional comment..." maxlength="1000" aria-label="Optional product comment"></textarea><button type="button" class="feedback-send" id="modalFeedbackSend">Send rating</button><div id="modalFeedbackReplies"></div></div></div></div>`;document.body.appendChild(modal);modal.addEventListener('click',e=>{if(e.target.closest('[data-close-product]'))close()})}
     const img=modal.querySelector('#modalProductImg'); const source=card.querySelector('img').getAttribute('src'); img.src=source; img.alt=p.name;
     const thumbs=[...modal.querySelectorAll('.modal-thumbnail-strip button')];
     thumbs.forEach((thumb,index)=>{
@@ -106,36 +106,53 @@
     let qty=1; const qtyEl=modal.querySelector('#modalQty'); qtyEl.textContent=qty; const setQty=n=>{qty=Math.max(1,Math.min(p.stock,n));qtyEl.textContent=qty}; modal.querySelector('#modalQtyMinus').onclick=()=>setQty(qty-1); modal.querySelector('#modalQtyPlus').onclick=()=>setQty(qty+1);
     modal.querySelector('#modalAdd').onclick=async()=>{try{await apiAdd(p,qty);toast(`${p.name} added to cart.`)}catch(e){toast(e.message)}};
     modal.querySelector('#modalCheckout').onclick=async()=>{try{await apiAdd(p,qty);close();sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='index.html#cart'}catch(e){toast(e.message)}};
-    const fbNote=modal.querySelector('#modalFeedbackNote'),fbText=modal.querySelector('#modalFeedbackText'),fbSend=modal.querySelector('#modalFeedbackSend'),fbReplies=modal.querySelector('#modalFeedbackReplies');
+    const fbNote=modal.querySelector('#modalFeedbackNote'),fbText=modal.querySelector('#modalFeedbackText'),fbSend=modal.querySelector('#modalFeedbackSend'),fbReplies=modal.querySelector('#modalFeedbackReplies'),fbStars=modal.querySelector('#modalFeedbackStars'),fbRatingLabel=modal.querySelector('#modalFeedbackRatingLabel');
     fbText.value=''; fbReplies.innerHTML='';
+    let selectedRating=0;
+    fbStars.innerHTML=Array.from({length:5},(_,i)=>`<button type="button" class="feedback-star" role="radio" aria-checked="false" aria-label="${i+1} star${i?'s':''}" data-rating="${i+1}">★</button>`).join('');
+    const setRating=value=>{
+      selectedRating=value;
+      fbStars.querySelectorAll('.feedback-star').forEach(star=>{
+        const active=Number(star.dataset.rating)<=value;
+        star.classList.toggle('is-selected',active);
+        star.setAttribute('aria-checked',Number(star.dataset.rating)===value?'true':'false');
+      });
+      fbRatingLabel.textContent=`${value} out of 5 stars`;
+    };
+    fbStars.querySelectorAll('.feedback-star').forEach(star=>star.addEventListener('click',()=>setRating(Number(star.dataset.rating))));
     let feedbackUser=false;
     fetch('api/session.php',{credentials:'same-origin'}).then(r=>r.json()).then(d=>{
       feedbackUser=!!(d.user&&d.user.role==='user');
       const isOwner=!!(d.user&&d.user.role==='owner');
-      fbNote.textContent=isOwner?'Owner view: customer feedback for this product.':feedbackUser?'Your comment will be sent to the PawCare owner.':'Sign in to leave a comment for the owner.';
+      fbNote.textContent=isOwner?'Owner view: customer feedback for this product.':feedbackUser?'Your rating and optional comment will be sent to the PawCare owner.':'Sign in to leave a rating or comment for the owner.';
       fbText.disabled=!feedbackUser; fbSend.disabled=!feedbackUser;
+      fbStars.querySelectorAll('button').forEach(star=>star.disabled=!feedbackUser);
       if(feedbackUser||isOwner) return fetch('api/product_feedback.php?product_id='+encodeURIComponent(p.id),{credentials:'same-origin'}).then(r=>r.json()).then(x=>{x.__owner=isOwner;return x});
     }).then(d=>{
       if(!d||!d.feedback)return;
-      fbReplies.innerHTML=d.feedback.map(x=>`<div class="feedback-note" style="margin-top:10px"><b>${d.__owner?'Customer: '+String(x.user_name||'Customer'):'Your comment:'}</b> ${String(x.comment).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}${x.owner_reply?`<br><b>Owner reply:</b> ${String(x.owner_reply).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}`:''}</div>`).join('');
-    }).catch(()=>{});
+      fbReplies.innerHTML=d.feedback.map(x=>`<div class="feedback-note feedback-entry"><b>${d.__owner?'Customer: '+escapeHtml(x.user_name||'Customer'):'Your review:'}</b><span class="feedback-entry-rating">${x.rating?`${'★'.repeat(Number(x.rating))}${'☆'.repeat(5-Number(x.rating))}`:'No rating'}</span><p>${escapeHtml(x.comment||'Rating only; no comment.')}</p>${x.owner_reply?`<p><b>Owner reply:</b> ${escapeHtml(x.owner_reply)}</p>`:''}</div>`).join('');
+    }).catch(error=>{fbNote.textContent=error.message||'Could not load product feedback.'});
     fbSend.onclick=async()=>{
-      if(!feedbackUser){fbNote.textContent='Please sign in first to add a comment.';return}
+      if(!feedbackUser){fbNote.textContent='Please sign in first to add a rating.';return}
+      if(!selectedRating){fbNote.textContent='Please select a rating from 1 to 5 stars.';return}
       const comment=fbText.value.trim();
-      if(!comment){fbNote.textContent='Please write a comment first.';return}
       fbSend.disabled=true;fbSend.textContent='Sending...';
       try{
-        const response=await fetch('/api/product_feedback.php',{method:'POST',credentials:'include',cache:'no-store',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({product_id:p.id,comment})});
+        const response=await fetch('api/product_feedback.php',{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({product_id:p.id,rating:selectedRating,comment})});
         const text=await response.text();let result={};
         try{result=text?JSON.parse(text):{}}catch(_){throw new Error('The server returned an invalid response.')}
         if(!response.ok)throw new Error(result.error||'Could not send comment');
         fbText.value='';
-        fbNote.textContent='Comment sent to the owner. Thank you!';
-        const refreshed=await fetch(`/api/product_feedback.php?product_id=${encodeURIComponent(p.id)}&v=${Date.now()}`,{credentials:'include',cache:'no-store',headers:{'Accept':'application/json'}});
+        fbNote.textContent='Rating sent to the owner. Thank you!';
+        const refreshed=await fetch(`api/product_feedback.php?product_id=${encodeURIComponent(p.id)}&v=${Date.now()}`,{credentials:'same-origin',cache:'no-store',headers:{'Accept':'application/json'}});
         const refreshedData=await refreshed.json();
-        if(refreshedData.feedback) fbReplies.innerHTML=refreshedData.feedback.map(x=>`<div class="feedback-note" style="margin-top:10px"><b>Your comment:</b> ${String(x.comment).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}${x.owner_reply?`<br><b>Owner reply:</b> ${String(x.owner_reply).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]))}`:''}</div>`).join('');
+        if(!refreshed.ok)throw new Error(refreshedData.error||'Could not reload product feedback.');
+        if(refreshedData.feedback) fbReplies.innerHTML=refreshedData.feedback.map(x=>`<div class="feedback-note feedback-entry"><b>Your review:</b><span class="feedback-entry-rating">${x.rating?`${'★'.repeat(Number(x.rating))}${'☆'.repeat(5-Number(x.rating))}`:'No rating'}</span><p>${escapeHtml(x.comment||'Rating only; no comment.')}</p>${x.owner_reply?`<p><b>Owner reply:</b> ${escapeHtml(x.owner_reply)}</p>`:''}</div>`).join('');
+        selectedRating=0;
+        fbStars.querySelectorAll('.feedback-star').forEach(star=>{star.classList.remove('is-selected');star.setAttribute('aria-checked','false')});
+        fbRatingLabel.textContent='Select 1 to 5 stars';
       }catch(e){fbNote.textContent=e.message||'Could not send comment.'}
-      finally{fbSend.disabled=false;fbSend.textContent='Send comment'}
+      finally{fbSend.disabled=false;fbSend.textContent='Send rating'}
     };
     modal.classList.add('open');document.body.classList.add('modal-open'); setTimeout(()=>modal.querySelector('.product-modal__close').focus(),100);
     function close(){
@@ -150,6 +167,7 @@
       if(zoomButton) zoomButton.textContent='⌕';
     }
   }
+  function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));}
   grid.addEventListener('click',e=>{
     const addBtn=e.target.closest('.product-add-btn');
     if(addBtn){

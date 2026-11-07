@@ -47,7 +47,7 @@
     let points=[];
     function resize(){
       const d=Math.min(devicePixelRatio||1,2); canvas.width=innerWidth*d; canvas.height=innerHeight*d; canvas.style.width=innerWidth+'px'; canvas.style.height=innerHeight+'px'; ctx.setTransform(d,0,0,d,0,0);
-      points=Array.from({length:Math.min(70,Math.floor(innerWidth/22))},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-0.5)*.14,vy:(Math.random()-0.5)*.14,r:Math.random()*1.8+.5}));
+      points=Array.from({length:Math.min(110,Math.floor(innerWidth/15))},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-0.5)*.22,vy:(Math.random()-0.5)*.22,r:Math.random()*1.8+.5}));
     }
     function draw(){
       ctx.clearRect(0,0,innerWidth,innerHeight);
@@ -133,7 +133,7 @@
       '#shopView .feature-card,#shopView .need-card,#shopView .pet-tile,' +
       '#shopView .category-banner,#shopView .care-banner,#shopView .business-proof__item,' +
       '#shopView .trust-item,#shopView .life-stage-card,#shopView .guide-card,' +
-      '#shopView .testimonial-card,#shopView .promo-strip,#shopView .service-card'
+      '#shopView .testimonial-card,#shopView .promo-strip,#shopView .service-card,#shopView .business-cta'
     );
     depthTargets.forEach(target=>{
       target.style.transformStyle='preserve-3d';

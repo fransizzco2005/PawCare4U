@@ -257,8 +257,83 @@
   }
   window.toggleAuth=()=>{if(menu){menu.hidden=!menu.hidden}else openAuth('signin')};
 
-  /* Inner-page cart: go to the real cart drawer on index WITHOUT home galaxy. */
-  window.togglePawCareCart=()=>{sessionStorage.setItem('pawcareSkipHomeGalaxy','1');location.href='index.html#cart'};
+  if(!isHome){
+    const overlay=document.createElement('div');
+    overlay.className='drawer-overlay';
+    overlay.id='innerCartOverlay';
+    const drawer=document.createElement('aside');
+    drawer.className='cart-drawer';
+    drawer.id='innerCartDrawer';
+    drawer.setAttribute('role','dialog');
+    drawer.setAttribute('aria-modal','true');
+    drawer.setAttribute('aria-label','Your cart');
+    drawer.innerHTML='<div class="cart-drawer__head"><h2>Your cart</h2><button class="close-btn" id="innerCartClose" type="button" aria-label="Close cart">✕</button></div><div class="cart-items" id="innerCartItems"></div><p class="empty-state" id="innerCartEmpty" hidden>Your cart is empty.</p><p class="inner-cart-error" id="innerCartError" hidden></p><div class="cart-drawer__footer"><div class="cart-total-row"><span>Subtotal</span><strong id="innerCartSubtotal">₱0.00</strong></div><button class="btn-primary btn-full" id="innerCartCheckout" type="button">Checkout</button></div>';
+    document.body.append(overlay,drawer);
+
+    const cartItems=drawer.querySelector('#innerCartItems');
+    const emptyState=drawer.querySelector('#innerCartEmpty');
+    const cartError=drawer.querySelector('#innerCartError');
+    const subtotal=drawer.querySelector('#innerCartSubtotal');
+    const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const money=value=>'₱'+Number(value||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const closeCart=()=>{
+      drawer.classList.remove('active');
+      overlay.classList.remove('active');
+    };
+    const renderCart=items=>{
+      const count=items.reduce((sum,item)=>sum+Number(item.qty||0),0);
+      document.querySelectorAll('.icon-badge').forEach(badge=>badge.textContent=count);
+      emptyState.hidden=items.length>0;
+      cartItems.innerHTML=items.map(item=>`<div class="cart-item inner-cart-item"><div class="cart-item__thumb"><img src="${escapeHTML(item.image_url||'pawcare-logo.png')}" alt=""></div><div class="inner-cart-item__details"><strong>${escapeHTML(item.name)}</strong><span>${money(item.price)} each</span><div class="inner-cart-item__controls"><button type="button" data-cart-action="decrease" data-product-id="${Number(item.product_id)}" aria-label="Decrease ${escapeHTML(item.name)} quantity">−</button><span>${Number(item.qty)}</span><button type="button" data-cart-action="increase" data-product-id="${Number(item.product_id)}" aria-label="Increase ${escapeHTML(item.name)} quantity">+</button><button type="button" class="inner-cart-item__remove" data-cart-action="remove" data-product-id="${Number(item.product_id)}">Remove</button></div></div><strong>${money(Number(item.price)*Number(item.qty))}</strong></div>`).join('');
+      subtotal.textContent=money(items.reduce((sum,item)=>sum+Number(item.price)*Number(item.qty),0));
+    };
+    const loadCart=async()=>{
+      cartError.hidden=true;
+      try{
+        const data=await api('api/cart.php');
+        renderCart(data.items||[]);
+      }catch(error){
+        cartItems.innerHTML='';
+        emptyState.hidden=true;
+        cartError.textContent=error.message;
+        cartError.hidden=false;
+      }
+    };
+    const openCart=()=>{
+      drawer.classList.add('active');
+      overlay.classList.add('active');
+      loadCart();
+      drawer.querySelector('#innerCartClose').focus();
+    };
+    window.togglePawCareCart=()=>drawer.classList.contains('active')?closeCart():openCart();
+    drawer.querySelector('#innerCartClose').addEventListener('click',closeCart);
+    overlay.addEventListener('click',closeCart);
+    document.addEventListener('keydown',event=>{if(event.key==='Escape')closeCart()});
+    cartItems.addEventListener('click',async event=>{
+      const button=event.target.closest('[data-cart-action]');
+      if(!button)return;
+      const productId=Number(button.dataset.productId);
+      const item=button.closest('.inner-cart-item');
+      const currentQty=Number(item?.querySelector('.inner-cart-item__controls span')?.textContent||0);
+      button.disabled=true;
+      cartError.hidden=true;
+      try{
+        const action=button.dataset.cartAction;
+        const data=action==='remove'
+          ? await api('api/cart.php',{method:'DELETE',body:JSON.stringify({product_id:productId})})
+          : await api('api/cart.php',{method:'POST',body:JSON.stringify({product_id:productId,qty:currentQty+(action==='increase'?1:-1)})});
+        renderCart(data.items||[]);
+      }catch(error){
+        cartError.textContent=error.message;
+        cartError.hidden=false;
+        button.disabled=false;
+      }
+    });
+    drawer.querySelector('#innerCartCheckout').addEventListener('click',()=>{
+      sessionStorage.setItem('pawcareSkipHomeGalaxy','1');
+      location.href='index.html#cart';
+    });
+  }
 
   function toast(msg){let t=document.getElementById('pawcareEnhanceToast');if(!t){t=document.createElement('div');t.id='pawcareEnhanceToast';t.className='catalog-toast';document.body.appendChild(t)}t.textContent=msg;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2200)}
 

@@ -2495,9 +2495,9 @@
 }
 
 .page-loader-mark{
-  width:62px;
-  height:62px;
-  border-radius:18px;
+  width:84px;
+  height:84px;
+  border-radius:50%;
   background:transparent;
   display:grid;
   place-items:center;
@@ -2509,10 +2509,10 @@
 .page-loader-mark svg{display:none!important}
 .page-loader-mark:before{
   content:"";
-  width:62px;
-  height:62px;
-  border-radius:14px;
-  background:url("pawcare-logo-removebg.png") center/contain no-repeat;
+  width:84px;
+  height:84px;
+  border-radius:50%;
+  background:url("pawcare-logo.png") center/contain no-repeat;
   filter:drop-shadow(0 10px 18px rgba(24,118,255,.38));
 }
 

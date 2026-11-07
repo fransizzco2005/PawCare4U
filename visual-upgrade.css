@@ -72,7 +72,7 @@ body.page-home,body.home-page{background:#050b16!important;background-image:radi
   overflow:hidden!important;
   border-radius:50%!important;
   border:1px solid rgba(124,204,255,.28)!important;
-  background:transparent url('pawcare-logo-removebg.png') center/86% no-repeat!important;
+  background:transparent url('pawcare-logo.png') center/86% no-repeat!important;
   box-shadow:0 8px 22px rgba(30,113,180,.22)!important;
 }
 .logo-mark svg,
@@ -1250,4 +1250,147 @@ body.home-page .business-cta a:hover{
     grid-row:3!important;
     justify-self:center!important;
   }
+}
+
+body{isolation:isolate}
+.pc-motion-bg{z-index:-1!important}
+.pc-motion-bg canvas{opacity:.9!important}
+
+.topbar{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  background:rgba(3,9,20,.82)!important;
+}
+.topbar:before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  background:linear-gradient(105deg,transparent 15%,rgba(87,188,255,.16) 48%,transparent 78%);
+  transform:translateX(-100%);
+  animation:pcTopbarShimmer 8s ease-in-out infinite;
+  pointer-events:none;
+}
+.topbar-inner{position:relative;z-index:1}
+@keyframes pcTopbarShimmer{
+  0%,35%{transform:translateX(-100%)}
+  75%,100%{transform:translateX(100%)}
+}
+
+body.home-page .business-cta{
+  transition:transform .32s cubic-bezier(.2,.75,.25,1),box-shadow .32s ease,border-color .32s ease!important;
+}
+body.home-page .business-cta:after{
+  content:"";
+  position:absolute;
+  inset:-60% -30%;
+  background:linear-gradient(115deg,transparent 43%,rgba(255,255,255,.34) 50%,transparent 57%);
+  transform:translateX(-75%) rotate(-8deg);
+  transition:transform .7s ease;
+  pointer-events:none;
+}
+body.home-page .business-cta:hover{
+  border-color:rgba(87,167,244,.58)!important;
+  box-shadow:0 34px 78px rgba(1,19,48,.46),0 18px 40px rgba(38,126,210,.26),inset 0 1px rgba(255,255,255,.98)!important;
+}
+body.home-page .business-cta:hover:after{transform:translateX(75%) rotate(-8deg)}
+body.home-page .business-cta a{
+  box-shadow:0 15px 28px rgba(17,91,180,.28),inset 0 1px rgba(255,255,255,.48),inset 0 -3px rgba(8,56,123,.14)!important;
+}
+body.home-page .business-cta a:hover{
+  box-shadow:0 21px 38px rgba(17,91,180,.38),inset 0 1px rgba(255,255,255,.55),inset 0 -3px rgba(8,56,123,.12)!important;
+}
+
+body.page-dog .hero,body.page-cat .hero,body.page-bird .hero,body.page-fish .hero,body.page-rodent .hero,body.page-small-pets .hero{
+  height:auto!important;
+  min-height:210px!important;
+  grid-template-columns:minmax(0,1fr) 270px!important;
+  grid-template-rows:auto auto!important;
+  align-content:center!important;
+  align-items:center!important;
+  gap:4px 36px!important;
+  padding:20px 24px!important;
+}
+body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-fish .hero h1,body.page-rodent .hero h1,body.page-small-pets .hero h1{
+  grid-column:1!important;
+  grid-row:1!important;
+  align-self:end!important;
+  max-width:700px;
+  margin:0 0 4px!important;
+  line-height:1.12!important;
+}
+body.page-dog .hero p,body.page-cat .hero p,body.page-bird .hero p,body.page-fish .hero p,body.page-rodent .hero p,body.page-small-pets .hero p{
+  grid-column:1!important;
+  grid-row:2!important;
+  align-self:start!important;
+  max-width:540px!important;
+  margin:0!important;
+  line-height:1.5!important;
+}
+body.page-dog .catalog-hero-visual,body.page-cat .catalog-hero-visual,body.page-bird .catalog-hero-visual,body.page-fish .catalog-hero-visual,body.page-rodent .catalog-hero-visual,body.page-small-pets .catalog-hero-visual{
+  grid-column:2!important;
+  grid-row:1 / span 2!important;
+  width:240px!important;
+  height:160px!important;
+  justify-self:end!important;
+  align-self:center!important;
+  margin:0!important;
+}
+
+.feedback-rating{display:grid;grid-template-columns:1fr;align-items:center;gap:8px 12px;margin:12px 0}
+.feedback-rating>span:first-child{color:#34445b;font-weight:700}
+.feedback-stars{display:flex;gap:4px}
+.feedback-star{
+  padding:0 2px;
+  border:0;
+  background:transparent;
+  color:#b8c5d3;
+  font-size:26px;
+  line-height:1;
+  cursor:pointer;
+}
+.feedback-star.is-selected{color:#f3ad27}
+.feedback-star:disabled{cursor:not-allowed;opacity:.5}
+.feedback-rating-label{grid-column:1/-1;color:#718096;font-size:12px}
+.feedback-entry{display:grid;grid-template-columns:1fr auto;gap:5px 12px;padding:12px 0;border-top:1px solid #e4ebf3}
+.feedback-entry p{grid-column:1/-1;margin:0!important}
+.feedback-entry-rating{color:#efa91e;font-weight:800;letter-spacing:.04em}
+.product-feedback-box textarea{min-height:88px;resize:vertical}
+.product-modal #modalCheckout{background:#fff!important;color:#163557!important;border:1px solid #bfd4e8!important}
+.product-modal #modalCheckout:hover{background:#edf5fc!important}
+.cart-drawer #checkoutBtn{color:#fff!important}
+.inner-cart-error{margin:0 20px 14px;color:#b42318;font-size:13px}
+.inner-cart-item{align-items:flex-start!important}
+.inner-cart-item__details{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px;color:#17283d}
+.inner-cart-item__details>strong{font-size:13px;line-height:1.35}
+.inner-cart-item__details>span{color:#708198;font-size:12px}
+.inner-cart-item__controls{display:flex;align-items:center;gap:8px;margin-top:3px}
+.inner-cart-item__controls button{min-width:28px;min-height:28px;border:1px solid #d5e0eb;border-radius:8px;background:#f4f8fc;color:#173b63;font-weight:800;cursor:pointer}
+.inner-cart-item__controls .inner-cart-item__remove{border:0;background:transparent;color:#a23a3a;font-size:11px}
+.inner-cart-item>strong{white-space:nowrap;color:#153a63;font-size:13px}
+
+@media(max-width:760px){
+  body.page-dog .hero,body.page-cat .hero,body.page-bird .hero,body.page-fish .hero,body.page-rodent .hero,body.page-small-pets .hero{
+    min-height:0!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto auto auto!important;
+    gap:10px!important;
+    padding:24px 20px!important;
+  }
+  body.page-dog .hero h1,body.page-cat .hero h1,body.page-bird .hero h1,body.page-fish .hero h1,body.page-rodent .hero h1,body.page-small-pets .hero h1{
+    grid-column:1!important;grid-row:1!important;margin:0!important;text-align:left!important;font-size:26px!important;
+  }
+  body.page-dog .hero p,body.page-cat .hero p,body.page-bird .hero p,body.page-fish .hero p,body.page-rodent .hero p,body.page-small-pets .hero p{
+    grid-column:1!important;grid-row:2!important;margin:0!important;text-align:left!important;
+  }
+  body.page-dog .catalog-hero-visual,body.page-cat .catalog-hero-visual,body.page-bird .catalog-hero-visual,body.page-fish .catalog-hero-visual,body.page-rodent .catalog-hero-visual,body.page-small-pets .catalog-hero-visual{
+    grid-column:1!important;grid-row:3!important;justify-self:center!important;width:min(240px,72vw)!important;height:150px!important;
+  }
+  .feedback-rating{gap:8px}
+  .feedback-rating-label{grid-column:1}
+}
+@media(prefers-reduced-motion:reduce){
+  .topbar:before{animation:none}
+  body.home-page .business-cta:after{display:none}
 }
