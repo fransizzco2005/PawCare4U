@@ -1,4 +1,42 @@
 (() => {
+  const catalogFallbacks = {
+    dog: 'https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=900&q=88',
+    cat: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=900&q=88',
+    bird: 'https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&fit=crop&w=900&q=88',
+    fish: 'https://images.unsplash.com/photo-1522069169874-c58ec4b4bb49?auto=format&fit=crop&w=900&q=88',
+    'small-pets': 'https://images.unsplash.com/photo-1425082661705-1834bfd09dca?auto=format&fit=crop&w=900&q=88'
+  };
+  const animal = Object.keys(catalogFallbacks).find(name =>
+    document.body.classList.contains(name === 'small-pets' ? 'page-small-pets' : `page-${name}`)
+  ) || 'cat';
+  const fallback = catalogFallbacks[animal];
+
+  document.querySelectorAll('.product-thumb img, .catalog-hero-frame img').forEach((img) => {
+    const applyFallback = () => {
+      if (img.dataset.pawcareFallbackApplied) return;
+      img.dataset.pawcareFallbackApplied = '1';
+      img.src = fallback;
+    };
+    img.addEventListener('error', applyFallback, { once: true });
+    if (img.complete && img.naturalWidth === 0) applyFallback();
+  });
+
+  if (document.querySelector('.page-dog,.page-cat,.page-bird,.page-fish,.page-small-pets') && !document.querySelector('.catalog-scroll-cue')) {
+    const products = document.querySelector('.products-section') || document.querySelector('.filters-grid');
+    if (products) {
+      const cue = document.createElement('a');
+      cue.className = 'catalog-scroll-cue';
+      cue.href = '#';
+      cue.setAttribute('aria-label', 'Scroll to products');
+      cue.innerHTML = '<span>Explore products</span><i aria-hidden="true">⌄</i>';
+      cue.addEventListener('click', (event) => {
+        event.preventDefault();
+        products.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      document.querySelector('.hero')?.appendChild(cue);
+    }
+  }
+
   if (!document.querySelector('.pc-motion-bg')) {
     const bg=document.createElement('div');
     bg.className='pc-motion-bg';
