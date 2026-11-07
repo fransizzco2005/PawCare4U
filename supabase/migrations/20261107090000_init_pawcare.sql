@@ -264,7 +264,9 @@ CREATE TABLE IF NOT EXISTS product_feedback (
 -- Email: owner@pawcare.ph | Password: owner123
 INSERT INTO owners (name,email,password_hash)
 VALUES ('PawCare Owner','owner@pawcare.ph','$2y$12$GaRF0/1JiK4CDI2Lc36pDOkO/SHiCvFg/5sHfMXe64uu6UAGdLriu')
-ON CONFLICT (email) DO UPDATE SET name=EXCLUDED.name;
+ON CONFLICT (email) DO UPDATE SET
+  name = EXCLUDED.name,
+  password_hash = EXCLUDED.password_hash;
 
 INSERT INTO order_status_history (order_id,status,note)
 SELECT id, order_status, 'Initial order status'
