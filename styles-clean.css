@@ -2483,8 +2483,11 @@
 
 .page-loader-ring{
   position:absolute;
+  top:50%;
+  left:50%;
   width:104px;
   height:104px;
+  margin:-52px 0 0 -52px;
   border-radius:50%;
   border:2px solid rgba(120,170,255,.16);
   border-top-color:#4d9cff;
@@ -2495,17 +2498,22 @@
   width:62px;
   height:62px;
   border-radius:18px;
-  background:linear-gradient(145deg,#0b63ce,#18a0ff);
+  background:transparent;
   display:grid;
   place-items:center;
   color:#fff;
-  box-shadow:0 14px 40px rgba(24,118,255,.45);
+  box-shadow:none;
   animation:pcPulse 1.7s ease-in-out infinite;
 }
 
-.page-loader-mark svg{
-  width:32px;
-  height:32px;
+.page-loader-mark svg{display:none!important}
+.page-loader-mark:before{
+  content:"";
+  width:62px;
+  height:62px;
+  border-radius:14px;
+  background:url("pawcare-logo-removebg.png") center/contain no-repeat;
+  filter:drop-shadow(0 10px 18px rgba(24,118,255,.38));
 }
 
 .page-loader-text{

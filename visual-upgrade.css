@@ -1162,6 +1162,54 @@ body.home-page .testimonial-author span{color:#eef7ff!important}
 body.home-page .guides-section article,
 body.home-page .testimonial-card{color:#eef7ff!important}
 
+/* White homepage panels keep their descriptions readable in dark ink only. */
+body.home-page .guides-grid article p,
+body.home-page .testimonial-grid article p{
+  color:#111111!important;
+}
+
+body.home-page .business-cta{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(150,205,255,.32)!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(121,205,255,.18),transparent 38%),
+    linear-gradient(145deg,#eff8ff,#ffffff)!important;
+  box-shadow:
+    0 28px 70px rgba(1,19,48,.38),
+    0 14px 34px rgba(38,126,210,.20),
+    inset 0 1px rgba(255,255,255,.95)!important;
+  transform-style:preserve-3d;
+}
+body.home-page .business-cta:before{
+  content:"";
+  position:absolute;
+  inset:10px;
+  border-radius:11px;
+  border:1px solid rgba(65,146,220,.08);
+  pointer-events:none;
+}
+body.home-page .business-cta a{
+  position:relative;
+  z-index:1;
+  min-height:48px!important;
+  display:inline-flex!important;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px!important;
+  font-size:15px;
+  box-shadow:
+    0 12px 24px rgba(17,91,180,.24),
+    inset 0 1px rgba(255,255,255,.38)!important;
+  transform:translateZ(18px);
+}
+body.home-page .business-cta a:hover{
+  transform:translateY(-4px) translateZ(18px) scale(1.02)!important;
+  box-shadow:
+    0 18px 34px rgba(17,91,180,.32),
+    inset 0 1px rgba(255,255,255,.44)!important;
+}
+
 @media(max-width:820px){
   body.home-page #shopView .hero{
     min-height:720px!important;
