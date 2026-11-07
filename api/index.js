@@ -47,9 +47,23 @@ function verify(value) {
 }
 
 async function body(req) {
-  if (req.body && typeof req.body === 'object') return req.body;
   let text = '';
-  for await (const chunk of req) text += chunk;
+  if (req.body && typeof req.body === 'object') return req.body;
+  if (typeof req.body === 'string') text = req.body;
+  else for await (const chunk of req) text += chunk;
+  const contentType = String(req.headers['content-type'] || '');
+  if (contentType.includes('application/json')) return text ? JSON.parse(text) : {};
+  if (contentType.includes('multipart/form-data')) {
+    const boundary = contentType.split('boundary=')[1]?.trim();
+    const fields = {};
+    if (boundary && text) {
+      for (const part of text.split(`--${boundary}`)) {
+        const match = part.match(/name="([^"]+)"\r?\n\r?\n([\s\S]*?)\r?\n(?:--)?$/);
+        if (match) fields[match[1]] = match[2].replace(/\r?\n$/, '');
+      }
+    }
+    return fields;
+  }
   return text ? JSON.parse(text) : {};
 }
 
@@ -73,6 +87,32 @@ module.exports = async function handler(req, res) {
       }
       const result = await pool.query('SELECT id, name, email, phone FROM users WHERE id = $1', [session.id]);
       return json(res, 200, { user: result.rows[0] ? { ...result.rows[0], role: 'user' } : null });
+    }
+    if (pathname === 'profile') {
+      if (!session) return json(res, 401, { error: 'Please sign in first.' });
+      if (req.method === 'GET') {
+        const result = session.role === 'owner'
+          ? await pool.query('SELECT id,name,email,profile_name,avatar_url FROM owners WHERE id=$1', [session.id])
+          : await pool.query('SELECT id,name,email,phone,nickname,avatar_url FROM users WHERE id=$1', [session.id]);
+        if (!result.rows[0]) return json(res, 401, { error: 'Please sign in first.' });
+        return json(res, 200, { profile: { ...result.rows[0], role: session.role } });
+      }
+      if (req.method === 'POST') {
+        const input = await body(req);
+        if (session.role === 'owner') {
+          const name = String(input.name || '').trim() || session.name;
+          const nickname = String(input.nickname || '').trim();
+          await pool.query('UPDATE owners SET name=$1, profile_name=$2 WHERE id=$3', [name, nickname, session.id]);
+          const result = await pool.query('SELECT id,name,email,profile_name,avatar_url FROM owners WHERE id=$1', [session.id]);
+          return json(res, 200, { ok: true, profile: { ...result.rows[0], role: 'owner' } });
+        }
+        const nickname = String(input.nickname || '').trim();
+        if (nickname.length > 80) return json(res, 422, { error: 'Nickname is too long.' });
+        await pool.query('UPDATE users SET nickname=$1 WHERE id=$2', [nickname, session.id]);
+        const result = await pool.query('SELECT id,name,email,phone,nickname,avatar_url FROM users WHERE id=$1', [session.id]);
+        return json(res, 200, { ok: true, profile: { ...result.rows[0], role: 'user' } });
+      }
+      return json(res, 405, { error: 'Method not allowed.' });
     }
     if (pathname === 'products' && req.method === 'GET') {
       const category = url.searchParams.get('category') || 'all';

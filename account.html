@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Account · PawCare</title>
+  <link rel="stylesheet" href="styles-clean.css">
+  <link rel="stylesheet" href="account-features.css">
+  <link rel="stylesheet" href="account-page.css">
+</head>
+<body class="account-page">
+  <header class="account-topbar">
+    <a class="account-brand" href="index.html"><span class="account-brand-mark paw-logo-mark">🐾</span><span>PawCare</span></a>
+    <nav class="account-topnav" aria-label="Account navigation"><a href="index.html">Home</a><a href="Dogs.html">Products</a><a href="services.html">Services</a></nav>
+    <div class="account-top-actions"><span class="role-chip">USER ACCOUNT</span><a href="index.html" class="back-home">Back to PawCare</a></div>
+  </header>
+  <main class="account-shell">
+    <div class="account-breadcrumb"><a href="index.html">PawCare</a><span>›</span><b>My Account</b></div>
+    <section class="account-layout">
+      <aside class="account-sidebar">
+        <div class="profile-mini">
+          <div class="avatar avatar-mini" id="miniAvatar"><span id="miniInitials">P</span><img id="miniAvatarImg" alt="Profile photo" hidden></div>
+          <div><strong id="miniName">Loading...</strong><small id="miniEmail"></small></div>
+        </div>
+        <button class="side-link active" data-section="profile">👤 <span>Profile</span></button>
+        <button class="side-link" data-section="orders">📦 <span>My Orders</span></button>
+        <button class="side-link" data-section="reservations">🗓️ <span>My Reservations</span></button>
+        <button class="side-link owner-only" data-section="feedback" hidden>💬 <span>Customer Feedback</span></button>
+        <button class="side-link owner-only" data-section="overview" hidden>📊 <span>Overview</span></button>
+        <button class="side-link" id="signOutAccount">↪ <span>Sign out</span></button>
+      </aside>
+      <section class="account-content">
+        <div class="account-heading"><div><span class="section-kicker">MY ACCOUNT</span><h1 id="accountTitle">Profile</h1><p id="accountSubtitle">Manage your PawCare profile and keep track of your orders.</p></div><span class="big-role-indicator">● CUSTOMER</span></div>
+        <section class="account-section active" id="section-profile">
+          <div class="profile-card">
+            <div class="profile-card-top">
+              <div class="profile-avatar-wrap"><div class="avatar avatar-large" id="profileAvatar"><span id="profileInitials">P</span><img id="profileAvatarImg" alt="Profile photo" hidden></div><label class="photo-btn" for="avatarInput">Change photo</label><input id="avatarInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden></div>
+              <div><span class="hello-label">Hello,</span><h2 id="profileHello">PawCare user!</h2><p id="profileRoleText">Your account information</p></div>
+            </div>
+            <form id="profileForm" class="profile-form">
+              <div class="form-grid">
+                <label>Profile name / nickname<input id="nicknameInput" name="nickname" maxlength="80" placeholder="Enter your nickname"></label>
+                <label>Username / full name<input id="fullNameInput" name="name" readonly></label>
+                <label>Email<input id="emailInput" readonly></label>
+                <label>Phone number<input id="phoneInput" readonly></label>
+              </div>
+              <div class="profile-note">You can change your <b>nickname</b>. Your username/login email stays the same.</div>
+              <div class="profile-actions"><button class="save-profile" type="submit">Save changes</button><span id="profileMessage"></span></div>
+            </form>
+          </div>
+        </section>
+        <section class="account-section" id="section-orders"><div id="accountOrders" class="account-orders-grid"><div class="account-loading">Loading orders...</div></div></section>
+        <section class="account-section" id="section-reservations"><div id="accountReservations" class="account-reservations-grid"><div class="account-loading">Loading reservations...</div></div></section>
+        <section class="account-section" id="section-feedback"><div id="accountFeedback"><div class="account-loading">Loading feedback...</div></div></section>
+        <section class="account-section" id="section-overview"><div id="accountOverview"><div class="account-loading">Loading overview...</div></div></section>
+      </section>
+    </section>
+  </main>
+  <script src="account-page.js"></script>
+</body>
+</html>
