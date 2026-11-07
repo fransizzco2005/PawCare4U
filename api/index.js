@@ -225,6 +225,9 @@ module.exports = async function handler(req, res) {
         return json(res, 200, { items: await cartRows() }, headers);
       }
       if (req.method === 'POST') {
+        if (!session || session.role !== 'user') {
+          return json(res, 401, { error: 'Please sign in before adding items to your cart.' });
+        }
         const input = await body(req);
         const productId = Number(input.product_id || 0);
         if (!productId) return json(res, 422, { error: 'product_id is required.' });

@@ -118,6 +118,13 @@
     if(e.defaultPrevented||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target==='_blank')return;
     const href=a.getAttribute('href'); if(!href||href.startsWith('#')||href.startsWith('mailto:')||href.startsWith('tel:'))return;
     try{const u=new URL(href,location.href);if(u.origin!==location.origin)return;if(u.pathname===location.pathname&&!u.hash)return}catch(_){return}
+    const shopPage=/^(dogs|cats|birds|fish|smallpets)\.html$/i.test(new URL(href,location.href).pathname.split('/').pop()||'');
+    if(shopPage && (!currentUser || currentUser.role !== 'user')){
+      e.preventDefault();
+      openAuth('signin');
+      toast('Please sign in or create an account to access the shop.');
+      return;
+    }
     e.preventDefault(); sessionStorage.setItem('pawcareTabNavigation','1'); location.assign(href);
   }));
   navLinks.forEach(a=>{try{const u=new URL(a.href,location.href),cur=location.pathname.split('/').pop().toLowerCase()||'index.html',tar=u.pathname.split('/').pop().toLowerCase()||'index.html';a.classList.toggle('active',cur===tar)}catch(_){}});
@@ -192,7 +199,16 @@
     api('api/session.php').then(async d=>{
       let user=d.user||null;
       if(user){try{const p=await api('api/profile.php');user={...user,...p.profile};}catch(_){} }
-      setAccount(user);window.PawCareOwnerMode?.init(user);return api('api/cart.php')
+      setAccount(user);window.PawCareOwnerMode?.init(user);
+      const page=location.pathname.split('/').pop().toLowerCase();
+      const isShopPage=/^(dogs|cats|birds|fish|smallpets)\.html$/.test(page);
+      if(isShopPage && (!user || user.role !== 'user')){
+        sessionStorage.setItem('pawcareSkipHomeGalaxy','1');
+        sessionStorage.setItem('pawcareRequireSignIn','1');
+        location.replace('index.html');
+        return { items: [] };
+      }
+      return api('api/cart.php')
     }).then(d=>{
       const count=(d.items||[]).reduce((n,i)=>n+Number(i.qty||0),0);document.querySelectorAll('.icon-badge').forEach(x=>x.textContent=count);
     }).catch(()=>setAccount(null));
@@ -200,6 +216,10 @@
     /* HOME: read the real PHP session immediately so Owner/User mode is correct on first paint. */
     const syncHome=async()=>{try{const d=await api('api/session.php');let u=d.user||null;if(u){try{const p=await api('api/profile.php');u={...u,...p.profile};if(window.state)window.state.user=u;}catch(_){} }setAccount(u);window.PawCareOwnerMode?.init(u);}catch(_){setAccount(null)}};
     syncHome(); setTimeout(syncHome,350); setTimeout(syncHome,900);
+    if(sessionStorage.getItem('pawcareRequireSignIn')==='1'){
+      sessionStorage.removeItem('pawcareRequireSignIn');
+      setTimeout(()=>{if(typeof openAuth==='function')openAuth('signin');},200);
+    }
   }
 
   function ensureAuthModal(){
