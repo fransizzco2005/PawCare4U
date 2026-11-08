@@ -27,7 +27,7 @@
         </div>
         <div class="pawcare-welcome__content">
           <p class="pawcare-welcome__eyebrow">WELCOME TO PAWCARE</p>
-          <h1 class="pawcare-welcome__title">Every Paw Deserves the Best!</h1>
+          <h1 class="pawcare-welcome__title">Every Pet Deserves the Best</h1>
           <p class="pawcare-welcome__subtitle">Everything your pet needs to thrive. Shop top-tier nutrition, interactive toys, and everyday care essentials today!</p>
           <button class="pawcare-welcome__start" type="button"><span>Start Shopping</span><i aria-hidden="true">→</i></button>
         </div>
