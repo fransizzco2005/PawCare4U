@@ -99,14 +99,15 @@ async function loadOverview(month=overviewMonth,year=overviewYear){
   const years=[...new Set([overviewYear,...(d.years||[]).map(Number)])].sort((a,b)=>b-a);
   const ratingMonths=(d.monthly_ratings||[]).map(m=>`<tr><td>${esc(m.month)}</td><td>${Number(m.count||0)}</td><td>${Number(m.average||0).toFixed(2)} / 5</td></tr>`).join('');
   box.innerHTML=`<div class="owner-account-panel">
-   <h2>Overall performance</h2><div class="owner-summary-grid">
-    <div><b>${Number(s.orders||0)}</b><span>Completed and active orders</span></div><div><b>${money(s.sales)}</b><span>All-time sales</span></div>
-    <div><b>${Number(r.average||0).toFixed(2)} / 5</b><span>Overall customer rating (${Number(r.count||0)} ratings)</span></div>
-   </div><h2>This month</h2><div class="owner-summary-grid">
-    <div><b>${Number(s.month_orders||0)}</b><span>Orders</span></div><div><b>${money(s.month_sales)}</b><span>Sales</span></div>
-    <div><b>${Number(r.month_average||0).toFixed(2)} / 5</b><span>Customer rating (${Number(r.month_count||0)} ratings)</span></div>
-   </div><div class="overview-tables"><div><h3>Monthly sales</h3>${monthlySalesPicker(overviewMonth,overviewYear,years)}<div class="overview-month-result"><b>${monthLabel} ${overviewYear}</b><div><span>${Number(selected.orders||0)} orders</span><strong>${money(selected.sales)}</strong></div></div></div>
-   <div><h3>Monthly feedback</h3><table><thead><tr><th>Month</th><th>Ratings</th><th>Average</th></tr></thead><tbody>${ratingMonths||'<tr><td colspan="3">No ratings recorded.</td></tr>'}</tbody></table></div></div>
+  <div class="overview-sales-controls"><h3>Monthly sales</h3>${monthlySalesPicker(overviewMonth,overviewYear,years)}</div>
+  <h2>Overall performance</h2><div class="owner-summary-grid">
+   <div><b>${Number(s.orders||0)}</b><span>Completed and active orders</span></div><div><b>${money(s.sales)}</b><span>All-time sales</span></div>
+   <div><b>${Number(r.average||0).toFixed(2)} / 5</b><span>Overall customer rating (${Number(r.count||0)} ratings)</span></div>
+  </div><div class="overview-month-result"><span>${monthLabel} ${overviewYear}</span><div><span>Orders <b>${Number(selected.orders||0)}</b></span><strong>${money(selected.sales)}</strong></div></div>
+  <h2>This month</h2><div class="owner-summary-grid">
+   <div><b>${Number(s.month_orders||0)}</b><span>Orders</span></div><div><b>${money(s.month_sales)}</b><span>Sales</span></div>
+   <div><b>${Number(r.month_average||0).toFixed(2)} / 5</b><span>Customer rating (${Number(r.month_count||0)} ratings)</span></div>
+  </div><div class="overview-tables"><div><h3>Monthly feedback</h3><table><thead><tr><th>Month</th><th>Ratings</th><th>Average</th></tr></thead><tbody>${ratingMonths||'<tr><td colspan="3">No ratings recorded.</td></tr>'}</tbody></table></div></div>
   </div>`;
   box.querySelector('[data-sales-year]')?.addEventListener('change',event=>loadOverview(overviewMonth,Number(event.target.value)));
   box.querySelectorAll('[data-sales-month]').forEach(button=>button.addEventListener('click',()=>loadOverview(Number(button.dataset.salesMonth),overviewYear)));
