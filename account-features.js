@@ -6,6 +6,10 @@ const money=n=>'₱'+Number(n||0).toLocaleString('en-PH',{minimumFractionDigits:
 const labels={placed:'Order placed',processing:'Packed / processing',shipped:'On the way',delivered:'Delivered',cancelled:'Cancelled'};
 const cancelReasons={found_another_product:'I found another product',ordered_by_mistake:'I ordered by mistake',changed_my_mind:'I changed my mind',delivery_takes_too_long:'The delivery takes too long',other:'Other',owner_cancelled:'Cancel on behalf of the customer'};
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let orderTrashView=false;
+function orderTrashToolbar(inTrash){return `<div class="record-trash-toolbar"><div><b>${inTrash?'Trash':'All orders'}</b><small>${inTrash?'Archived records are hidden from the active list.':'Move old records to trash to tidy this list.'}</small></div><button type="button" class="record-trash-toggle" data-order-trash-toggle>${inTrash?'← Back to orders':'🗑 View trash'}</button></div>`}
+function orderTrashButton(id,inTrash){const label=`Order #${id}`;return inTrash?`<div class="record-owner-actions"><button type="button" data-record-action="restore" data-record-id="${id}">↩ Restore</button><button type="button" class="record-delete-forever" data-record-action="delete" data-record-id="${id}" data-record-label="${esc(label)}">Delete permanently</button></div>`:`<button type="button" class="record-trash-button" data-record-action="archive" data-record-id="${id}" aria-label="Move ${label} to trash" title="Move to trash">🗑</button>`}
+function wireOrderTrash(panel,reload,inTrash){panel.querySelector('[data-order-trash-toggle]')?.addEventListener('click',()=>{orderTrashView=!orderTrashView;reload()});panel.querySelectorAll('[data-record-action]').forEach(button=>button.onclick=async()=>{const action=button.dataset.recordAction,id=Number(button.dataset.recordId);if(action==='delete'&&!window.confirm(`Permanently delete ${button.dataset.recordLabel}? This cannot be undone.`))return;const text=button.textContent;button.disabled=true;button.textContent=action==='delete'?'Deleting...':action==='restore'?'Restoring...':'Moving...';try{await api('api/record_trash.php',{method:'POST',body:JSON.stringify({type:'order',action,id})});await reload()}catch(error){alert(error.message);button.disabled=false;button.textContent=text}})}
 function cancellationForm(id,owner){return `<details class="cancellation-details"><summary>Cancel order</summary><form class="cancellation-form" data-cancel-type="order" data-cancel-id="${id}"><label>Reason<select name="reason" required>${Object.entries(cancelReasons).filter(([key])=>key!=='owner_cancelled'||owner).map(([key,label])=>`<option value="${key}">${esc(label)}</option>`).join('')}</select></label><label class="cancellation-other" hidden>Tell us more<input name="other_reason" maxlength="300" disabled></label><button type="submit">Confirm cancellation</button></form></details>`}
 function wireCancellationForms(box,reload){box.querySelectorAll('.cancellation-form').forEach(form=>{const select=form.elements.reason,other=form.querySelector('.cancellation-other'),input=form.elements.other_reason;select.onchange=()=>{const show=select.value==='other';other.hidden=!show;input.disabled=!show;input.required=show};form.onsubmit=async event=>{event.preventDefault();const button=form.querySelector('button');button.disabled=true;button.textContent='Cancelling...';try{await api('api/order_cancel.php',{method:'POST',body:JSON.stringify({order_id:Number(form.dataset.cancelId),reason:select.value,other_reason:input.value.trim()})});await reload()}catch(error){alert(error.message);button.disabled=false;button.textContent='Confirm cancellation'}}})}
 function tracking(o){
@@ -13,20 +17,20 @@ function tracking(o){
  if(cur==='cancelled') return `<div class="tracking cancelled">${states.slice(0,3).map(x=>`<div class="track-step"><span>✓</span><small>${labels[x]}</small></div>`).join('')}<div class="track-step current"><span>×</span><small>Cancelled</small></div></div>`;
  return `<div class="tracking">${states.map((x,i)=>`<div class="track-step ${i<=idx?'done':''} ${x===cur?'current':''}"><span>${i<idx?'✓':i===idx?'●':'○'}</span><small>${labels[x]}</small></div>`).join('')}</div>`;
 }
-function orderCard(o,owner=false){
+function orderCard(o,owner=false,inTrash=false){
  const items=(o.items||[]).map(i=>`<div class="order-item"><span>${esc(i.name)} × ${i.qty}</span><b>${money(i.price*i.qty)}</b></div>`).join('');
  const statusOptions=['placed','processing','shipped','delivered'].map(s=>`<option value="${s}" ${s===o.order_status?'selected':''}>${labels[s]}</option>`).join('');
  const fulfillment=o.fulfillment_method==='pickup'?`Store pickup · ${esc(o.pickup_branch||'PawCare location')}`:'Home delivery';
  const cancelHistory=(o.history||[]).slice().reverse().find(h=>h.status==='cancelled');
  const cancelReason=cancelHistory?.note?`<p class="cancellation-reason"><b>Cancellation reason:</b> ${esc(cancelHistory.note.replace(/^Cancellation reason:\\s*/i,''))}</p>`:'';
  const hasStarted=(o.history||[]).some(h=>['processing','shipped','delivered'].includes(h.status));
- const cancelAction=o.order_status!=='cancelled'&&(owner||(o.order_status==='placed'&&!hasStarted))?cancellationForm(o.id,owner):'';
+ const cancelAction=!inTrash&&o.order_status!=='cancelled'&&(owner||(o.order_status==='placed'&&!hasStarted))?cancellationForm(o.id,owner):'';
  return `<article class="order-card">
-  <div class="order-card-head"><div><b>Order #${o.id}</b><small>${new Date(o.created_at).toLocaleString()}</small></div><span class="status-pill status-${o.order_status}">${labels[o.order_status]||o.order_status}</span></div>
+  <div class="order-card-head"><div><b>Order #${o.id}</b><small>${new Date(o.created_at).toLocaleString()}</small></div><div class="record-card-actions"><span class="status-pill status-${o.order_status}">${labels[o.order_status]||o.order_status}</span>${owner?orderTrashButton(o.id,inTrash):''}</div></div>
   <p class="order-fulfillment"><b>${fulfillment}</b></p>
   ${owner?`<div class="customer-box"><b>${esc(o.customer_name)}</b><span>${esc(o.customer_email)}</span><span>${esc(o.phone||'')}</span><span>${esc(o.line1)}, ${esc(o.city)}, ${esc(o.province)} ${esc(o.postal_code)}</span></div>`:''}
   <div class="order-items">${items}</div><div class="order-total"><span>Total</span><b>${money(o.total)}</b></div>${tracking(o)}${cancelReason}${cancelAction}
-  ${owner&&o.order_status!=='cancelled'?`<div class="owner-order-action"><label>Update status <select data-order-status data-id="${o.id}">${statusOptions}</select></label></div>`:''}
+  ${owner&&!inTrash&&o.order_status!=='cancelled'?`<div class="owner-order-action"><label>Update status <select data-order-status data-id="${o.id}">${statusOptions}</select></label></div>`:''}
  </article>`;
 }
 async function initUserOrders(){
@@ -43,7 +47,8 @@ function initOwner(){
  setInterval(()=>loadOwnerMessages(!panels.messages?.hidden),8000);
  async function loadOwnerOrders(){
   const p=panels.orders;p.innerHTML='<div class="orders-message">Loading orders...</div>';
-  try{const d=await api('api/orders.php');p.innerHTML=d.orders.length?d.orders.map(o=>orderCard(o,true)).join(''):'<div class="empty-owner">No customer orders yet.</div>';
+  try{const d=await api(`api/orders.php${orderTrashView?'?view=trash':''}`);p.innerHTML=orderTrashToolbar(orderTrashView)+(d.orders.length?d.orders.map(o=>orderCard(o,true,orderTrashView)).join(''):`<div class="empty-owner">${orderTrashView?'Trash is empty.':'No customer orders yet.'}</div>`);
+   wireOrderTrash(p,loadOwnerOrders,orderTrashView);
    wireCancellationForms(p,loadOwnerOrders);
    p.querySelectorAll('[data-order-status]').forEach(sel=>sel.onchange=async()=>{try{await api('api/owner_orders.php',{method:'POST',body:JSON.stringify({order_id:sel.dataset.id,status:sel.value})});loadOwnerOrders();}catch(e){alert(e.message);loadOwnerOrders();}});
   }catch(e){p.innerHTML=`<div class="orders-message">${esc(e.message)}</div>`;}

@@ -6,18 +6,21 @@ $user = current_user();
 if (!$user) { http_response_code(401); die(json_encode(['error'=>'Please sign in first.'])); }
 
 if ($user['role'] === 'owner') {
-    $stmt = $pdo->query(
+    $trash = ($_GET['view'] ?? '') === 'trash';
+    $stmt = $pdo->prepare(
         "SELECT o.id,o.user_id,o.subtotal,o.shipping_fee,o.total,o.payment_method,o.payment_status,o.order_status,o.fulfillment_method,o.pickup_branch,o.created_at,
-                u.name customer_name,u.email customer_email,
+                o.archived_at,u.name customer_name,u.email customer_email,
                 a.full_name,a.line1,a.city,a.province,a.postal_code,a.phone
          FROM orders o JOIN users u ON u.id=o.user_id
          JOIN addresses a ON a.id=o.address_id
+         WHERE " . ($trash ? "o.archived_at IS NOT NULL" : "o.archived_at IS NULL") . "
          ORDER BY o.created_at DESC"
     );
+    $stmt->execute();
 } else {
     $stmt = $pdo->prepare(
         "SELECT o.id,o.user_id,o.subtotal,o.shipping_fee,o.total,o.payment_method,o.payment_status,o.order_status,o.fulfillment_method,o.pickup_branch,o.created_at,
-                a.full_name,a.line1,a.city,a.province,a.postal_code,a.phone
+                o.archived_at,a.full_name,a.line1,a.city,a.province,a.postal_code,a.phone
          FROM orders o JOIN addresses a ON a.id=o.address_id
          WHERE o.user_id=? ORDER BY o.created_at DESC"
     );

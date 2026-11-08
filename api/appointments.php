@@ -10,10 +10,12 @@ try {
             exit;
         }
         if ($user['role'] === 'owner') {
-            $stmt = $pdo->query("SELECT a.id, CONCAT('PC-', LPAD(a.id::text, 6, '0')) AS reference, s.name AS service_name, a.branch, a.appointment_date, a.appointment_time, a.customer_name, a.email, a.phone, a.pet_name, a.pet_type, a.pet_age, a.notes, a.status, a.cancellation_reason, a.created_at FROM appointments a JOIN services s ON s.id = a.service_id ORDER BY a.appointment_date ASC, a.appointment_time ASC, a.id DESC");
+            $trash = ($_GET['view'] ?? '') === 'trash';
+            $stmt = $pdo->prepare("SELECT a.id, CONCAT('PC-', LPAD(a.id::text, 6, '0')) AS reference, s.name AS service_name, a.branch, a.appointment_date, a.appointment_time, a.customer_name, a.email, a.phone, a.pet_name, a.pet_type, a.pet_age, a.notes, a.status, a.cancellation_reason, a.archived_at, a.created_at FROM appointments a JOIN services s ON s.id = a.service_id WHERE " . ($trash ? "a.archived_at IS NOT NULL" : "a.archived_at IS NULL") . " ORDER BY a.appointment_date ASC, a.appointment_time ASC, a.id DESC");
+            $stmt->execute();
             echo json_encode(['appointments' => $stmt->fetchAll(), 'role' => 'owner']);
         } else {
-            $stmt = $pdo->prepare("SELECT a.id, CONCAT('PC-', LPAD(a.id::text, 6, '0')) AS reference, s.name AS service_name, a.branch, a.appointment_date, a.appointment_time, a.customer_name, a.email, a.phone, a.pet_name, a.pet_type, a.pet_age, a.notes, a.status, a.cancellation_reason, a.created_at FROM appointments a JOIN services s ON s.id = a.service_id WHERE a.user_id = ? ORDER BY a.appointment_date ASC, a.appointment_time ASC, a.id DESC");
+            $stmt = $pdo->prepare("SELECT a.id, CONCAT('PC-', LPAD(a.id::text, 6, '0')) AS reference, s.name AS service_name, a.branch, a.appointment_date, a.appointment_time, a.customer_name, a.email, a.phone, a.pet_name, a.pet_type, a.pet_age, a.notes, a.status, a.cancellation_reason, a.archived_at, a.created_at FROM appointments a JOIN services s ON s.id = a.service_id WHERE a.user_id = ? ORDER BY a.appointment_date ASC, a.appointment_time ASC, a.id DESC");
             $stmt->execute([$user['id']]);
             echo json_encode(['appointments' => $stmt->fetchAll(), 'role' => 'user']);
         }
@@ -26,13 +28,14 @@ try {
         $in = json_input(); $id=(int)($in['id'] ?? 0); $status=trim((string)($in['status'] ?? ''));
         $allowed=['pending','confirmed','completed'];
         if(!$id || !in_array($status,$allowed,true)){http_response_code(422);echo json_encode(['error'=>'Invalid reservation status.']);exit;}
-        $stmt=$pdo->prepare("UPDATE appointments SET status=? WHERE id=? AND status<>'cancelled' RETURNING id");
+        $stmt=$pdo->prepare("UPDATE appointments SET status=? WHERE id=? AND status<>'cancelled' AND archived_at IS NULL RETURNING id");
         $stmt->execute([$status,$id]);
         if (!$stmt->fetchColumn()) {
-            $current=$pdo->prepare('SELECT status FROM appointments WHERE id=?'); $current->execute([$id]);
-            $missing=$current->fetchColumn()===false;
+            $current=$pdo->prepare('SELECT status,archived_at FROM appointments WHERE id=?'); $current->execute([$id]);
+            $record=$current->fetch();
+            $missing=$record===false;
             http_response_code($missing?404:409);
-            echo json_encode(['error'=>$missing?'Reservation not found.':'Cancelled reservations cannot be updated.']); exit;
+            echo json_encode(['error'=>$missing?'Reservation not found.':($record['archived_at']!==null?'Move this reservation out of the trash before updating it.':'Cancelled reservations cannot be updated.')]); exit;
         }
         echo json_encode(['ok'=>true,'status'=>$status]); exit;
     }

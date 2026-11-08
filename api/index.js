@@ -415,19 +415,65 @@ module.exports = async function handler(req, res) {
         client.release();
       }
     }
+    if (pathname === 'record_trash' && req.method === 'POST') {
+      if (!session || session.role !== 'owner') return json(res, 403, { error: 'Owner access only.' });
+      const input = await body(req);
+      const type = String(input.type || '');
+      const action = String(input.action || '');
+      const id = Number(input.id || 0);
+      const tables = { order: 'orders', reservation: 'appointments' };
+      if (!tables[type] || !['archive','restore','delete'].includes(action) || !Number.isInteger(id) || id <= 0) {
+        return json(res, 422, { error: 'Choose a valid order or reservation action.' });
+      }
+      const table = tables[type];
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        const record = await client.query(`SELECT archived_at FROM ${table} WHERE id=$1 FOR UPDATE`, [id]);
+        if (!record.rows[0]) {
+          await client.query('ROLLBACK');
+          return json(res, 404, { error: `${type === 'order' ? 'Order' : 'Reservation'} not found.` });
+        }
+        const archived = record.rows[0].archived_at !== null;
+        if (action === 'archive' && archived) {
+          await client.query('ROLLBACK');
+          return json(res, 409, { error: 'This record is already in the trash.' });
+        }
+        if (action === 'restore' && !archived) {
+          await client.query('ROLLBACK');
+          return json(res, 409, { error: 'This record is not in the trash.' });
+        }
+        if (action === 'delete' && !archived) {
+          await client.query('ROLLBACK');
+          return json(res, 409, { error: 'Move this record to the trash before permanently deleting it.' });
+        }
+        if (action === 'archive') await client.query(`UPDATE ${table} SET archived_at=NOW() WHERE id=$1`, [id]);
+        if (action === 'restore') await client.query(`UPDATE ${table} SET archived_at=NULL WHERE id=$1`, [id]);
+        if (action === 'delete') await client.query(`DELETE FROM ${table} WHERE id=$1 AND archived_at IS NOT NULL`, [id]);
+        await client.query('COMMIT');
+        return json(res, 200, { ok: true, action, type, id });
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
+      }
+    }
     if (pathname === 'orders' && req.method === 'GET') {
       if (!session) return json(res, 401, { error: 'Please sign in first.' });
       let result;
       if (session.role === 'owner') {
+        const trashed = url.searchParams.get('view') === 'trash';
         result = await pool.query(
           `SELECT o.id,o.user_id,o.subtotal,o.shipping_fee,o.total,o.payment_method,o.payment_status,o.order_status,o.fulfillment_method,o.pickup_branch,o.created_at,
-                  u.name customer_name,u.email customer_email,a.full_name,a.line1,a.city,a.province,a.postal_code,a.phone
-           FROM orders o JOIN users u ON u.id=o.user_id JOIN addresses a ON a.id=o.address_id ORDER BY o.created_at DESC`
+                  o.archived_at,u.name customer_name,u.email customer_email,a.full_name,a.line1,a.city,a.province,a.postal_code,a.phone
+           FROM orders o JOIN users u ON u.id=o.user_id JOIN addresses a ON a.id=o.address_id
+           WHERE ${trashed ? 'o.archived_at IS NOT NULL' : 'o.archived_at IS NULL'} ORDER BY o.created_at DESC`
         );
       } else {
         result = await pool.query(
           `SELECT o.id,o.user_id,o.subtotal,o.shipping_fee,o.total,o.payment_method,o.payment_status,o.order_status,o.fulfillment_method,o.pickup_branch,o.created_at,
-                  a.full_name,a.line1,a.city,a.province,a.postal_code,a.phone
+                  o.archived_at,a.full_name,a.line1,a.city,a.province,a.postal_code,a.phone
            FROM orders o JOIN addresses a ON a.id=o.address_id WHERE o.user_id=$1 ORDER BY o.created_at DESC`,
           [session.id]
         );
@@ -539,13 +585,13 @@ module.exports = async function handler(req, res) {
       const status = String(input.status || '');
       if (!orderId || !['placed','processing','shipped','delivered'].includes(status)) return json(res, 422, { error: 'Invalid order or status.' });
       const updated = await pool.query(
-        "UPDATE orders SET order_status=$1 WHERE id=$2 AND order_status<>'cancelled' RETURNING id",
+        "UPDATE orders SET order_status=$1 WHERE id=$2 AND order_status<>'cancelled' AND archived_at IS NULL RETURNING id",
         [status, orderId]
       );
       if (!updated.rows[0]) {
-        const exists = await pool.query('SELECT order_status FROM orders WHERE id=$1', [orderId]);
+        const exists = await pool.query('SELECT order_status,archived_at FROM orders WHERE id=$1', [orderId]);
         return exists.rows[0]
-          ? json(res, 409, { error: 'Cancelled orders cannot be updated.' })
+          ? json(res, 409, { error: exists.rows[0].archived_at ? 'Move this order out of the trash before updating it.' : 'Cancelled orders cannot be updated.' })
           : json(res, 404, { error: 'Order not found.' });
       }
       await pool.query('INSERT INTO order_status_history(order_id,status,note) VALUES($1,$2,$3)', [orderId, status, 'Status updated by owner']);
@@ -608,14 +654,15 @@ module.exports = async function handler(req, res) {
       if (req.method === 'GET') {
         if (!session) return json(res, 200, { appointments: [], role: 'guest' });
         if (session.role === 'owner') {
+          const trashed = url.searchParams.get('view') === 'trash';
           const result = await pool.query(
-            `SELECT a.id,'PC-'||lpad(a.id::text,6,'0') AS reference,s.name AS service_name,a.branch,a.appointment_date,a.appointment_time,a.customer_name,a.email,a.phone,a.pet_name,a.pet_type,a.pet_age,a.notes,a.status,a.cancellation_reason,a.created_at
-             FROM appointments a JOIN services s ON s.id=a.service_id ORDER BY a.appointment_date ASC,a.appointment_time ASC,a.id DESC`
+            `SELECT a.id,'PC-'||lpad(a.id::text,6,'0') AS reference,s.name AS service_name,a.branch,a.appointment_date,a.appointment_time,a.customer_name,a.email,a.phone,a.pet_name,a.pet_type,a.pet_age,a.notes,a.status,a.cancellation_reason,a.archived_at,a.created_at
+             FROM appointments a JOIN services s ON s.id=a.service_id WHERE ${trashed ? 'a.archived_at IS NOT NULL' : 'a.archived_at IS NULL'} ORDER BY a.appointment_date ASC,a.appointment_time ASC,a.id DESC`
           );
           return json(res, 200, { appointments: result.rows, role: 'owner' });
         }
         const result = await pool.query(
-          `SELECT a.id,'PC-'||lpad(a.id::text,6,'0') AS reference,s.name AS service_name,a.branch,a.appointment_date,a.appointment_time,a.customer_name,a.email,a.phone,a.pet_name,a.pet_type,a.pet_age,a.notes,a.status,a.cancellation_reason,a.created_at
+          `SELECT a.id,'PC-'||lpad(a.id::text,6,'0') AS reference,s.name AS service_name,a.branch,a.appointment_date,a.appointment_time,a.customer_name,a.email,a.phone,a.pet_name,a.pet_type,a.pet_age,a.notes,a.status,a.cancellation_reason,a.archived_at,a.created_at
            FROM appointments a JOIN services s ON s.id=a.service_id WHERE a.user_id=$1 ORDER BY a.appointment_date ASC,a.appointment_time ASC,a.id DESC`,
           [session.id]
         );
@@ -627,8 +674,9 @@ module.exports = async function handler(req, res) {
         const id = Number(input.id || 0);
         const status = String(input.status || '');
         if (!id || !['pending','confirmed','completed'].includes(status)) return json(res, 422, { error: 'Invalid reservation status.' });
-        const current = await pool.query('SELECT status FROM appointments WHERE id=$1', [id]);
+        const current = await pool.query('SELECT status,archived_at FROM appointments WHERE id=$1', [id]);
         if (!current.rows[0]) return json(res, 404, { error: 'Reservation not found.' });
+        if (current.rows[0].archived_at) return json(res, 409, { error: 'Move this reservation out of the trash before updating it.' });
         if (current.rows[0].status === 'cancelled') return json(res, 409, { error: 'Cancelled reservations cannot be updated.' });
         await pool.query('UPDATE appointments SET status=$1 WHERE id=$2', [status, id]);
         return json(res, 200, { ok: true, status });

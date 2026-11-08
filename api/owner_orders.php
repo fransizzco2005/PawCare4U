@@ -11,15 +11,16 @@ if (!$orderId || !in_array($status,$allowed,true)) {
 }
 $pdo->beginTransaction();
 try {
- $stmt=$pdo->prepare('UPDATE orders SET order_status=? WHERE id=? AND order_status<>? RETURNING id');
+ $stmt=$pdo->prepare('UPDATE orders SET order_status=? WHERE id=? AND order_status<>? AND archived_at IS NULL RETURNING id');
  $stmt->execute([$status,$orderId,'cancelled']);
  if (!$stmt->fetchColumn()) {
   $pdo->rollBack();
-  $exists=$pdo->prepare('SELECT order_status FROM orders WHERE id=?');
+  $exists=$pdo->prepare('SELECT order_status,archived_at FROM orders WHERE id=?');
   $exists->execute([$orderId]);
-  $existingStatus=$exists->fetchColumn();
+  $existing=$exists->fetch();
+  $existingStatus=$existing['order_status']??false;
   http_response_code($existingStatus===false?404:409);
-  die(json_encode(['error'=>$existingStatus===false?'Order not found.':'Cancelled orders cannot be updated.']));
+  die(json_encode(['error'=>$existingStatus===false?'Order not found.':($existing['archived_at']!==null?'Move this order out of the trash before updating it.':'Cancelled orders cannot be updated.')]));
  }
  $pdo->prepare('INSERT INTO order_status_history(order_id,status,note) VALUES(?,?,?)')
      ->execute([$orderId,$status,'Status updated by owner']);
