@@ -20,25 +20,21 @@
     scene.setAttribute('aria-modal','true');
     scene.setAttribute('aria-label','Welcome to PawCare');
     scene.innerHTML=`
-      <div class="pawcare-welcome__glow pawcare-welcome__glow--one"></div>
-      <div class="pawcare-welcome__glow pawcare-welcome__glow--two"></div>
-      <div class="pawcare-welcome__specks" aria-hidden="true">${Array.from({length:18},()=>`<i style="--x:${Math.random()*100}%;--y:${Math.random()*100}%;--delay:${-Math.random()*3}s"></i>`).join('')}</div>
       <div class="pawcare-welcome__stage">
-        <div class="pawcare-welcome__eyebrow"><span>✦</span> A happier way to care <span>✦</span></div>
-        <div class="pawcare-welcome__title-wrap"><h1 class="pawcare-welcome__title"><span>W</span><span>E</span><span>L</span><span>C</span><span>O</span><span>M</span><span>E</span></h1><span class="pawcare-welcome__title-shadow" aria-hidden="true">WELCOME</span></div>
-        <p class="pawcare-welcome__subtitle">to <b>PawCare</b> <span>·</span> happy pets start here</p>
-        <div class="pawcare-welcome__runway" aria-hidden="true">
-          <span class="pawcare-welcome__trail pawcare-welcome__trail--one"></span><span class="pawcare-welcome__trail pawcare-welcome__trail--two"></span>
-          <svg class="pawcare-welcome__pet pawcare-welcome__pet--dog" viewBox="0 0 16 16" role="presentation" shape-rendering="crispEdges">
-            <rect x="4" y="2" width="7" height="2" fill="#f3b94f"/><rect x="3" y="4" width="10" height="5" fill="#f3b94f"/><rect x="1" y="4" width="3" height="3" fill="#ce8247"/><rect x="11" y="3" width="3" height="3" fill="#ce8247"/><rect x="5" y="5" width="1" height="1" fill="#172443"/><rect x="10" y="5" width="1" height="1" fill="#172443"/><rect x="7" y="7" width="3" height="1" fill="#fff1d2"/><rect x="4" y="9" width="8" height="2" fill="#e99f45"/><rect x="4" y="11" width="2" height="3" fill="#f3b94f"/><rect x="10" y="11" width="2" height="3" fill="#f3b94f"/><rect x="12" y="8" width="3" height="1" fill="#ce8247"/>
-          </svg>
-          <svg class="pawcare-welcome__pet pawcare-welcome__pet--cat" viewBox="0 0 16 16" role="presentation" shape-rendering="crispEdges">
-            <rect x="3" y="2" width="3" height="4" fill="#84d7c6"/><rect x="10" y="2" width="3" height="4" fill="#84d7c6"/><rect x="4" y="5" width="8" height="5" fill="#84d7c6"/><rect x="5" y="6" width="1" height="1" fill="#172443"/><rect x="10" y="6" width="1" height="1" fill="#172443"/><rect x="7" y="8" width="2" height="1" fill="#f38da2"/><rect x="3" y="10" width="10" height="2" fill="#65c7b5"/><rect x="4" y="12" width="2" height="2" fill="#84d7c6"/><rect x="10" y="12" width="2" height="2" fill="#84d7c6"/><rect x="12" y="9" width="3" height="1" fill="#65c7b5"/>
-          </svg>
-          <span class="pawcare-welcome__bubble pawcare-welcome__bubble--one">hi!</span><span class="pawcare-welcome__bubble pawcare-welcome__bubble--two">meow!</span>
+        <div class="pawcare-welcome__gallery pawcare-welcome__gallery--left" aria-hidden="true">
+          <figure class="pawcare-welcome__photo pawcare-welcome__photo--dog"><img src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&amp;fit=crop&amp;w=760&amp;q=88" alt="" fetchpriority="high"></figure>
+          <figure class="pawcare-welcome__photo pawcare-welcome__photo--small"><img src="https://images.unsplash.com/photo-1425082661705-1834bfd09dca?auto=format&amp;fit=crop&amp;w=420&amp;q=85" alt="" loading="lazy"></figure>
         </div>
-        <button class="pawcare-welcome__start" type="button"><span>Start Shopping</span><i aria-hidden="true">→</i></button>
-        <div class="pawcare-welcome__hint"><span>🐾</span> Let’s make tails wag <span>🐾</span></div>
+        <div class="pawcare-welcome__content">
+          <p class="pawcare-welcome__eyebrow">WELCOME TO PAWCARE</p>
+          <h1 class="pawcare-welcome__title">Every Paw Deserves the Best!</h1>
+          <p class="pawcare-welcome__subtitle">Everything your pet needs to thrive. Shop top-tier nutrition, interactive toys, and everyday care essentials today!</p>
+          <button class="pawcare-welcome__start" type="button"><span>Start Shopping</span><i aria-hidden="true">→</i></button>
+        </div>
+        <div class="pawcare-welcome__gallery pawcare-welcome__gallery--right" aria-hidden="true">
+          <figure class="pawcare-welcome__photo pawcare-welcome__photo--cat"><img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&amp;fit=crop&amp;w=760&amp;q=88" alt="" fetchpriority="high"></figure>
+          <figure class="pawcare-welcome__photo pawcare-welcome__photo--small"><img src="https://images.unsplash.com/photo-1444464666168-49d633b86797?auto=format&amp;fit=crop&amp;w=420&amp;q=85" alt="" loading="lazy"></figure>
+        </div>
       </div>`;
     document.body.appendChild(scene);
     let finished=false;
@@ -55,14 +51,6 @@
       setTimeout(()=>{scene.remove();reveal.remove();onDone?.()},revealDuration);
     };
     scene.querySelector('.pawcare-welcome__start').addEventListener('click',finish);
-    scene.addEventListener('pointermove',event=>{
-      if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-      const bounds=scene.getBoundingClientRect();
-      const x=(event.clientX-bounds.left)/bounds.width-.5;
-      const y=(event.clientY-bounds.top)/bounds.height-.5;
-      scene.querySelector('.pawcare-welcome__stage').style.setProperty('--tilt-x',`${-y*5}deg`);
-      scene.querySelector('.pawcare-welcome__stage').style.setProperty('--tilt-y',`${x*7}deg`);
-    });
     const onKeyDown=event=>{if(event.key==='Escape'){finish();document.removeEventListener('keydown',onKeyDown)}};
     document.addEventListener('keydown',onKeyDown);
     requestAnimationFrame(()=>scene.classList.add('is-active'));
