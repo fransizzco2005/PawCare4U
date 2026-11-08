@@ -29,4 +29,25 @@ $monthlyRatings = $pdo->query(
      FROM product_feedback WHERE user_id IS NOT NULL AND rating IS NOT NULL
      GROUP BY date_trunc('month',created_at) ORDER BY date_trunc('month',created_at) DESC LIMIT 12"
 )->fetchAll();
-echo json_encode(['sales'=>$sales,'ratings'=>$ratings,'monthly'=>$monthly,'monthly_ratings'=>$monthlyRatings]);
+$years = $pdo->query("SELECT DISTINCT EXTRACT(YEAR FROM created_at)::int AS year FROM orders ORDER BY year DESC")->fetchAll(PDO::FETCH_COLUMN);
+$year = filter_var($_GET['year'] ?? date('Y'), FILTER_VALIDATE_INT);
+$month = filter_var($_GET['month'] ?? date('n'), FILTER_VALIDATE_INT);
+if (!$year || $year < 2000 || $year > 9999 || !$month || $month < 1 || $month > 12) {
+    http_response_code(422);
+    die(json_encode(['error'=>'Choose a valid month and year.']));
+}
+$selectedMonth = $pdo->prepare(
+    "SELECT COUNT(*) FILTER (WHERE order_status<>'cancelled')::int orders,
+            COALESCE(SUM(total) FILTER (WHERE order_status<>'cancelled'),0) sales
+     FROM orders
+     WHERE EXTRACT(YEAR FROM created_at)=? AND EXTRACT(MONTH FROM created_at)=?"
+);
+$selectedMonth->execute([$year,$month]);
+echo json_encode([
+    'sales'=>$sales,
+    'ratings'=>$ratings,
+    'monthly'=>$monthly,
+    'monthly_ratings'=>$monthlyRatings,
+    'years'=>array_map('intval',$years),
+    'selected_month'=>['year'=>$year,'month'=>$month]+$selectedMonth->fetch()
+]);

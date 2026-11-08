@@ -576,7 +576,28 @@ module.exports = async function handler(req, res) {
          FROM product_feedback WHERE user_id IS NOT NULL AND rating IS NOT NULL
          GROUP BY date_trunc('month',created_at) ORDER BY date_trunc('month',created_at) DESC LIMIT 12`
       );
-      return json(res, 200, { sales: sales.rows[0], ratings: ratings.rows[0], monthly: monthly.rows, monthly_ratings: monthlyRatings.rows });
+      const year = Number(url.searchParams.get('year') || new Date().getFullYear());
+      const month = Number(url.searchParams.get('month') || new Date().getMonth() + 1);
+      if (!Number.isInteger(year) || year < 2000 || year > 9999 || !Number.isInteger(month) || month < 1 || month > 12) {
+        return json(res, 422, { error: 'Choose a valid month and year.' });
+      }
+      const [years, selectedMonth] = await Promise.all([
+        pool.query('SELECT DISTINCT EXTRACT(YEAR FROM created_at)::int AS year FROM orders ORDER BY year DESC'),
+        pool.query(
+          `SELECT COUNT(*) FILTER (WHERE order_status <> 'cancelled')::int AS orders,
+                  COALESCE(SUM(total) FILTER (WHERE order_status <> 'cancelled'),0)::numeric AS sales
+           FROM orders WHERE EXTRACT(YEAR FROM created_at)=$1 AND EXTRACT(MONTH FROM created_at)=$2`,
+          [year,month]
+        )
+      ]);
+      return json(res, 200, {
+        sales: sales.rows[0],
+        ratings: ratings.rows[0],
+        monthly: monthly.rows,
+        monthly_ratings: monthlyRatings.rows,
+        years: years.rows.map(row => row.year),
+        selected_month: { year, month, ...selectedMonth.rows[0] }
+      });
     }
     if (pathname === 'owner_orders' && req.method === 'POST') {
       if (!session || session.role !== 'owner') return json(res, 403, { error: 'Owner access only.' });

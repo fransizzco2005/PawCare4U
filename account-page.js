@@ -7,6 +7,10 @@ const cancelReasons={found_another_product:'I found another product',ordered_by_
 let profile=null;
 let orderTrashView=false;
 let reservationTrashView=false;
+let overviewMonth=new Date().getMonth()+1;
+let overviewYear=new Date().getFullYear();
+const overviewMonthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+function monthlySalesPicker(month,year,years){return `<div class="overview-month-picker"><label>Year<select data-sales-year>${years.map(value=>`<option value="${value}" ${Number(value)===Number(year)?'selected':''}>${value}</option>`).join('')}</select></label><div class="overview-month-tabs" role="tablist" aria-label="Select sales month">${overviewMonthNames.map((name,index)=>`<button type="button" role="tab" aria-selected="${index+1===Number(month)}" class="${index+1===Number(month)?'active':''}" data-sales-month="${index+1}">${name}</button>`).join('')}</div></div>`}
 function initials(name){return String(name||'PawCare').trim().split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase()||'P'}
 function avatar(url,name){const img=url?`<img src="${esc(url)}" alt="Profile photo">`:'';return img||initials(name)}
 function tracking(o){const states=['placed','processing','shipped','delivered'],idx=states.indexOf(o.order_status);if(o.order_status==='cancelled')return `<div class="tracking cancelled">${states.slice(0,3).map(x=>`<div class="track-step"><span>✓</span><small>${labels[x]}</small></div>`).join('')}<div class="track-step current"><span>×</span><small>Cancelled</small></div></div>`;return `<div class="tracking">${states.map((x,i)=>`<div class="track-step ${i<=idx?'done':''} ${x===o.order_status?'current':''}"><span>${i<idx?'✓':i===idx?'●':'○'}</span><small>${labels[x]}</small></div>`).join('')}</div>`}
@@ -84,12 +88,15 @@ async function loadFeedback(){
  }catch(e){box.innerHTML=`<div class="account-loading">${esc(e.message)}</div>`}
 }
 
-async function loadOverview(){
+async function loadOverview(month=overviewMonth,year=overviewYear){
  const box=document.getElementById('accountOverview'); if(!box)return;
+ overviewMonth=Number(month);overviewYear=Number(year);
  box.innerHTML='<div class="account-loading">Loading overview...</div>';
  try{
-  const d=await api('api/owner_overview.php'),s=d.sales||{},r=d.ratings||{};
-  const months=(d.monthly||[]).map(m=>`<tr><td>${esc(m.month)}</td><td>${Number(m.orders||0)}</td><td>${money(m.sales)}</td></tr>`).join('');
+  const d=await api(`api/owner_overview.php?month=${overviewMonth}&year=${overviewYear}`),s=d.sales||{},r=d.ratings||{},selected=d.selected_month||{};
+  overviewMonth=Number(selected.month||overviewMonth);overviewYear=Number(selected.year||overviewYear);
+  const monthLabel=overviewMonthNames[overviewMonth-1]||'Month';
+  const years=[...new Set([overviewYear,...(d.years||[]).map(Number)])].sort((a,b)=>b-a);
   const ratingMonths=(d.monthly_ratings||[]).map(m=>`<tr><td>${esc(m.month)}</td><td>${Number(m.count||0)}</td><td>${Number(m.average||0).toFixed(2)} / 5</td></tr>`).join('');
   box.innerHTML=`<div class="owner-account-panel">
    <h2>Overall performance</h2><div class="owner-summary-grid">
@@ -98,9 +105,11 @@ async function loadOverview(){
    </div><h2>This month</h2><div class="owner-summary-grid">
     <div><b>${Number(s.month_orders||0)}</b><span>Orders</span></div><div><b>${money(s.month_sales)}</b><span>Sales</span></div>
     <div><b>${Number(r.month_average||0).toFixed(2)} / 5</b><span>Customer rating (${Number(r.month_count||0)} ratings)</span></div>
-   </div><div class="overview-tables"><div><h3>Monthly sales</h3><table><thead><tr><th>Month</th><th>Orders</th><th>Sales</th></tr></thead><tbody>${months||'<tr><td colspan="3">No sales recorded.</td></tr>'}</tbody></table></div>
+   </div><div class="overview-tables"><div><h3>Monthly sales</h3>${monthlySalesPicker(overviewMonth,overviewYear,years)}<div class="overview-month-result"><b>${monthLabel} ${overviewYear}</b><div><span>${Number(selected.orders||0)} orders</span><strong>${money(selected.sales)}</strong></div></div></div>
    <div><h3>Monthly feedback</h3><table><thead><tr><th>Month</th><th>Ratings</th><th>Average</th></tr></thead><tbody>${ratingMonths||'<tr><td colspan="3">No ratings recorded.</td></tr>'}</tbody></table></div></div>
   </div>`;
+  box.querySelector('[data-sales-year]')?.addEventListener('change',event=>loadOverview(overviewMonth,Number(event.target.value)));
+  box.querySelectorAll('[data-sales-month]').forEach(button=>button.addEventListener('click',()=>loadOverview(Number(button.dataset.salesMonth),overviewYear)));
  }catch(e){box.innerHTML=`<div class="account-loading">${esc(e.message)}</div>`}
 }
 
