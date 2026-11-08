@@ -1705,18 +1705,17 @@ body.page-rodent .catalog-hero-visual{margin-top:-26px!important;top:-8px!import
     radial-gradient(ellipse at 18% 82%,rgba(28,173,165,.16),transparent 35%),
     linear-gradient(135deg,#071322 0%,#0b1c34 48%,#101833 100%);
   perspective:1100px;
-  transition:opacity .38s ease,visibility .38s ease;
+  transform:scale(1);
+  filter:blur(0);
+  transition:opacity .85s ease,visibility .85s ease,transform .85s ease,filter .85s ease;
 }
 .pawcare-welcome.is-active{opacity:1;visibility:visible}
-.pawcare-welcome.is-leaving{opacity:0;visibility:hidden}
+.pawcare-welcome.is-leaving{opacity:0;visibility:hidden;transform:scale(1.035);filter:blur(12px)}
 .pawcare-welcome__glow{position:absolute;width:min(76vw,780px);aspect-ratio:1;border-radius:50%;filter:blur(90px);opacity:.2;pointer-events:none}
 .pawcare-welcome__glow--one{background:#1e9be8;left:-32%;top:-48%;animation:welcomeGlow 7s ease-in-out infinite alternate}
 .pawcare-welcome__glow--two{background:#20c5a5;right:-34%;bottom:-56%;animation:welcomeGlow 6s ease-in-out infinite alternate-reverse}
 .pawcare-welcome__specks{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 .pawcare-welcome__specks i{position:absolute;left:var(--x);top:var(--y);width:3px;height:3px;border-radius:50%;background:#c9f5ff;opacity:.34;box-shadow:0 0 12px rgba(151,230,255,.7);animation:welcomeSpeck 2.8s ease-in-out var(--delay) infinite alternate}
-.pawcare-welcome__skip{position:absolute;z-index:5;right:clamp(16px,4vw,48px);top:clamp(16px,4vh,36px);padding:9px 14px;border:1px solid rgba(215,237,255,.25);border-radius:999px;background:rgba(255,255,255,.08);color:#eaf6ff;font-size:12px;font-weight:700;backdrop-filter:blur(14px);cursor:pointer}
-.pawcare-welcome__skip:hover{background:rgba(255,255,255,.16);transform:translateY(-2px)}
-.pawcare-welcome__skip span{margin-left:7px;font-size:16px;line-height:10px}
 .pawcare-welcome__stage{position:relative;z-index:2;width:min(920px,92vw);text-align:center;transform:rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg));transform-style:preserve-3d;transition:transform .22s ease-out}
 .pawcare-welcome__eyebrow{display:flex;align-items:center;justify-content:center;gap:12px;color:#8ee4dc;font-size:clamp(10px,1.3vw,13px);font-weight:800;letter-spacing:.22em;text-transform:uppercase;animation:welcomeRise .6s .12s both}
 .pawcare-welcome__eyebrow span{color:#ffd47d;font-size:18px}
@@ -1736,6 +1735,14 @@ body.page-rodent .catalog-hero-visual{margin-top:-26px!important;top:-8px!import
 .pawcare-welcome__pet--cat{right:-10%;transform:scaleX(-1);animation:welcomeCatRun 3.5s cubic-bezier(.42,0,.58,1) .9s both}
 .pawcare-welcome__bubble{position:absolute;z-index:3;bottom:66px;padding:4px 9px;border-radius:9px 9px 9px 2px;background:#fff;color:#29425e;font-size:11px;font-weight:900;opacity:0;box-shadow:0 5px 15px rgba(0,0,0,.2);animation:welcomeBubble .75s ease-out 1.45s both}
 .pawcare-welcome__bubble--one{left:31%}.pawcare-welcome__bubble--two{right:22%;animation-delay:2.4s}
+.pawcare-welcome__start{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:14px;min-width:210px;margin-top:20px;padding:14px 22px;border:1px solid rgba(191,245,255,.65);border-radius:16px;background:linear-gradient(145deg,#35cdb9,#1684bd 72%,#116caa);box-shadow:0 6px 0 #07517d,0 12px 25px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.45);color:#fff;font-family:inherit;font-size:16px;font-weight:800;line-height:1;letter-spacing:.02em;cursor:pointer;transform:translateY(0);transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.pawcare-welcome__start:hover{transform:translateY(-4px);filter:brightness(1.12);box-shadow:0 10px 0 #07517d,0 18px 34px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.55)}
+.pawcare-welcome__start:active{transform:translateY(3px);box-shadow:0 3px 0 #07517d,0 7px 16px rgba(0,0,0,.28),inset 0 2px 6px rgba(0,0,0,.18)}
+.pawcare-welcome__start:focus-visible{outline:3px solid #fff;outline-offset:5px}
+.pawcare-welcome__start i{font-size:22px;font-style:normal;line-height:12px;transition:transform .18s ease}
+.pawcare-welcome__start:hover i{transform:translateX(4px)}
+.pawcare-welcome__reveal{position:fixed;inset:0;z-index:2147482999;pointer-events:none;background:rgba(3,12,24,.34);opacity:0;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}
+.pawcare-welcome__reveal.is-active{animation:welcomeReveal .9s ease-out forwards}
 .pawcare-welcome__hint{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:12px;color:#8ea9c2;font-size:12px;font-weight:700;letter-spacing:.08em;animation:welcomeRise .6s .62s both}
 .pawcare-welcome__hint span{color:#f4c769;font-size:14px}
 @keyframes welcomeGlow{to{transform:translate3d(12%,8%,0) scale(1.12);opacity:.3}}
@@ -1747,5 +1754,6 @@ body.page-rodent .catalog-hero-visual{margin-top:-26px!important;top:-8px!import
 @keyframes welcomeCatRun{0%{right:-10%;transform:scaleX(-1) translateY(0)}18%{transform:scaleX(-1) translateY(-13px)}36%{transform:scaleX(-1) translateY(0)}54%{transform:scaleX(-1) translateY(-12px)}72%{transform:scaleX(-1) translateY(0)}100%{right:108%;transform:scaleX(-1) translateY(-6px)}}
 @keyframes welcomeBubble{0%{opacity:0;transform:translateY(6px) scale(.8)}18%,75%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-3px) scale(.96)}}
 @keyframes welcomeTrail{to{opacity:.8;transform:scaleX(.82)}}
+@keyframes welcomeReveal{0%{opacity:.68;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}100%{opacity:0;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}}
 @media(max-width:600px){.pawcare-welcome__stage{width:94vw}.pawcare-welcome__runway{width:88vw;height:76px;margin-top:16px}.pawcare-welcome__pet{bottom:5px}.pawcare-welcome__bubble{bottom:54px}.pawcare-welcome__hint{font-size:10px}.pawcare-welcome__title-wrap{margin-top:24px}}
-@media(prefers-reduced-motion:reduce){.pawcare-welcome__glow,.pawcare-welcome__specks i,.pawcare-welcome__title span,.pawcare-welcome__eyebrow,.pawcare-welcome__subtitle,.pawcare-welcome__title-wrap,.pawcare-welcome__hint,.pawcare-welcome__pet,.pawcare-welcome__bubble,.pawcare-welcome__trail{animation:none!important}.pawcare-welcome__stage{transition:none!important}.pawcare-welcome__pet--dog{left:31%}.pawcare-welcome__pet--cat{right:31%}.pawcare-welcome__bubble{opacity:1}}
+@media(prefers-reduced-motion:reduce){.pawcare-welcome__glow,.pawcare-welcome__specks i,.pawcare-welcome__title span,.pawcare-welcome__eyebrow,.pawcare-welcome__subtitle,.pawcare-welcome__title-wrap,.pawcare-welcome__hint,.pawcare-welcome__pet,.pawcare-welcome__bubble,.pawcare-welcome__trail,.pawcare-welcome__reveal{animation:none!important}.pawcare-welcome{transition:none!important}.pawcare-welcome__stage,.pawcare-welcome__start{transition:none!important}.pawcare-welcome__pet--dog{left:31%}.pawcare-welcome__pet--cat{right:31%}.pawcare-welcome__bubble{opacity:1}}

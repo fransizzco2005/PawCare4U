@@ -10,8 +10,8 @@
       .then(async r=>{const raw=await r.text();let d={};try{d=raw?JSON.parse(raw):{}}catch(_){throw new Error('Server returned invalid JSON.')}if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;});
   }
 
-  /* The first home visit gets one brief welcome after the loader; tab returns never replay it. */
-  function runWelcomeScene(onDone,duration=5000){
+  /* The first home visit waits for the visitor to start; tab returns never replay it. */
+  function runWelcomeScene(onDone){
     if(!isHome || sessionStorage.getItem('pawcareWelcomeSeen')==='1'){onDone?.();return;}
     sessionStorage.setItem('pawcareWelcomeSeen','1');
     const scene=document.createElement('section');
@@ -23,7 +23,6 @@
       <div class="pawcare-welcome__glow pawcare-welcome__glow--one"></div>
       <div class="pawcare-welcome__glow pawcare-welcome__glow--two"></div>
       <div class="pawcare-welcome__specks" aria-hidden="true">${Array.from({length:18},()=>`<i style="--x:${Math.random()*100}%;--y:${Math.random()*100}%;--delay:${-Math.random()*3}s"></i>`).join('')}</div>
-      <button class="pawcare-welcome__skip" type="button" aria-label="Skip welcome">Skip <span>×</span></button>
       <div class="pawcare-welcome__stage">
         <div class="pawcare-welcome__eyebrow"><span>✦</span> A happier way to care <span>✦</span></div>
         <div class="pawcare-welcome__title-wrap"><h1 class="pawcare-welcome__title"><span>W</span><span>E</span><span>L</span><span>C</span><span>O</span><span>M</span><span>E</span></h1><span class="pawcare-welcome__title-shadow" aria-hidden="true">WELCOME</span></div>
@@ -38,6 +37,7 @@
           </svg>
           <span class="pawcare-welcome__bubble pawcare-welcome__bubble--one">hi!</span><span class="pawcare-welcome__bubble pawcare-welcome__bubble--two">meow!</span>
         </div>
+        <button class="pawcare-welcome__start" type="button"><span>Start Shopping</span><i aria-hidden="true">→</i></button>
         <div class="pawcare-welcome__hint"><span>🐾</span> Let’s make tails wag <span>🐾</span></div>
       </div>`;
     document.body.appendChild(scene);
@@ -45,12 +45,16 @@
     const finish=()=>{
       if(finished)return;
       finished=true;
-      clearTimeout(timer);
       scene.classList.add('is-leaving');
-      setTimeout(()=>{scene.remove();onDone?.()},380);
+      const reveal=document.createElement('div');
+      reveal.className='pawcare-welcome__reveal';
+      reveal.setAttribute('aria-hidden','true');
+      document.body.appendChild(reveal);
+      requestAnimationFrame(()=>reveal.classList.add('is-active'));
+      const revealDuration=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:900;
+      setTimeout(()=>{scene.remove();reveal.remove();onDone?.()},revealDuration);
     };
-    const timer=setTimeout(finish,duration);
-    scene.querySelector('.pawcare-welcome__skip').addEventListener('click',finish);
+    scene.querySelector('.pawcare-welcome__start').addEventListener('click',finish);
     scene.addEventListener('pointermove',event=>{
       if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
       const bounds=scene.getBoundingClientRect();
@@ -61,19 +65,18 @@
     });
     const onKeyDown=event=>{if(event.key==='Escape'){finish();document.removeEventListener('keydown',onKeyDown)}};
     document.addEventListener('keydown',onKeyDown);
-    scene.addEventListener('click',event=>{if(event.target===scene)finish()});
     requestAnimationFrame(()=>scene.classList.add('is-active'));
-    setTimeout(()=>scene.querySelector('.pawcare-welcome__skip')?.focus(),60);
+    setTimeout(()=>scene.querySelector('.pawcare-welcome__start')?.focus(),60);
     scene.addEventListener('transitionend',event=>{if(event.target===scene&&finished)document.removeEventListener('keydown',onKeyDown)});
   }
 
-  /* First home visit: loader, then one short welcome; later tab returns only load. */
+  /* First home visit: loader, then a click-to-start welcome; later tab returns only load. */
   if(loader){
     const navLoad=sessionStorage.getItem('pawcareTabNavigation')==='1'; sessionStorage.removeItem('pawcareTabNavigation');
     const skipHome=sessionStorage.getItem('pawcareSkipHomeGalaxy')==='1'; sessionStorage.removeItem('pawcareSkipHomeGalaxy');
     if(isHome && !skipHome && !location.hash && sessionStorage.getItem('pawcareWelcomeSeen')!=='1'){
       const duration=navLoad?2000:Number(body.dataset.loaderDuration||4500);
-      setTimeout(()=>runWelcomeScene(()=>{loader.classList.add('is-done');setTimeout(()=>loader.remove(),420)},5000),duration);
+      setTimeout(()=>runWelcomeScene(()=>{loader.classList.add('is-done');setTimeout(()=>loader.remove(),420)}),duration);
     }else if(navLoad){
       setTimeout(()=>{loader.classList.add('is-done');setTimeout(()=>loader.remove(),420)},2000);
     }else{ loader.remove(); }
