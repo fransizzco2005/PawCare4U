@@ -10,103 +10,70 @@
       .then(async r=>{const raw=await r.text();let d={};try{d=raw?JSON.parse(raw):{}}catch(_){throw new Error('Server returned invalid JSON.')}if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;});
   }
 
-  /* HOME ONLY: cinematic entrance. It never runs for product/cart/auth actions. */
-  function runSpacePortal(onDone,duration=2100){
-    if(!isHome || body.classList.contains('space-transition-active')){onDone?.();return;}
-    body.classList.add('space-transition-active');
-    const portal=document.createElement('div'); portal.className='space-portal'; portal.setAttribute('aria-hidden','true');
-    portal.innerHTML=`<div class="space-portal__vignette"></div><div class="space-portal__nebula space-portal__nebula--a"></div><div class="space-portal__nebula space-portal__nebula--b"></div><div class="space-portal__starfield space-portal__stars--far"></div><div class="space-portal__starfield space-portal__stars--near"></div><div class="space-portal__warp-ring space-portal__warp-ring--1"></div><div class="space-portal__warp-ring space-portal__warp-ring--2"></div><div class="space-portal__warp-ring space-portal__warp-ring--3"></div><div class="space-portal__accretion"></div><div class="space-portal__blackhole"></div><div class="space-portal__lens"></div><div class="space-portal__flash"></div>`;
-    document.body.appendChild(portal);
-
-    /* Galaxy entrance SFX.
-       IMPORTANT: browsers may block audible autoplay on a fresh page. We use
-       Web Audio and also unlock the audio context from the same user gesture
-       that unlocks the site's music. This removes MP3 decode/start latency.
-    */
-    let galaxyAudioCtx=null;
-    function unlockGalaxyAudio(){
-      try{
-        const AC=window.AudioContext||window.webkitAudioContext;
-        if(!AC) return null;
-        if(!galaxyAudioCtx) galaxyAudioCtx=new AC();
-        if(galaxyAudioCtx.state==='suspended') galaxyAudioCtx.resume().catch(()=>{});
-        return galaxyAudioCtx;
-      }catch(_){return null}
-    }
-    ['pointerdown','keydown','touchstart'].forEach(ev=>{
-      window.addEventListener(ev,()=>{unlockGalaxyAudio();},{once:false,passive:true});
+  /* The first home visit gets one brief welcome after the loader; tab returns never replay it. */
+  function runWelcomeScene(onDone,duration=5000){
+    if(!isHome || sessionStorage.getItem('pawcareWelcomeSeen')==='1'){onDone?.();return;}
+    sessionStorage.setItem('pawcareWelcomeSeen','1');
+    const scene=document.createElement('section');
+    scene.className='pawcare-welcome';
+    scene.setAttribute('role','dialog');
+    scene.setAttribute('aria-modal','true');
+    scene.setAttribute('aria-label','Welcome to PawCare');
+    scene.innerHTML=`
+      <div class="pawcare-welcome__glow pawcare-welcome__glow--one"></div>
+      <div class="pawcare-welcome__glow pawcare-welcome__glow--two"></div>
+      <div class="pawcare-welcome__specks" aria-hidden="true">${Array.from({length:18},()=>`<i style="--x:${Math.random()*100}%;--y:${Math.random()*100}%;--delay:${-Math.random()*3}s"></i>`).join('')}</div>
+      <button class="pawcare-welcome__skip" type="button" aria-label="Skip welcome">Skip <span>×</span></button>
+      <div class="pawcare-welcome__stage">
+        <div class="pawcare-welcome__eyebrow"><span>✦</span> A happier way to care <span>✦</span></div>
+        <div class="pawcare-welcome__title-wrap"><h1 class="pawcare-welcome__title"><span>W</span><span>E</span><span>L</span><span>C</span><span>O</span><span>M</span><span>E</span></h1><span class="pawcare-welcome__title-shadow" aria-hidden="true">WELCOME</span></div>
+        <p class="pawcare-welcome__subtitle">to <b>PawCare</b> <span>·</span> happy pets start here</p>
+        <div class="pawcare-welcome__runway" aria-hidden="true">
+          <span class="pawcare-welcome__trail pawcare-welcome__trail--one"></span><span class="pawcare-welcome__trail pawcare-welcome__trail--two"></span>
+          <svg class="pawcare-welcome__pet pawcare-welcome__pet--dog" viewBox="0 0 16 16" role="presentation" shape-rendering="crispEdges">
+            <rect x="4" y="2" width="7" height="2" fill="#f3b94f"/><rect x="3" y="4" width="10" height="5" fill="#f3b94f"/><rect x="1" y="4" width="3" height="3" fill="#ce8247"/><rect x="11" y="3" width="3" height="3" fill="#ce8247"/><rect x="5" y="5" width="1" height="1" fill="#172443"/><rect x="10" y="5" width="1" height="1" fill="#172443"/><rect x="7" y="7" width="3" height="1" fill="#fff1d2"/><rect x="4" y="9" width="8" height="2" fill="#e99f45"/><rect x="4" y="11" width="2" height="3" fill="#f3b94f"/><rect x="10" y="11" width="2" height="3" fill="#f3b94f"/><rect x="12" y="8" width="3" height="1" fill="#ce8247"/>
+          </svg>
+          <svg class="pawcare-welcome__pet pawcare-welcome__pet--cat" viewBox="0 0 16 16" role="presentation" shape-rendering="crispEdges">
+            <rect x="3" y="2" width="3" height="4" fill="#84d7c6"/><rect x="10" y="2" width="3" height="4" fill="#84d7c6"/><rect x="4" y="5" width="8" height="5" fill="#84d7c6"/><rect x="5" y="6" width="1" height="1" fill="#172443"/><rect x="10" y="6" width="1" height="1" fill="#172443"/><rect x="7" y="8" width="2" height="1" fill="#f38da2"/><rect x="3" y="10" width="10" height="2" fill="#65c7b5"/><rect x="4" y="12" width="2" height="2" fill="#84d7c6"/><rect x="10" y="12" width="2" height="2" fill="#84d7c6"/><rect x="12" y="9" width="3" height="1" fill="#65c7b5"/>
+          </svg>
+          <span class="pawcare-welcome__bubble pawcare-welcome__bubble--one">hi!</span><span class="pawcare-welcome__bubble pawcare-welcome__bubble--two">meow!</span>
+        </div>
+        <div class="pawcare-welcome__hint"><span>🐾</span> Let’s make tails wag <span>🐾</span></div>
+      </div>`;
+    document.body.appendChild(scene);
+    let finished=false;
+    const finish=()=>{
+      if(finished)return;
+      finished=true;
+      clearTimeout(timer);
+      scene.classList.add('is-leaving');
+      setTimeout(()=>{scene.remove();onDone?.()},380);
+    };
+    const timer=setTimeout(finish,duration);
+    scene.querySelector('.pawcare-welcome__skip').addEventListener('click',finish);
+    scene.addEventListener('pointermove',event=>{
+      if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+      const bounds=scene.getBoundingClientRect();
+      const x=(event.clientX-bounds.left)/bounds.width-.5;
+      const y=(event.clientY-bounds.top)/bounds.height-.5;
+      scene.querySelector('.pawcare-welcome__stage').style.setProperty('--tilt-x',`${-y*5}deg`);
+      scene.querySelector('.pawcare-welcome__stage').style.setProperty('--tilt-y',`${x*7}deg`);
     });
-    function playGalaxyEntranceSfx(){
-      const ctx=unlockGalaxyAudio();
-      if(!ctx || ctx.state==='suspended') return;
-      const t=ctx.currentTime+0.005;
-      const master=ctx.createGain();
-      master.gain.setValueAtTime(0.0001,t);
-      master.gain.exponentialRampToValueAtTime(0.18,t+0.025);
-      master.gain.exponentialRampToValueAtTime(0.0001,t+1.65);
-      master.connect(ctx.destination);
-
-      const bass=ctx.createOscillator(), bg=ctx.createGain();
-      bass.type='sine'; bass.frequency.setValueAtTime(62,t);
-      bass.frequency.exponentialRampToValueAtTime(27,t+1.55);
-      bg.gain.setValueAtTime(0.0001,t);
-      bg.gain.exponentialRampToValueAtTime(0.65,t+0.08);
-      bg.gain.exponentialRampToValueAtTime(0.0001,t+1.55);
-      bass.connect(bg); bg.connect(master); bass.start(t); bass.stop(t+1.7);
-
-      const sweep=ctx.createOscillator(), sg=ctx.createGain();
-      sweep.type='triangle'; sweep.frequency.setValueAtTime(150,t);
-      sweep.frequency.exponentialRampToValueAtTime(1550,t+1.0);
-      sweep.frequency.exponentialRampToValueAtTime(650,t+1.55);
-      sg.gain.setValueAtTime(0.0001,t);
-      sg.gain.exponentialRampToValueAtTime(0.16,t+0.09);
-      sg.gain.exponentialRampToValueAtTime(0.0001,t+1.5);
-      sweep.connect(sg); sg.connect(master); sweep.start(t); sweep.stop(t+1.6);
-
-      const hit=ctx.createOscillator(), hg=ctx.createGain();
-      hit.type='sine'; hit.frequency.setValueAtTime(760,t+0.98);
-      hit.frequency.exponentialRampToValueAtTime(170,t+1.42);
-      hg.gain.setValueAtTime(0.0001,t+0.98);
-      hg.gain.exponentialRampToValueAtTime(0.15,t+1.03);
-      hg.gain.exponentialRampToValueAtTime(0.0001,t+1.52);
-      hit.connect(hg); hg.connect(master); hit.start(t+0.98); hit.stop(t+1.58);
-
-      const buffer=ctx.createBuffer(1,Math.floor(ctx.sampleRate*1.35),ctx.sampleRate);
-      const data=buffer.getChannelData(0);
-      for(let i=0;i<data.length;i++){
-        const x=i/data.length;
-        data[i]=(Math.random()*2-1)*Math.pow(1-x,0.72);
-      }
-      const noise=ctx.createBufferSource(), nf=ctx.createBiquadFilter(), ng=ctx.createGain();
-      noise.buffer=buffer; nf.type='bandpass';
-      nf.frequency.setValueAtTime(520,t);
-      nf.frequency.exponentialRampToValueAtTime(3800,t+0.8);
-      nf.Q.value=0.7;
-      ng.gain.setValueAtTime(0.0001,t);
-      ng.gain.exponentialRampToValueAtTime(0.20,t+0.04);
-      ng.gain.exponentialRampToValueAtTime(0.0001,t+1.22);
-      noise.connect(nf); nf.connect(ng); ng.connect(master);
-      noise.start(t); noise.stop(t+1.3);
-    }
-    playGalaxyEntranceSfx();
-
-    const makeStars=(host,count,near)=>{const frag=document.createDocumentFragment();for(let i=0;i<count;i++){const star=document.createElement('i');star.style.setProperty('--angle',(Math.random()*Math.PI*2)+'rad');star.style.setProperty('--radius',(4+Math.random()*47)+'vw');star.style.setProperty('--delay',(Math.random()*.35)+'s');star.style.setProperty('--length',(near?(24+Math.random()*100):(8+Math.random()*42))+'px');star.style.setProperty('--thickness',(near?(1+Math.random()*2.5):(.5+Math.random()*1.2))+'px');star.style.setProperty('--opacity',(near?(0.42+Math.random()*.58):(.18+Math.random()*.48)).toFixed(2));frag.appendChild(star)}host.appendChild(frag)};
-    makeStars(portal.querySelector('.space-portal__stars--far'),120,false); makeStars(portal.querySelector('.space-portal__stars--near'),90,true);
-    requestAnimationFrame(()=>portal.classList.add('is-active'));
-    setTimeout(()=>portal.classList.add('is-reveal'),Math.max(0,duration-620));
-    setTimeout(()=>{portal.remove();body.classList.remove('space-transition-active');onDone?.()},duration);
+    const onKeyDown=event=>{if(event.key==='Escape'){finish();document.removeEventListener('keydown',onKeyDown)}};
+    document.addEventListener('keydown',onKeyDown);
+    scene.addEventListener('click',event=>{if(event.target===scene)finish()});
+    requestAnimationFrame(()=>scene.classList.add('is-active'));
+    setTimeout(()=>scene.querySelector('.pawcare-welcome__skip')?.focus(),60);
+    scene.addEventListener('transitionend',event=>{if(event.target===scene&&finished)document.removeEventListener('keydown',onKeyDown)});
   }
 
-  /* Loader rules:
-     - fresh/reloaded HOME: 4.5s loader, then galaxy entrance
-     - top-nav arrival: 2s loader only
-     - checkout/cart/product/auth: no loader, no galaxy */
+  /* First home visit: loader, then one short welcome; later tab returns only load. */
   if(loader){
     const navLoad=sessionStorage.getItem('pawcareTabNavigation')==='1'; sessionStorage.removeItem('pawcareTabNavigation');
     const skipHome=sessionStorage.getItem('pawcareSkipHomeGalaxy')==='1'; sessionStorage.removeItem('pawcareSkipHomeGalaxy');
-    if(isHome && !navLoad && !skipHome && !location.hash){
-      const duration=Number(body.dataset.loaderDuration||4500);
-      setTimeout(()=>runSpacePortal(()=>{loader.classList.add('is-done');setTimeout(()=>loader.remove(),420)},2100),duration);
+    if(isHome && !skipHome && !location.hash && sessionStorage.getItem('pawcareWelcomeSeen')!=='1'){
+      const duration=navLoad?2000:Number(body.dataset.loaderDuration||4500);
+      setTimeout(()=>runWelcomeScene(()=>{loader.classList.add('is-done');setTimeout(()=>loader.remove(),420)},5000),duration);
     }else if(navLoad){
       setTimeout(()=>{loader.classList.add('is-done');setTimeout(()=>loader.remove(),420)},2000);
     }else{ loader.remove(); }
