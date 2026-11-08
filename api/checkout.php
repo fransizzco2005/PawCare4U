@@ -13,10 +13,24 @@ $province  = trim($in['province']   ?? '');
 $postal    = trim($in['postal_code']?? '');
 $phone     = trim($in['phone']      ?? '');
 $method    = $in['payment_method']  ?? 'cod'; // cod | gcash | card
+$fulfillment = $in['fulfillment'] ?? 'delivery';
+$pickupBranch = trim((string)($in['pickup_branch'] ?? ''));
 
-if (!$fullName || !$line1 || !$city || !$province || !$postal || !$phone) {
+if (!$fullName || !$phone || !in_array($fulfillment, ['delivery','pickup'], true)) {
+    http_response_code(422);
+    die(json_encode(['error' => 'Please enter your name and phone number and choose a fulfillment option.']));
+}
+if ($fulfillment === 'delivery' && (!$line1 || !$city || !$province || !$postal)) {
     http_response_code(422);
     die(json_encode(['error' => 'Please fill in the full delivery address.']));
+}
+if ($fulfillment === 'pickup' && !in_array($pickupBranch, [
+    'PawCare Manila BGC',
+    'PawCare Veterinary Clinic — Makati',
+    'PawCare Cebu City',
+], true)) {
+    http_response_code(422);
+    die(json_encode(['error' => 'Choose an available PawCare pickup location.']));
 }
 if (!in_array($method, ['cod', 'gcash', 'card'], true)) {
     http_response_code(422);
@@ -39,7 +53,7 @@ try {
     }
 
     $subtotal    = array_sum(array_map(fn($i) => $i['price'] * $i['qty'], $items));
-    $shippingFee = $subtotal >= 50 ? 0 : 4.99;
+    $shippingFee = $fulfillment === 'pickup' || $subtotal >= 50 ? 0 : 4.99;
     $total       = $subtotal + $shippingFee;
 
     // 2. Save the delivery address
@@ -47,7 +61,14 @@ try {
         'INSERT INTO addresses (user_id, full_name, line1, city, province, postal_code, phone)
          VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id'
     );
-    $addressStmt->execute([$user['id'], $fullName, $line1, $city, $province, $postal, $phone]);
+    $addressStmt->execute([
+        $user['id'], $fullName,
+        $fulfillment === 'pickup' ? 'Store pickup' : $line1,
+        $fulfillment === 'pickup' ? $pickupBranch : $city,
+        $fulfillment === 'pickup' ? 'Pickup' : $province,
+        $fulfillment === 'pickup' ? '—' : $postal,
+        $phone,
+    ]);
     $addressId = (int)$addressStmt->fetchColumn();
 
     // 3. Create the order
@@ -61,6 +82,8 @@ try {
         'placed',
     ]);
     $orderId = (int)$orderStmt->fetchColumn();
+    $pdo->prepare('UPDATE orders SET fulfillment_method=?,pickup_branch=? WHERE id=?')
+        ->execute([$fulfillment, $fulfillment === 'pickup' ? $pickupBranch : null, $orderId]);
     $pdo->prepare('INSERT INTO order_status_history (order_id,status,note) VALUES (?, ?, ?)')->execute([$orderId, 'placed', 'Order placed']);
 
     // 4. Snapshot the line items + decrement stock

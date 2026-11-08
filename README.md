@@ -20,8 +20,10 @@
 4. Apply `supabase/migrations/20261107150000_product_feedback_ratings.sql` to add five-star product ratings and allow rating-only feedback.
 5. Apply `supabase/migrations/20261107200000_product_feedback_owner_sender.sql` to support owner-authored product feedback.
 6. Apply `supabase/migrations/20261108090000_product_messages_inventory.sql` for customer/owner product messaging and preorder requests.
-7. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
-8. For the alternate MySQL schema, import `schema.sql` (or `database/pawcare.sql`); apply `database/migration_product_messages_inventory.sql` to an existing MySQL schema.
+7. Apply `supabase/migrations/20261108140000_order_cancellation_pickup_product_upload.sql` for order cancellation, pickup orders, reservation cancellation reasons, and the product image bucket.
+8. Set `SUPABASE_SERVICE_ROLE_KEY` in `.env` and hosting environment variables so owner product image uploads can write to the private server-side storage API. Never expose this key in browser code.
+9. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
+10. For the alternate MySQL schema, import `schema.sql` (or `database/pawcare.sql`); apply `database/migration_product_messages_inventory.sql` to an existing MySQL schema.
 
 ## PHP hosting requirement
 PawCare must run on a host that executes PHP and POST requests. A static-only host will return HTTP 405 because login, registration, cart, checkout, and owner APIs use PHP endpoints.
@@ -35,6 +37,7 @@ PawCare must run on a host that executes PHP and POST requests. A static-only ho
    - `SUPABASE_DB_USER=postgres.nbickxvumjpvqvmiiznj`
    - `SUPABASE_DB_PASSWORD=<database password>`
    - `SUPABASE_URL=https://nbickxvumjpvqvmiiznj.supabase.co`
+   - `SUPABASE_SERVICE_ROLE_KEY=<Supabase service role key>`
 3. Redeploy from the latest commit.
 4. Verify `https://YOUR-VERCEL-DOMAIN/api/health.php` returns `"ok":true`.
 

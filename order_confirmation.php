@@ -41,9 +41,10 @@ $items = $items->fetchAll();
     payment status: <strong><?= htmlspecialchars($order['payment_status']) ?></strong>).</p>
 
   <div class="confirm-card">
-    <h3>Delivery address</h3>
-    <p><?= htmlspecialchars($order['line1']) ?>, <?= htmlspecialchars($order['city']) ?>,
-       <?= htmlspecialchars($order['province']) ?> <?= htmlspecialchars($order['postal_code']) ?><br>
+    <h3><?= ($order['fulfillment_method'] ?? 'delivery') === 'pickup' ? 'Store pickup' : 'Delivery address' ?></h3>
+    <p><?= ($order['fulfillment_method'] ?? 'delivery') === 'pickup'
+        ? htmlspecialchars($order['pickup_branch'] ?? $order['city'])
+        : htmlspecialchars($order['line1']) . ', ' . htmlspecialchars($order['city']) . ', ' . htmlspecialchars($order['province']) . ' ' . htmlspecialchars($order['postal_code']) ?><br>
        📞 <?= htmlspecialchars($order['phone']) ?></p>
   </div>
 

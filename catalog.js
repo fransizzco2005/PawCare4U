@@ -29,7 +29,7 @@
   }
   const grid=document.querySelector('.products-grid');
   if(!grid) return;
-  const cards=[...grid.querySelectorAll('.product-card')];
+  let cards=[...grid.querySelectorAll('.product-card')];
   const count=document.querySelector('.products-count');
   const sort=document.querySelector('.sort-control select');
   const search=document.getElementById('search-input');
@@ -40,7 +40,7 @@
   let active='All categories', query='';
 
   function money(n){return '₱'+Number(n||0).toLocaleString('en-PH',{maximumFractionDigits:0});}
-  function data(card){return {id:Number(card.dataset.productId),name:card.dataset.name,price:Number(card.dataset.price),oldPrice:card.dataset.oldPrice?Number(card.dataset.oldPrice):null,rating:Number(card.dataset.rating||4.5),reviews:Number(card.dataset.reviews||0),description:card.dataset.description||'A practical PawCare essential for everyday pet care.',category:animalKey,subcategory:card.dataset.subcategory,stock:Number(card.dataset.stock??100),image:card.querySelector('img')?.getAttribute('src')||''};}
+  function data(card){return {id:Number(card.dataset.productId),name:card.dataset.name,price:Number(card.dataset.price),oldPrice:card.dataset.oldPrice?Number(card.dataset.oldPrice):null,rating:Number(card.dataset.rating||4.5),reviews:Number(card.dataset.reviews||0),description:card.dataset.description||'A practical PawCare essential for everyday pet care.',category:animalKey,subcategory:card.dataset.subcategory||'',stock:Number(card.dataset.stock??100),image:card.querySelector('img')?.getAttribute('src')||''};}
   function renderSidebar(){
     if(!sidebar) return;
     sidebar.innerHTML='';
@@ -49,7 +49,7 @@
     const group=document.createElement('div'); group.className='filter-group'; group.innerHTML='<label>Shop by category</label>';
     categories.forEach(cat=>{const label=document.createElement('label');label.className='filter-option';label.innerHTML=`<input type="radio" name="pc-sub" ${cat===active?'checked':''}> <span>${cat}</span>`;label.querySelector('input').addEventListener('change',()=>{active=cat;render()});group.appendChild(label)});
     sidebar.appendChild(group);
-    const note=document.createElement('div');note.className='filter-group filter-note';note.innerHTML='<label>Catalog</label><p>20 products · 2 products in every shop category.</p>';sidebar.appendChild(note);
+    const note=document.createElement('div');note.className='filter-group filter-note';note.innerHTML=`<label>Catalog</label><p>${cards.length} products in this collection.</p>`;sidebar.appendChild(note);
     const saveBtn=document.createElement('button');saveBtn.type='button';saveBtn.className='filter-save-btn';saveBtn.textContent='Save this search';
     saveBtn.addEventListener('click',()=>toast(`Search saved: ${active}`));
     sidebar.appendChild(saveBtn);
@@ -68,6 +68,22 @@
   function toast(msg){let t=document.getElementById('catalogToast');if(!t){t=document.createElement('div');t.id='catalogToast';t.className='catalog-toast';document.body.appendChild(t)}t.textContent=msg;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2200)}
   function syncCatalog(){
     fetch('api/products.php',{credentials:'same-origin'}).then(async response=>{if(!response.ok)throw Error('Could not refresh product stock and prices.');return response.json()}).then(products=>{
+      const existingIds=new Set(cards.map(card=>Number(card.dataset.productId)));
+      products.filter(product=>product.category===animalKey&&!existingIds.has(Number(product.id))).forEach(product=>{
+        const card=document.createElement('article');
+        card.className='product-card';
+        Object.assign(card.dataset,{productId:product.id,name:product.name,price:product.price,oldPrice:product.oldPrice||'',rating:product.rating||5,reviews:product.reviews||0,subcategory:product.subcategory||'',stock:product.stock??0});
+        card.innerHTML=`<div class="product-thumb"><img loading="lazy" alt=""><button type="button" class="product-view-btn">Explore product</button></div><div class="product-body"><h3 class="product-name"></h3><div class="product-rating"></div><div class="product-price"></div><button type="button" class="product-add-btn">Add to cart</button></div>`;
+        card.querySelector('img').src=product.image_url||'';
+        card.querySelector('img').alt=product.name;
+        card.querySelector('.product-name').textContent=product.name;
+        card.querySelector('.product-rating').textContent=`★ ${Number(product.rating||5).toFixed(1)} · ${Number(product.reviews||0)} reviews`;
+        card.querySelector('.product-price').textContent=money(product.price);
+        card.querySelector('.product-view-btn').dataset.openProduct='';
+        card.querySelector('.product-add-btn').dataset.addToCart='';
+        grid.appendChild(card);
+      });
+      cards=[...grid.querySelectorAll('.product-card')];
       const byId=new Map(products.map(product=>[Number(product.id),product]));
       cards.forEach(card=>{
         const product=byId.get(Number(card.dataset.productId));if(!product)return;
@@ -77,6 +93,7 @@
         if(!stockNote){stockNote=document.createElement('small');stockNote.className='product-stock-note';price?.after(stockNote)}
         if(stockNote){stockNote.textContent=Number(product.stock)>0?`${Number(product.stock)} left in stock`:'Out of stock · preorder available';stockNote.classList.toggle('is-out-of-stock',Number(product.stock)<=0)}
       });
+      render();
     }).catch(error=>toast(error.message));
   }
   async function apiAdd(product,qty){

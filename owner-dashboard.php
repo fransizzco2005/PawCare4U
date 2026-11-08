@@ -15,5 +15,5 @@ if(!$owner){ header('Location: index.html#account'); exit; }
   <section id="ownerFeedbackPanel" class="owner-panel" hidden></section>
   <section id="ownerOverviewPanel" class="owner-panel" hidden></section>
 </main>
-<script src="account-features.js"></script><script>window.PawCareOwner?.init();</script>
+<script src="inventory-admin.js"></script><script src="account-features.js"></script><script>window.PawCareOwner?.init();</script>
 </body></html>

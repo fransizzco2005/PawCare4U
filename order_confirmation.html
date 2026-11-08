@@ -21,11 +21,12 @@
           <div><small>Receipt number</small><b id="receiptId">Loading...</b></div>
           <div><small>Payment method</small><b id="receiptPayment">—</b></div>
           <div><small>Order status</small><b id="receiptStatus">Placed</b></div>
+          <div><small>Fulfillment</small><b id="receiptFulfillment">—</b></div>
         </div>
         <section class="receipt-items" id="receiptItems"><div class="receipt-item">Loading receipt...</div></section>
         <section class="receipt-totals">
           <div><span>Subtotal</span><b id="receiptSubtotal">₱0.00</b></div>
-          <div><span>Shipping</span><b id="receiptShipping">₱0.00</b></div>
+          <div><span id="receiptShippingLabel">Shipping</span><b id="receiptShipping">₱0.00</b></div>
           <div class="total"><span>Total</span><b id="receiptTotal">₱0.00</b></div>
         </section>
       </div>
@@ -47,6 +48,9 @@
       if(!order){document.getElementById('receiptItems').innerHTML='<div class="receipt-item">Your order is confirmed. Open My Orders for complete details.</div>';return}
       document.getElementById('receiptPayment').textContent=order.payment_method==='cod'?'Cash on delivery':String(order.payment_method||'—').toUpperCase();
       document.getElementById('receiptStatus').textContent=String(order.order_status||'placed').replace(/^\w/,c=>c.toUpperCase());
+      const pickup=order.fulfillment_method==='pickup';
+      document.getElementById('receiptFulfillment').textContent=pickup?`Store pickup · ${order.pickup_branch||'PawCare location'}`:'Home delivery';
+      document.getElementById('receiptShippingLabel').textContent=pickup?'Pickup':'Shipping';
       document.getElementById('receiptItems').innerHTML=(order.items||[]).map(i=>`<div class="receipt-item"><span>${i.name} × ${i.qty}</span><b>${money(Number(i.price)*Number(i.qty))}</b></div>`).join('');
       document.getElementById('receiptSubtotal').textContent=money(order.subtotal);
       document.getElementById('receiptShipping').textContent=money(order.shipping_fee);

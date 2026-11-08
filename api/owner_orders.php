@@ -5,17 +5,22 @@ require_owner();
 $in=json_input();
 $orderId=(int)($in['order_id']??0);
 $status=$in['status']??'';
-$allowed=['placed','processing','shipped','delivered','cancelled'];
+$allowed=['placed','processing','shipped','delivered'];
 if (!$orderId || !in_array($status,$allowed,true)) {
  http_response_code(422); die(json_encode(['error'=>'Invalid order or status.']));
 }
-$stmt=$pdo->prepare('SELECT order_status FROM orders WHERE id=?');
-$stmt->execute([$orderId]);
-$current=$stmt->fetchColumn();
-if ($current===false) { http_response_code(404); die(json_encode(['error'=>'Order not found.'])); }
 $pdo->beginTransaction();
 try {
- $pdo->prepare('UPDATE orders SET order_status=? WHERE id=?')->execute([$status,$orderId]);
+ $stmt=$pdo->prepare('UPDATE orders SET order_status=? WHERE id=? AND order_status<>? RETURNING id');
+ $stmt->execute([$status,$orderId,'cancelled']);
+ if (!$stmt->fetchColumn()) {
+  $pdo->rollBack();
+  $exists=$pdo->prepare('SELECT order_status FROM orders WHERE id=?');
+  $exists->execute([$orderId]);
+  $existingStatus=$exists->fetchColumn();
+  http_response_code($existingStatus===false?404:409);
+  die(json_encode(['error'=>$existingStatus===false?'Order not found.':'Cancelled orders cannot be updated.']));
+ }
  $pdo->prepare('INSERT INTO order_status_history(order_id,status,note) VALUES(?,?,?)')
      ->execute([$orderId,$status,'Status updated by owner']);
  $pdo->commit();

@@ -53,7 +53,7 @@ async function body(req) {
     if (Buffer.isBuffer(req.body)) text = req.body.toString();
     else if (req.body && typeof req.body === 'object' && !Array.isArray(req.body)) {
       const keys = Object.keys(req.body);
-      if (keys.some(key => ['name','email','password','nickname','phone','avatar_data','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id','conversation_id','kind','quantity','price','stock','feedback_id'].includes(key))) {
+      if (keys.some(key => ['name','email','password','nickname','phone','avatar_data','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id','conversation_id','kind','quantity','price','stock','feedback_id','image_data','category','subcategory','fulfillment','pickup_branch','reason','other_reason'].includes(key))) {
         if (!text) return req.body;
       }
     }
@@ -71,7 +71,7 @@ async function body(req) {
       return parsed && typeof parsed === 'object' ? parsed : {};
     } catch (_) {
       const result = {};
-      for (const key of ['name','email','password','nickname','phone','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id','conversation_id','kind','quantity','price','stock','feedback_id']) {
+      for (const key of ['name','email','password','nickname','phone','product_id','qty','delta','service_id','branch','appointment_date','appointment_time','customer_name','pet_name','pet_type','pet_age','notes','status','order_id','message','comment','owner_reply','id','conversation_id','kind','quantity','price','stock','feedback_id','image_data','category','subcategory','fulfillment','pickup_branch','reason','other_reason']) {
         const match = text.match(new RegExp('"' + key + '"\\s*:\\s*(?:"([^"]*)"|([^,}\\s]+))'));
         if (match) result[key] = match[1] !== undefined ? match[1] : match[2];
       }
@@ -90,6 +90,63 @@ async function body(req) {
     return fields;
   }
   return text ? JSON.parse(text) : {};
+}
+
+function cancellationReason(input, role) {
+  const reasons = {
+    found_another_product: 'I found another product',
+    ordered_by_mistake: 'I ordered by mistake',
+    changed_my_mind: 'I changed my mind',
+    delivery_takes_too_long: 'The delivery takes too long',
+    other: 'Other'
+  };
+  if (role === 'owner') reasons.owner_cancelled = 'Cancelled by the owner';
+  const code = String(input.reason || '');
+  if (!Object.hasOwn(reasons, code)) throw Object.assign(new Error('Choose a cancellation reason.'), { status: 422 });
+  if (code !== 'other') return reasons[code];
+  const detail = String(input.other_reason || '').trim();
+  if (!detail || detail.length > 300) throw Object.assign(new Error('Enter a cancellation reason (up to 300 characters).'), { status: 422 });
+  return `Other: ${detail}`;
+}
+
+async function uploadProductImage(dataUrl) {
+  const match = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/.exec(String(dataUrl || ''));
+  if (!match) throw Object.assign(new Error('Upload a JPG, PNG, or WEBP product image.'), { status: 422 });
+  const image = Buffer.from(match[2], 'base64');
+  const signatures = {
+    jpeg: image[0] === 0xff && image[1] === 0xd8 && image[2] === 0xff,
+    png: image.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10])),
+    webp: image.toString('ascii', 0, 4) === 'RIFF' && image.toString('ascii', 8, 12) === 'WEBP'
+  };
+  if (!image.length || image.length > 3 * 1024 * 1024 || !signatures[match[1]]) {
+    throw Object.assign(new Error('Product images must be valid and no larger than 3 MB.'), { status: 422 });
+  }
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+  if (!key) throw Object.assign(new Error('Product image storage is not configured. Set SUPABASE_SERVICE_ROLE_KEY on the server.'), { status: 503 });
+  const baseUrl = process.env.SUPABASE_URL || 'https://nbickxvumjpvqvmiiznj.supabase.co';
+  const extension = match[1] === 'jpeg' ? 'jpg' : match[1];
+  const path = `products/${crypto.randomUUID()}.${extension}`;
+  const response = await fetch(`${baseUrl}/storage/v1/object/product-images/${path}`, {
+    method: 'POST',
+    headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': `image/${match[1]}`, 'x-upsert': 'false' },
+    body: image
+  });
+  if (!response.ok) {
+    console.error('Product image storage upload failed:', response.status, await response.text());
+    throw Object.assign(new Error('Could not upload the product image. Please try again.'), { status: 502 });
+  }
+  return `${baseUrl}/storage/v1/object/public/product-images/${path}`;
+}
+
+async function deleteProductImage(imageUrl) {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+  const baseUrl = process.env.SUPABASE_URL || 'https://nbickxvumjpvqvmiiznj.supabase.co';
+  const prefix = `${baseUrl}/storage/v1/object/public/product-images/`;
+  if (!key || !imageUrl.startsWith(prefix)) return;
+  const response = await fetch(`${baseUrl}/storage/v1/object/product-images/${imageUrl.slice(prefix.length)}`, {
+    method: 'DELETE', headers: { apikey: key, Authorization: `Bearer ${key}` }
+  });
+  if (!response.ok) console.error('Failed to remove an orphaned product image:', response.status);
 }
 
 module.exports = async function handler(req, res) {
@@ -142,6 +199,33 @@ module.exports = async function handler(req, res) {
         return json(res, 200, { ok: true, profile: { ...result.rows[0], role: 'user' } });
       }
       return json(res, 405, { error: 'Method not allowed.' });
+    }
+    if (pathname === 'products' && req.method === 'POST') {
+      if (!session || session.role !== 'owner') return json(res, 403, { error: 'Owner access only.' });
+      const input = await body(req);
+      const name = String(input.name || '').trim();
+      const category = String(input.category || '').trim();
+      const subcategory = String(input.subcategory || '').trim();
+      const price = Number(input.price);
+      const stock = Number(input.stock);
+      if (!name || name.length > 190 || !['dog','cat','bird','fish','rodent'].includes(category) ||
+          subcategory.length > 80 || !Number.isFinite(price) || price <= 0 ||
+          !Number.isInteger(stock) || stock < 0 || stock > 1000000) {
+        return json(res, 422, { error: 'Enter a product name, valid category, price, and stock from 0 to 1,000,000.' });
+      }
+      const imageUrl = await uploadProductImage(input.image_data);
+      try {
+        const created = await pool.query(
+          `INSERT INTO products(name,category,subcategory,price,stock,image_url,rating,reviews)
+           VALUES($1,$2,$3,$4,$5,$6,5,0)
+           RETURNING id,name,category,subcategory,price,old_price AS "oldPrice",rating,reviews,tag,icon,stock,image_url`,
+          [name, category, subcategory || null, price, stock, imageUrl]
+        );
+        return json(res, 200, { ok: true, product: created.rows[0] });
+      } catch (error) {
+        await deleteProductImage(imageUrl);
+        throw error;
+      }
     }
     if (pathname === 'products' && req.method === 'PUT') {
       if (!session || session.role !== 'owner') return json(res, 403, { error: 'Owner access only.' });
@@ -280,9 +364,17 @@ module.exports = async function handler(req, res) {
       const province = String(input.province || '').trim();
       const postalCode = String(input.postal_code || '').trim();
       const phone = String(input.phone || '').trim();
+      const fulfillment = String(input.fulfillment || 'delivery');
+      const pickupBranch = String(input.pickup_branch || '').trim();
       const method = ['cod', 'gcash', 'card'].includes(String(input.payment_method || 'cod')) ? String(input.payment_method || 'cod') : '';
-      if (!fullName || !line1 || !city || !province || !postalCode || !phone || !method) {
-        return json(res, 422, { error: 'Please fill in the full delivery address and payment method.' });
+      if (!fullName || !phone || !['delivery','pickup'].includes(fulfillment) || !method) {
+        return json(res, 422, { error: 'Please enter your name and phone number and choose a fulfillment and payment option.' });
+      }
+      if (fulfillment === 'delivery' && (!line1 || !city || !province || !postalCode)) {
+        return json(res, 422, { error: 'Please fill in the full delivery address.' });
+      }
+      if (fulfillment === 'pickup' && !['PawCare Manila BGC','PawCare Veterinary Clinic — Makati','PawCare Cebu City'].includes(pickupBranch)) {
+        return json(res, 422, { error: 'Choose an available PawCare pickup location.' });
       }
       const client = await pool.connect();
       try {
@@ -294,15 +386,17 @@ module.exports = async function handler(req, res) {
         if (!cart.rows.length) throw Object.assign(new Error('Cart is empty'), { status: 422 });
         for (const item of cart.rows) if (item.qty > item.stock) throw Object.assign(new Error(`Only ${item.stock} left of ${item.name}.`), { status: 422 });
         const subtotal = cart.rows.reduce((sum, item) => sum + Number(item.price) * Number(item.qty), 0);
-        const shippingFee = subtotal >= 50 ? 0 : 4.99;
+        const shippingFee = fulfillment === 'pickup' || subtotal >= 50 ? 0 : 4.99;
         const total = subtotal + shippingFee;
         const address = await client.query(
           'INSERT INTO addresses(user_id,full_name,line1,city,province,postal_code,phone) VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING id',
-          [session.id, fullName, line1, city, province, postalCode, phone]
+          [session.id, fullName, fulfillment === 'pickup' ? 'Store pickup' : line1,
+            fulfillment === 'pickup' ? pickupBranch : city, fulfillment === 'pickup' ? 'Pickup' : province,
+            fulfillment === 'pickup' ? '—' : postalCode, phone]
         );
         const order = await client.query(
-          'INSERT INTO orders(user_id,address_id,subtotal,shipping_fee,total,payment_method,payment_status,order_status) VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id',
-          [session.id, address.rows[0].id, subtotal, shippingFee, total, method, 'pending', 'placed']
+          'INSERT INTO orders(user_id,address_id,subtotal,shipping_fee,total,payment_method,payment_status,order_status,fulfillment_method,pickup_branch) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id',
+          [session.id, address.rows[0].id, subtotal, shippingFee, total, method, 'pending', 'placed', fulfillment, fulfillment === 'pickup' ? pickupBranch : null]
         );
         const orderId = order.rows[0].id;
         await client.query('INSERT INTO order_status_history(order_id,status,note) VALUES($1,$2,$3)', [orderId, 'placed', 'Order placed']);
@@ -326,13 +420,13 @@ module.exports = async function handler(req, res) {
       let result;
       if (session.role === 'owner') {
         result = await pool.query(
-          `SELECT o.id,o.user_id,o.subtotal,o.shipping_fee,o.total,o.payment_method,o.payment_status,o.order_status,o.created_at,
+          `SELECT o.id,o.user_id,o.subtotal,o.shipping_fee,o.total,o.payment_method,o.payment_status,o.order_status,o.fulfillment_method,o.pickup_branch,o.created_at,
                   u.name customer_name,u.email customer_email,a.full_name,a.line1,a.city,a.province,a.postal_code,a.phone
            FROM orders o JOIN users u ON u.id=o.user_id JOIN addresses a ON a.id=o.address_id ORDER BY o.created_at DESC`
         );
       } else {
         result = await pool.query(
-          `SELECT o.id,o.user_id,o.subtotal,o.shipping_fee,o.total,o.payment_method,o.payment_status,o.order_status,o.created_at,
+          `SELECT o.id,o.user_id,o.subtotal,o.shipping_fee,o.total,o.payment_method,o.payment_status,o.order_status,o.fulfillment_method,o.pickup_branch,o.created_at,
                   a.full_name,a.line1,a.city,a.province,a.postal_code,a.phone
            FROM orders o JOIN addresses a ON a.id=o.address_id WHERE o.user_id=$1 ORDER BY o.created_at DESC`,
           [session.id]
@@ -349,6 +443,63 @@ module.exports = async function handler(req, res) {
         order.messages = messages.rows;
       }
       return json(res, 200, { orders: result.rows, role: session.role });
+    }
+    if (pathname === 'order_cancel' && req.method === 'POST') {
+      if (!session) return json(res, 401, { error: 'Please sign in first.' });
+      const input = await body(req);
+      const orderId = Number(input.order_id || 0);
+      let reason;
+      try { reason = cancellationReason(input, session.role); }
+      catch (error) { return json(res, error.status || 422, { error: error.message }); }
+      if (!Number.isInteger(orderId) || orderId <= 0) return json(res, 422, { error: 'Order is required.' });
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        const order = await client.query(
+          `SELECT id,user_id,order_status FROM orders WHERE id=$1 ${session.role === 'owner' ? '' : 'AND user_id=$2'} FOR UPDATE`,
+          session.role === 'owner' ? [orderId] : [orderId,session.id]
+        );
+        if (!order.rows[0]) {
+          await client.query('ROLLBACK');
+          return json(res, 404, { error: 'Order not found.' });
+        }
+        if (order.rows[0].order_status === 'cancelled') {
+          await client.query('ROLLBACK');
+          return json(res, 409, { error: 'This order is already cancelled.' });
+        }
+        if (session.role !== 'owner' && order.rows[0].order_status !== 'placed') {
+          await client.query('ROLLBACK');
+          return json(res, 409, { error: 'Orders can only be cancelled before packing or processing begins.' });
+        }
+        const items = await client.query('SELECT product_id,qty FROM order_items WHERE order_id=$1', [orderId]);
+        if (['placed','processing'].includes(order.rows[0].order_status)) {
+          for (const item of items.rows) {
+            await client.query('UPDATE products SET stock=stock+$1 WHERE id=$2', [item.qty,item.product_id]);
+          }
+        }
+        if (session.role !== 'owner') {
+          const progressed = await client.query(
+            "SELECT 1 FROM order_status_history WHERE order_id=$1 AND status IN ('processing','shipped','delivered') LIMIT 1",
+            [orderId]
+          );
+          if (progressed.rows[0]) {
+            await client.query('ROLLBACK');
+            return json(res, 409, { error: 'Orders can only be cancelled before packing or processing begins.' });
+          }
+        }
+        await client.query(
+          "UPDATE orders SET order_status='cancelled',payment_status=CASE WHEN payment_status='pending' THEN 'cancelled' ELSE payment_status END WHERE id=$1",
+          [orderId]
+        );
+        await client.query('INSERT INTO order_status_history(order_id,status,note) VALUES($1,$2,$3)', [orderId,'cancelled',`Cancellation reason: ${reason}`]);
+        await client.query('COMMIT');
+        return json(res, 200, { ok: true, status: 'cancelled', reason });
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
+      }
     }
     if (pathname === 'owner_overview' && req.method === 'GET') {
       if (!session || session.role !== 'owner') return json(res, 403, { error: 'Owner access only.' });
@@ -386,10 +537,17 @@ module.exports = async function handler(req, res) {
       const input = await body(req);
       const orderId = Number(input.order_id || 0);
       const status = String(input.status || '');
-      if (!orderId || !['placed','processing','shipped','delivered','cancelled'].includes(status)) return json(res, 422, { error: 'Invalid order or status.' });
-      const exists = await pool.query('SELECT id FROM orders WHERE id=$1', [orderId]);
-      if (!exists.rows[0]) return json(res, 404, { error: 'Order not found.' });
-      await pool.query('UPDATE orders SET order_status=$1 WHERE id=$2', [status, orderId]);
+      if (!orderId || !['placed','processing','shipped','delivered'].includes(status)) return json(res, 422, { error: 'Invalid order or status.' });
+      const updated = await pool.query(
+        "UPDATE orders SET order_status=$1 WHERE id=$2 AND order_status<>'cancelled' RETURNING id",
+        [status, orderId]
+      );
+      if (!updated.rows[0]) {
+        const exists = await pool.query('SELECT order_status FROM orders WHERE id=$1', [orderId]);
+        return exists.rows[0]
+          ? json(res, 409, { error: 'Cancelled orders cannot be updated.' })
+          : json(res, 404, { error: 'Order not found.' });
+      }
       await pool.query('INSERT INTO order_status_history(order_id,status,note) VALUES($1,$2,$3)', [orderId, status, 'Status updated by owner']);
       return json(res, 200, { ok: true, status });
     }
@@ -408,18 +566,56 @@ module.exports = async function handler(req, res) {
         return json(res, 200, { ok: true, id: created.rows[0].id });
       }
     }
+    if (pathname === 'appointment_cancel' && req.method === 'POST') {
+      if (!session) return json(res, 401, { error: 'Please sign in first.' });
+      const input = await body(req);
+      const id = Number(input.id || 0);
+      let reason;
+      try { reason = cancellationReason(input, session.role); }
+      catch (error) { return json(res, error.status || 422, { error: error.message }); }
+      if (!Number.isInteger(id) || id <= 0) return json(res, 422, { error: 'Reservation is required.' });
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        const reservation = await client.query(
+          `SELECT id,user_id,status FROM appointments WHERE id=$1 ${session.role === 'owner' ? '' : 'AND user_id=$2'} FOR UPDATE`,
+          session.role === 'owner' ? [id] : [id,session.id]
+        );
+        if (!reservation.rows[0]) {
+          await client.query('ROLLBACK');
+          return json(res, 404, { error: 'Reservation not found.' });
+        }
+        const status = reservation.rows[0].status;
+        if (status === 'cancelled') {
+          await client.query('ROLLBACK');
+          return json(res, 409, { error: 'This reservation is already cancelled.' });
+        }
+        if (session.role !== 'owner' && !['pending','confirmed'].includes(status)) {
+          await client.query('ROLLBACK');
+          return json(res, 409, { error: 'Only pending or confirmed reservations can be cancelled.' });
+        }
+        await client.query("UPDATE appointments SET status='cancelled',cancellation_reason=$1 WHERE id=$2", [reason,id]);
+        await client.query('COMMIT');
+        return json(res, 200, { ok: true, status: 'cancelled', reason });
+      } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+      } finally {
+        client.release();
+      }
+    }
     if (pathname === 'appointments') {
       if (req.method === 'GET') {
         if (!session) return json(res, 200, { appointments: [], role: 'guest' });
         if (session.role === 'owner') {
           const result = await pool.query(
-            `SELECT a.id,'PC-'||lpad(a.id::text,6,'0') AS reference,s.name AS service_name,a.branch,a.appointment_date,a.appointment_time,a.customer_name,a.email,a.phone,a.pet_name,a.pet_type,a.pet_age,a.notes,a.status,a.created_at
+            `SELECT a.id,'PC-'||lpad(a.id::text,6,'0') AS reference,s.name AS service_name,a.branch,a.appointment_date,a.appointment_time,a.customer_name,a.email,a.phone,a.pet_name,a.pet_type,a.pet_age,a.notes,a.status,a.cancellation_reason,a.created_at
              FROM appointments a JOIN services s ON s.id=a.service_id ORDER BY a.appointment_date ASC,a.appointment_time ASC,a.id DESC`
           );
           return json(res, 200, { appointments: result.rows, role: 'owner' });
         }
         const result = await pool.query(
-          `SELECT a.id,'PC-'||lpad(a.id::text,6,'0') AS reference,s.name AS service_name,a.branch,a.appointment_date,a.appointment_time,a.customer_name,a.email,a.phone,a.pet_name,a.pet_type,a.pet_age,a.notes,a.status,a.created_at
+          `SELECT a.id,'PC-'||lpad(a.id::text,6,'0') AS reference,s.name AS service_name,a.branch,a.appointment_date,a.appointment_time,a.customer_name,a.email,a.phone,a.pet_name,a.pet_type,a.pet_age,a.notes,a.status,a.cancellation_reason,a.created_at
            FROM appointments a JOIN services s ON s.id=a.service_id WHERE a.user_id=$1 ORDER BY a.appointment_date ASC,a.appointment_time ASC,a.id DESC`,
           [session.id]
         );
@@ -430,9 +626,50 @@ module.exports = async function handler(req, res) {
         const input = await body(req);
         const id = Number(input.id || 0);
         const status = String(input.status || '');
-        if (!id || !['pending','confirmed','completed','cancelled'].includes(status)) return json(res, 422, { error: 'Invalid reservation status.' });
+        if (!id || !['pending','confirmed','completed'].includes(status)) return json(res, 422, { error: 'Invalid reservation status.' });
+        const current = await pool.query('SELECT status FROM appointments WHERE id=$1', [id]);
+        if (!current.rows[0]) return json(res, 404, { error: 'Reservation not found.' });
+        if (current.rows[0].status === 'cancelled') return json(res, 409, { error: 'Cancelled reservations cannot be updated.' });
         await pool.query('UPDATE appointments SET status=$1 WHERE id=$2', [status, id]);
         return json(res, 200, { ok: true, status });
+      }
+      if (req.method === 'DELETE') {
+        if (!session) return json(res, 401, { error: 'Please sign in first.' });
+        const input = await body(req);
+        const id = Number(input.id || 0);
+        let reason;
+        try { reason = cancellationReason(input, session.role); }
+        catch (error) { return json(res, error.status || 422, { error: error.message }); }
+        if (!Number.isInteger(id) || id <= 0) return json(res, 422, { error: 'Reservation is required.' });
+        const client = await pool.connect();
+        try {
+          await client.query('BEGIN');
+          const reservation = await client.query(
+            `SELECT id,user_id,status FROM appointments WHERE id=$1 ${session.role === 'owner' ? '' : 'AND user_id=$2'} FOR UPDATE`,
+            session.role === 'owner' ? [id] : [id,session.id]
+          );
+          if (!reservation.rows[0]) {
+            await client.query('ROLLBACK');
+            return json(res, 404, { error: 'Reservation not found.' });
+          }
+          const status = reservation.rows[0].status;
+          if (status === 'cancelled') {
+            await client.query('ROLLBACK');
+            return json(res, 409, { error: 'This reservation is already cancelled.' });
+          }
+          if (session.role !== 'owner' && !['pending','confirmed'].includes(status)) {
+            await client.query('ROLLBACK');
+            return json(res, 409, { error: 'Only pending or confirmed reservations can be cancelled.' });
+          }
+          await client.query("UPDATE appointments SET status='cancelled',cancellation_reason=$1 WHERE id=$2", [reason,id]);
+          await client.query('COMMIT');
+          return json(res, 200, { ok: true, status: 'cancelled', reason });
+        } catch (error) {
+          await client.query('ROLLBACK');
+          throw error;
+        } finally {
+          client.release();
+        }
       }
       if (req.method === 'POST') {
         const input = await body(req);
@@ -719,6 +956,6 @@ module.exports = async function handler(req, res) {
     return json(res, 404, { error: 'API endpoint not found.' });
   } catch (error) {
     console.error(error);
-    return json(res, 500, { error: 'Server request failed.' });
+    return json(res, Number(error.status) || 500, { error: error.status ? error.message : 'Server request failed.' });
   }
 };

@@ -1693,15 +1693,34 @@
 
     <form id="checkoutForm">
 
-      <h3 class="checkout-subhead">Delivery address</h3>
-
+      <h3 class="checkout-subhead">Contact information</h3>
       <div class="checkout-grid">
         <label>Full name<input type="text" name="full_name" required></label>
         <label>Phone<input type="tel" name="phone" required></label>
+      </div>
+
+      <h3 class="checkout-subhead">How would you like your order?</h3>
+      <div class="payment-options fulfillment-options">
+        <label class="payment-option"><input type="radio" name="fulfillment" value="delivery" checked><span>🚚 Home delivery</span></label>
+        <label class="payment-option"><input type="radio" name="fulfillment" value="pickup"><span>🏬 Pick up in store</span></label>
+      </div>
+      <label id="pickupBranchField" hidden>Pickup location
+        <select name="pickup_branch" required disabled>
+          <option value="">Choose a PawCare location</option>
+          <option>PawCare Manila BGC</option>
+          <option>PawCare Veterinary Clinic — Makati</option>
+          <option>PawCare Cebu City</option>
+        </select>
+      </label>
+
+      <div id="checkoutDeliveryFields">
+        <h3 class="checkout-subhead">Delivery address</h3>
+        <div class="checkout-grid">
         <label class="span-2">Address line<input type="text" name="line1" required></label>
         <label>City<input type="text" name="city" required></label>
         <label>Province<input type="text" name="province" required></label>
         <label>Postal code<input type="text" name="postal_code" required></label>
+        </div>
       </div>
 
       <h3 class="checkout-subhead">Payment method</h3>
@@ -2322,6 +2341,28 @@ document.addEventListener('DOMContentLoaded', function () {
   const checkoutForm = document.getElementById('checkoutForm');
   const checkoutBtn = document.getElementById('checkoutBtn');
 
+  function updateCheckoutFulfillment() {
+    const pickup = checkoutForm.fulfillment.value === 'pickup';
+    const addressFields = document.getElementById('checkoutDeliveryFields');
+    const pickupField = document.getElementById('pickupBranchField');
+    addressFields.hidden = pickup;
+    addressFields.querySelectorAll('input').forEach(input => { input.required = !pickup; });
+    pickupField.hidden = !pickup;
+    pickupField.querySelector('select').disabled = !pickup;
+    renderCheckoutSummary();
+  }
+
+  function renderCheckoutSummary() {
+    const subtotal = cartSubtotal();
+    const pickup = checkoutForm.fulfillment.value === 'pickup';
+    const shipping = pickup ? 0 : subtotal >= 50 ? 0 : 4.99;
+    document.getElementById('checkoutSummary').innerHTML = `
+      <div class="checkout-summary__row"><span>Subtotal</span><span>${money(subtotal)}</span></div>
+      <div class="checkout-summary__row"><span>${pickup ? 'Store pickup' : 'Shipping'}</span><span>${shipping === 0 ? 'Free' : money(shipping)}</span></div>
+      <div class="checkout-summary__row total"><span>Total</span><span>${money(subtotal + shipping)}</span></div>
+    `;
+  }
+
   function openCheckout() {
     if (state.cart.length === 0) { showToast('Your cart is empty.'); return; }
     if (!state.user) {
@@ -2330,13 +2371,7 @@ document.addEventListener('DOMContentLoaded', function () {
       showToast('Please sign in to check out.');
       return;
     }
-    const subtotal = cartSubtotal();
-    const shipping = subtotal >= 50 ? 0 : 4.99;
-    document.getElementById('checkoutSummary').innerHTML = `
-      <div class="checkout-summary__row"><span>Subtotal</span><span>${money(subtotal)}</span></div>
-      <div class="checkout-summary__row"><span>Shipping</span><span>${shipping === 0 ? 'Free' : money(shipping)}</span></div>
-      <div class="checkout-summary__row total"><span>Total</span><span>${money(subtotal + shipping)}</span></div>
-    `;
+    updateCheckoutFulfillment();
     document.getElementById('checkoutError').hidden = true;
     closeCart();
     checkoutOverlay.classList.add('open');
@@ -2345,6 +2380,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function closeCheckout() { checkoutOverlay.classList.remove('open'); }
 
   if (checkoutBtn) checkoutBtn.addEventListener('click', openCheckout);
+  if (checkoutForm) checkoutForm.addEventListener('change', event => {
+    if (event.target.name === 'fulfillment') updateCheckoutFulfillment();
+  });
   if (checkoutClose) checkoutClose.addEventListener('click', closeCheckout);
   if (checkoutOverlay) {
     checkoutOverlay.addEventListener('click', function (event) {
@@ -2369,6 +2407,8 @@ document.addEventListener('DOMContentLoaded', function () {
           province: checkoutForm.province.value,
           postal_code: checkoutForm.postal_code.value,
           payment_method: checkoutForm.payment_method.value,
+          fulfillment: checkoutForm.fulfillment.value,
+          pickup_branch: checkoutForm.pickup_branch.value,
         };
         const result = await api('api/checkout.php', { method: 'POST', body: JSON.stringify(payload) });
         state.cart = [];
