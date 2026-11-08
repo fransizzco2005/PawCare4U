@@ -157,6 +157,23 @@ module.exports = async function handler(req, res) {
 
   try {
     if (pathname === 'ping') return json(res, 200, { ok: true, runtime: 'node', backend: 'supabase' });
+    if (pathname === 'home_stats') {
+      let visits;
+      if (req.method === 'POST') {
+        const result = await pool.query('UPDATE site_stats SET visits=visits+1 WHERE id=1 RETURNING visits');
+        visits = result.rows[0]?.visits;
+      } else if (req.method === 'GET') {
+        const result = await pool.query('SELECT visits FROM site_stats WHERE id=1');
+        visits = result.rows[0]?.visits;
+      } else {
+        return json(res, 405, { error: 'Method not allowed.' });
+      }
+      if (visits === undefined) throw new Error('Homepage statistics are not initialized.');
+      const rating = await pool.query(
+        'SELECT COUNT(rating)::int AS count,COALESCE(AVG(rating),0)::numeric(3,2) AS average FROM product_feedback WHERE user_id IS NOT NULL AND rating IS NOT NULL'
+      );
+      return json(res, 200, { visits: Number(visits), rating: rating.rows[0] });
+    }
     if (pathname === 'health') {
       const result = await pool.query('SELECT COUNT(*)::int AS product_count FROM products');
       return json(res, 200, { ok: true, database: 'supabase', product_count: result.rows[0].product_count });

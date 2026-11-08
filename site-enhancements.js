@@ -10,6 +10,33 @@
       .then(async r=>{const raw=await r.text();let d={};try{d=raw?JSON.parse(raw):{}}catch(_){throw new Error('Server returned invalid JSON.')}if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;});
   }
 
+  if(isHome){
+    const proof=document.querySelector('.hero-live-proof');
+    const rating=proof?.querySelector('[data-home-rating]');
+    const ratingCount=proof?.querySelector('[data-home-rating-count]');
+    const visits=proof?.querySelector('[data-home-visits]');
+    const loadHomeStats=async countVisit=>{
+      try{
+        const stats=await api('api/home_stats.php',{method:countVisit?'POST':'GET',...(countVisit?{body:'{}'}:{})});
+        rating.textContent=Number(stats.rating.count)>0?`${Number(stats.rating.average).toFixed(1)} / 5`:'—';
+        ratingCount.textContent=Number(stats.rating.count)>0?`(${Number(stats.rating.count).toLocaleString()} reviews)`:'No reviews yet';
+        visits.textContent=Number(stats.visits).toLocaleString();
+        proof.dataset.statsState='ready';
+      }catch(error){
+        proof.dataset.statsState='error';
+        proof.setAttribute('aria-label','Live PawCare statistics are temporarily unavailable.');
+        rating.textContent='—';
+        ratingCount.textContent='Unavailable';
+        visits.textContent='—';
+        console.error('Unable to load PawCare homepage statistics:',error);
+      }
+    };
+    if(proof&&rating&&ratingCount&&visits){
+      loadHomeStats(true);
+      window.setInterval(()=>loadHomeStats(false),30000);
+    }
+  }
+
   /* The first home visit waits for the visitor to start; tab returns never replay it. */
   function runWelcomeScene(onDone){
     if(!isHome || sessionStorage.getItem('pawcareWelcomeSeen')==='1'){onDone?.();return;}

@@ -22,9 +22,10 @@
 6. Apply `supabase/migrations/20261108090000_product_messages_inventory.sql` for customer/owner product messaging and preorder requests.
 7. Apply `supabase/migrations/20261108140000_order_cancellation_pickup_product_upload.sql` for order cancellation, pickup orders, reservation cancellation reasons, and the product image bucket.
 8. Apply `supabase/migrations/20261108180000_owner_order_reservation_trash.sql` to enable the owner-only order and reservation trash.
-9. Set `SUPABASE_SERVICE_ROLE_KEY` in `.env` and hosting environment variables so owner product image uploads can write to the private server-side storage API. Never expose this key in browser code.
-10. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
-11. For the alternate MySQL schema, import `schema.sql` (or `database/pawcare.sql`); apply `database/migration_product_messages_inventory.sql` to an existing MySQL schema.
+9. Apply `supabase/migrations/20261108193000_homepage_visit_stats.sql` to enable the live homepage visit counter.
+10. Set `SUPABASE_SERVICE_ROLE_KEY` in `.env` and hosting environment variables so owner product image uploads can write to the private server-side storage API. Never expose this key in browser code.
+11. Open the project through `http://localhost/...`, not by double-clicking the HTML file.
+12. For the alternate MySQL schema, import `schema.sql` (or `database/pawcare.sql`); apply `database/migration_product_messages_inventory.sql` to an existing MySQL schema.
 
 ## PHP hosting requirement
 PawCare must run on a host that executes PHP and POST requests. A static-only host will return HTTP 405 because login, registration, cart, checkout, and owner APIs use PHP endpoints.
