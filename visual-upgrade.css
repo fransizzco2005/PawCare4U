@@ -1914,14 +1914,14 @@ body.home-page .hero-live-proof:hover{
 .home-qr-card{
   position:fixed;
   z-index:1100;
-  right:20px;
-  bottom:20px;
+  right:6px;
+  bottom:10px;
   display:flex;
-  width:128px;
+  width:108px;
   flex-direction:column;
   align-items:center;
-  gap:5px;
-  padding:10px 9px 8px;
+  gap:2px;
+  padding:4px 5px;
   border:1px solid rgba(255,255,255,.7);
   border-radius:14px;
   background:#fff;
@@ -1935,9 +1935,9 @@ body.home-page .hero-live-proof:hover{
   transform:translateY(-3px);
   box-shadow:0 16px 38px rgba(0,8,24,.45);
 }
-.home-qr-card__label{font-size:10px;font-weight:850;letter-spacing:.1em;line-height:1.2}
-.home-qr-card__code{width:100px;height:100px;object-fit:contain;background:#fff}
-.home-qr-card__hint{font-size:9px;font-weight:650;line-height:1.25;color:#52647a}
+.home-qr-card__label{font-size:9px;font-weight:850;letter-spacing:.08em;line-height:1.2}
+.home-qr-card__code{width:86px;height:86px;object-fit:contain;background:#fff}
+.home-qr-card__hint{display:none}
 body.home-page #shopView .hero-art__caption{right:auto;left:16px;max-width:calc(100% - 180px)}
 body.home-page .music-toggle{z-index:2147483001}
 @keyframes heroProofEnter{from{opacity:0;translate:0 -10px;scale:.96}to{opacity:1;translate:0 0;scale:1}}
@@ -1945,8 +1945,8 @@ body.home-page .music-toggle{z-index:2147483001}
 @keyframes heroProofPulse{0%,100%{opacity:1}50%{opacity:.52}}
 @media(max-width:760px){
   body.home-page .hero-live-proof{top:12px;right:12px;width:min(230px,calc(100% - 24px));padding:8px 10px}
-  body.home-page .home-qr-card{right:12px;bottom:76px;width:116px;padding:8px 7px 7px}
-  body.home-page .home-qr-card__code{width:88px;height:88px}
+  body.home-page .home-qr-card{right:8px;bottom:76px;width:104px}
+  body.home-page .home-qr-card__code{width:82px;height:82px}
 }
 @media(prefers-reduced-motion:reduce){
   body.home-page .hero-live-proof,.hero-live-proof__label i{animation:none!important}

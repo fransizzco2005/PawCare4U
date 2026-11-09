@@ -4,6 +4,7 @@
   const body=document.body;
   const loader=document.getElementById('pageLoader');
   const isHome=body.classList.contains('home-page');
+  let startWelcomeMusic=()=>{};
 
   function api(path, options={}){
     return fetch(path,{credentials:'same-origin',headers:{'Content-Type':'application/json'},...options})
@@ -86,7 +87,10 @@
       const revealDuration=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:900;
       setTimeout(()=>{scene.remove();reveal.remove();onDone?.()},revealDuration);
     };
-    scene.querySelector('.pawcare-welcome__start').addEventListener('click',finish);
+    scene.querySelector('.pawcare-welcome__start').addEventListener('click',()=>{
+      startWelcomeMusic();
+      finish();
+    });
     const onKeyDown=event=>{if(event.key==='Escape'){finish();document.removeEventListener('keydown',onKeyDown)}};
     document.addEventListener('keydown',onKeyDown);
     requestAnimationFrame(()=>scene.classList.add('is-active'));
@@ -360,14 +364,39 @@
       const request=audio.play();
       if(request&&typeof request.catch==='function'){
         request.catch(error=>{
-          if(error.name!=='NotAllowedError')console.error('Unable to play PawCare background music:',error);
+          if(error.name==='NotAllowedError'&&isEnabled()&&!audio.muted){
+            audio.muted=true;
+            const mutedRequest=audio.play();
+            if(mutedRequest&&typeof mutedRequest.catch==='function'){
+              mutedRequest.catch(mutedError=>{
+                if(mutedError.name!=='NotAllowedError')console.error('Unable to play PawCare background music:',mutedError);
+                updateMusicButton();
+              });
+            }
+          }else if(error.name!=='NotAllowedError'){
+            console.error('Unable to play PawCare background music:',error);
+          }
           updateMusicButton();
         });
       }
     };
 
-    audio.muted=true;
+    startWelcomeMusic=()=>{
+      enable();
+      audio.muted=false;
+      tryPlay();
+    };
+
+    audio.muted=!isEnabled();
     tryPlay();
+
+    const resumeAudiblePlayback=event=>{
+      if(!isEnabled()||event.target.closest?.('#musicToggle'))return;
+      audio.muted=false;
+      tryPlay();
+    };
+    document.addEventListener('pointerdown',resumeAudiblePlayback,{capture:true,once:true});
+    document.addEventListener('keydown',resumeAudiblePlayback,{capture:true,once:true});
 
     audio.addEventListener('timeupdate',save);audio.addEventListener('pause',save);
     window.addEventListener('pagehide',save);window.addEventListener('beforeunload',save);
