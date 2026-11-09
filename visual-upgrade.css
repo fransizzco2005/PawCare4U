@@ -1917,7 +1917,7 @@ body.home-page .hero-live-proof:hover{
   right:20px;
   bottom:20px;
   display:flex;
-  width:142px;
+  width:128px;
   flex-direction:column;
   align-items:center;
   gap:5px;
@@ -1936,16 +1936,17 @@ body.home-page .hero-live-proof:hover{
   box-shadow:0 16px 38px rgba(0,8,24,.45);
 }
 .home-qr-card__label{font-size:10px;font-weight:850;letter-spacing:.1em;line-height:1.2}
-.home-qr-card__code{width:112px;height:112px;object-fit:contain;background:#fff}
+.home-qr-card__code{width:100px;height:100px;object-fit:contain;background:#fff}
 .home-qr-card__hint{font-size:9px;font-weight:650;line-height:1.25;color:#52647a}
 body.home-page #shopView .hero-art__caption{right:auto;left:16px;max-width:calc(100% - 180px)}
+body.home-page .music-toggle{z-index:2147483001}
 @keyframes heroProofEnter{from{opacity:0;translate:0 -10px;scale:.96}to{opacity:1;translate:0 0;scale:1}}
 @keyframes heroProofFloat{0%,100%{translate:0 0}50%{translate:0 -3px}}
 @keyframes heroProofPulse{0%,100%{opacity:1}50%{opacity:.52}}
 @media(max-width:760px){
   body.home-page .hero-live-proof{top:12px;right:12px;width:min(230px,calc(100% - 24px));padding:8px 10px}
-  body.home-page .home-qr-card{right:12px;bottom:76px;width:124px;padding:8px 7px 7px}
-  body.home-page .home-qr-card__code{width:96px;height:96px}
+  body.home-page .home-qr-card{right:12px;bottom:76px;width:116px;padding:8px 7px 7px}
+  body.home-page .home-qr-card__code{width:88px;height:88px}
 }
 @media(prefers-reduced-motion:reduce){
   body.home-page .hero-live-proof,.hero-live-proof__label i{animation:none!important}

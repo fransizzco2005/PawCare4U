@@ -4,7 +4,6 @@
   const body=document.body;
   const loader=document.getElementById('pageLoader');
   const isHome=body.classList.contains('home-page');
-  let startWelcomeMusic=()=>{};
 
   function api(path, options={}){
     return fetch(path,{credentials:'same-origin',headers:{'Content-Type':'application/json'},...options})
@@ -87,10 +86,7 @@
       const revealDuration=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:900;
       setTimeout(()=>{scene.remove();reveal.remove();onDone?.()},revealDuration);
     };
-    scene.querySelector('.pawcare-welcome__start').addEventListener('click',()=>{
-      startWelcomeMusic();
-      finish();
-    });
+    scene.querySelector('.pawcare-welcome__start').addEventListener('click',finish);
     const onKeyDown=event=>{if(event.key==='Escape'){finish();document.removeEventListener('keydown',onKeyDown)}};
     document.addEventListener('keydown',onKeyDown);
     requestAnimationFrame(()=>scene.classList.add('is-active'));
@@ -358,7 +354,6 @@
     const isEnabled=()=>localStorage.getItem('pawcareMusicEnabled')!=='0';
     const enable=()=>localStorage.setItem('pawcareMusicEnabled','1');
     const disable=()=>localStorage.setItem('pawcareMusicEnabled','0');
-    let unmuted=false;
     const tryPlay=()=>{
       if(!isEnabled())return;
       setTime();
@@ -371,26 +366,8 @@
       }
     };
 
-    startWelcomeMusic=()=>{
-      enable();
-      unmuted=true;
-      audio.muted=false;
-      tryPlay();
-    };
-
     audio.muted=true;
     tryPlay();
-
-    const unmute=()=>{
-      if(unmuted||!isEnabled())return;
-      unmuted=true;
-      audio.muted=false;
-      tryPlay();
-    };
-    ['pointerdown','keydown','touchstart','mousemove','wheel','scroll'].forEach(ev=>
-      document.addEventListener(ev,unmute,{once:true,passive:true})
-    );
-    setTimeout(unmute,300); // some browsers allow it outright, no need to wait
 
     audio.addEventListener('timeupdate',save);audio.addEventListener('pause',save);
     window.addEventListener('pagehide',save);window.addEventListener('beforeunload',save);
@@ -426,7 +403,7 @@
       updateMusicButton();
     });
     b.onclick=()=>{
-      if(audio.paused||audio.muted){enable();unmuted=true;audio.muted=false;tryPlay();}
+      if(audio.paused||audio.muted){enable();audio.muted=false;tryPlay();}
       else{disable();audio.pause();save();}
     };
     updateMusicButton();
