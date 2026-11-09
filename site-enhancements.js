@@ -12,13 +12,31 @@
   }
 
   if(isHome){
-    const qrLink=document.querySelector('[data-home-qr-link]');
+    const qrCard=document.querySelector('[data-home-qr-card]');
     const qrImage=document.querySelector('[data-home-qr-image]');
-    if(qrLink&&qrImage){
+    if(qrCard&&qrImage){
       const targetUrl=new URL('index.html',location.href).href;
-      qrLink.href=targetUrl;
-      qrImage.src=`https://api.qrserver.com/v1/create-qr-code/?size=180x180&format=svg&margin=4&data=${encodeURIComponent(targetUrl)}`;
-      document.body.appendChild(qrLink);
+      qrImage.src=`https://api.qrserver.com/v1/create-qr-code/?size=320x320&format=svg&margin=4&data=${encodeURIComponent(targetUrl)}`;
+      document.body.appendChild(qrCard);
+
+      const qrDialog=document.createElement('dialog');
+      qrDialog.className='home-qr-dialog';
+      qrDialog.setAttribute('aria-label','Scan QR code to open PawCare');
+      qrDialog.innerHTML=`
+        <button class="home-qr-dialog__close" type="button" aria-label="Close enlarged QR code">×</button>
+        <p class="home-qr-dialog__title">SCAN TO VISIT PAWCARE</p>
+        <img class="home-qr-dialog__code" alt="Enlarged QR code to open PawCare">
+        <a class="home-qr-dialog__link" target="_blank" rel="noopener noreferrer">Open PawCare</a>`;
+      const dialogImage=qrDialog.querySelector('.home-qr-dialog__code');
+      const dialogLink=qrDialog.querySelector('.home-qr-dialog__link');
+      dialogImage.src=qrImage.src;
+      dialogLink.href=targetUrl;
+      document.body.appendChild(qrDialog);
+      qrCard.addEventListener('click',()=>qrDialog.showModal());
+      qrDialog.querySelector('.home-qr-dialog__close').addEventListener('click',()=>qrDialog.close());
+      qrDialog.addEventListener('click',event=>{
+        if(event.target===qrDialog)qrDialog.close();
+      });
     }
 
     const proof=document.querySelector('.hero-live-proof');
@@ -67,6 +85,7 @@
           <h1 class="pawcare-welcome__title">Every Pet Deserves the Best</h1>
           <p class="pawcare-welcome__subtitle">Everything your pet needs to thrive. Shop top-tier nutrition, interactive toys, and everyday care essentials today!</p>
           <button class="pawcare-welcome__start" type="button"><span>Start Shopping</span><i aria-hidden="true">→</i></button>
+          <p class="pawcare-welcome__music-note">Background music starts when you begin.</p>
         </div>
         <div class="pawcare-welcome__gallery pawcare-welcome__gallery--right" aria-hidden="true">
           <figure class="pawcare-welcome__photo pawcare-welcome__photo--cat"><img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&amp;fit=crop&amp;w=760&amp;q=88" alt="" fetchpriority="high"></figure>
@@ -87,7 +106,9 @@
       const revealDuration=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:900;
       setTimeout(()=>{scene.remove();reveal.remove();onDone?.()},revealDuration);
     };
-    scene.querySelector('.pawcare-welcome__start').addEventListener('click',()=>{
+    const startButton=scene.querySelector('.pawcare-welcome__start');
+    startButton.addEventListener('pointerdown',startWelcomeMusic);
+    startButton.addEventListener('click',()=>{
       startWelcomeMusic();
       finish();
     });

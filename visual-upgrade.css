@@ -1774,6 +1774,7 @@ body.page-rodent .catalog-hero-visual{margin-top:-26px!important;top:-8px!import
 .pawcare-welcome__eyebrow{margin:0 0 22px;color:#8ee4dc;font-size:clamp(11px,1vw,13px);font-weight:800;letter-spacing:.2em}
 .pawcare-welcome__title{max-width:700px;margin:0;color:#f7fbff;font-size:clamp(44px,5.3vw,74px);font-weight:800;line-height:1.04;letter-spacing:-.045em;text-wrap:balance;text-shadow:0 8px 32px rgba(0,0,0,.22)}
 .pawcare-welcome__subtitle{max-width:600px;margin:24px auto 0;color:#c8d8e6;font-size:clamp(16px,1.55vw,19px);font-weight:400;line-height:1.7;text-wrap:pretty}
+.pawcare-welcome__music-note{margin:12px 0 0;color:#a9c5d8;font-size:12px;line-height:1.4}
 .pawcare-welcome__start{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:14px;min-width:218px;margin-top:34px;padding:16px 24px;border:1px solid rgba(191,245,255,.65);border-radius:16px;background:linear-gradient(145deg,#35cdb9,#1684bd 72%,#116caa);box-shadow:0 6px 0 #07517d,0 12px 25px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.45);color:#fff;font-family:inherit;font-size:16px;font-weight:800;line-height:1;letter-spacing:.02em;cursor:pointer;transform:translateY(0);transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
 .pawcare-welcome__start:hover{transform:translateY(-4px);filter:brightness(1.12);box-shadow:0 10px 0 #07517d,0 18px 34px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.55)}
 .pawcare-welcome__start:active{transform:translateY(3px);box-shadow:0 3px 0 #07517d,0 7px 16px rgba(0,0,0,.28),inset 0 2px 6px rgba(0,0,0,.18)}
@@ -1917,27 +1918,63 @@ body.home-page .hero-live-proof:hover{
   right:6px;
   bottom:10px;
   display:flex;
-  width:108px;
+  width:92px;
   flex-direction:column;
   align-items:center;
-  gap:2px;
-  padding:4px 5px;
+  gap:1px;
+  padding:4px;
   border:1px solid rgba(255,255,255,.7);
   border-radius:14px;
   background:#fff;
   box-shadow:0 12px 32px rgba(0,8,24,.35);
   color:#10233b;
+  font:inherit;
   text-align:center;
-  text-decoration:none;
+  cursor:pointer;
   transition:transform .2s ease,box-shadow .2s ease;
 }
 .home-qr-card:hover,.home-qr-card:focus-visible{
   transform:translateY(-3px);
   box-shadow:0 16px 38px rgba(0,8,24,.45);
 }
-.home-qr-card__label{font-size:9px;font-weight:850;letter-spacing:.08em;line-height:1.2}
-.home-qr-card__code{width:86px;height:86px;object-fit:contain;background:#fff}
+.home-qr-card__label{font-size:8px;font-weight:850;letter-spacing:.06em;line-height:1.2}
+.home-qr-card__code{width:74px;height:74px;object-fit:contain;background:#fff}
 .home-qr-card__hint{display:none}
+.home-qr-dialog{
+  position:fixed;
+  inset:50% auto auto 50%;
+  width:min(340px,calc(100vw - 32px));
+  max-width:none;
+  max-height:calc(100dvh - 32px);
+  margin:0;
+  padding:22px;
+  overflow:visible;
+  border:1px solid rgba(198,231,255,.3);
+  border-radius:20px;
+  background:#fff;
+  box-shadow:0 24px 80px rgba(0,8,24,.5);
+  color:#10233b;
+  text-align:center;
+  transform:translate(-50%,-50%);
+}
+.home-qr-dialog::backdrop{background:rgba(2,10,22,.72);backdrop-filter:blur(4px)}
+.home-qr-dialog__close{
+  position:absolute;
+  top:8px;
+  right:10px;
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:50%;
+  background:#edf3f9;
+  color:#233b55;
+  font-size:24px;
+  line-height:1;
+  cursor:pointer;
+}
+.home-qr-dialog__title{margin:8px 26px 12px;font-size:12px;font-weight:850;letter-spacing:.08em}
+.home-qr-dialog__code{width:min(260px,70vw);height:auto;margin:0 auto}
+.home-qr-dialog__link{display:inline-block;margin-top:12px;color:#126ac2;font-size:13px;font-weight:750}
 body.home-page #shopView .hero-art__caption{right:auto;left:16px;max-width:calc(100% - 180px)}
 body.home-page .music-toggle{z-index:2147483001}
 @keyframes heroProofEnter{from{opacity:0;translate:0 -10px;scale:.96}to{opacity:1;translate:0 0;scale:1}}
@@ -1945,8 +1982,8 @@ body.home-page .music-toggle{z-index:2147483001}
 @keyframes heroProofPulse{0%,100%{opacity:1}50%{opacity:.52}}
 @media(max-width:760px){
   body.home-page .hero-live-proof{top:12px;right:12px;width:min(230px,calc(100% - 24px));padding:8px 10px}
-  body.home-page .home-qr-card{right:8px;bottom:76px;width:104px}
-  body.home-page .home-qr-card__code{width:82px;height:82px}
+  body.home-page .home-qr-card{right:8px;bottom:76px;width:88px}
+  body.home-page .home-qr-card__code{width:70px;height:70px}
 }
 @media(prefers-reduced-motion:reduce){
   body.home-page .hero-live-proof,.hero-live-proof__label i{animation:none!important}
