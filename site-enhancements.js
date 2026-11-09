@@ -4,6 +4,7 @@
   const body=document.body;
   const loader=document.getElementById('pageLoader');
   const isHome=body.classList.contains('home-page');
+  let startWelcomeMusic=()=>{};
 
   function api(path, options={}){
     return fetch(path,{credentials:'same-origin',headers:{'Content-Type':'application/json'},...options})
@@ -17,6 +18,7 @@
       const targetUrl=new URL('index.html',location.href).href;
       qrLink.href=targetUrl;
       qrImage.src=`https://api.qrserver.com/v1/create-qr-code/?size=180x180&format=svg&margin=4&data=${encodeURIComponent(targetUrl)}`;
+      document.body.appendChild(qrLink);
     }
 
     const proof=document.querySelector('.hero-live-proof');
@@ -85,7 +87,10 @@
       const revealDuration=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:900;
       setTimeout(()=>{scene.remove();reveal.remove();onDone?.()},revealDuration);
     };
-    scene.querySelector('.pawcare-welcome__start').addEventListener('click',finish);
+    scene.querySelector('.pawcare-welcome__start').addEventListener('click',()=>{
+      startWelcomeMusic();
+      finish();
+    });
     const onKeyDown=event=>{if(event.key==='Escape'){finish();document.removeEventListener('keydown',onKeyDown)}};
     document.addEventListener('keydown',onKeyDown);
     requestAnimationFrame(()=>scene.classList.add('is-active'));
@@ -340,7 +345,7 @@
     const getSavedAt=()=>Number(localStorage.getItem('pawcareMusicSavedAt')||Date.now());
     const resumeTime=()=>{
       const base=getTime(), age=(Date.now()-getSavedAt())/1000, d=audio.duration;
-      return Number.isFinite(d)&&d>0&&age>=0&&age<=30 ? (base+age)%d : base;
+      return Number.isFinite(d)&&d>0&&age>=0 ? (base+age)%d : base;
     };
     let applied=false;
     const setTime=()=>{if(applied)return;try{audio.currentTime=resumeTime();applied=true}catch(_){}};
@@ -353,6 +358,7 @@
     const isEnabled=()=>localStorage.getItem('pawcareMusicEnabled')!=='0';
     const enable=()=>localStorage.setItem('pawcareMusicEnabled','1');
     const disable=()=>localStorage.setItem('pawcareMusicEnabled','0');
+    let unmuted=false;
     const tryPlay=()=>{
       if(!isEnabled())return;
       setTime();
@@ -365,10 +371,16 @@
       }
     };
 
+    startWelcomeMusic=()=>{
+      enable();
+      unmuted=true;
+      audio.muted=false;
+      tryPlay();
+    };
+
     audio.muted=true;
     tryPlay();
 
-    let unmuted=false;
     const unmute=()=>{
       if(unmuted||!isEnabled())return;
       unmuted=true;

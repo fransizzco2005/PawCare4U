@@ -1912,10 +1912,10 @@ body.home-page .hero-live-proof:hover{
 .hero-live-proof__stat small{color:#bfd0df;font-size:9px;line-height:1.2;white-space:nowrap}
 .hero-live-proof__divider{width:1px;height:27px;background:rgba(219,237,255,.22)}
 .home-qr-card{
-  position:absolute;
-  z-index:4;
-  right:16px;
-  bottom:16px;
+  position:fixed;
+  z-index:1100;
+  right:20px;
+  bottom:20px;
   display:flex;
   width:142px;
   flex-direction:column;
@@ -1944,6 +1944,8 @@ body.home-page #shopView .hero-art__caption{right:auto;left:16px;max-width:calc(
 @keyframes heroProofPulse{0%,100%{opacity:1}50%{opacity:.52}}
 @media(max-width:760px){
   body.home-page .hero-live-proof{top:12px;right:12px;width:min(230px,calc(100% - 24px));padding:8px 10px}
+  body.home-page .home-qr-card{right:12px;bottom:76px;width:124px;padding:8px 7px 7px}
+  body.home-page .home-qr-card__code{width:96px;height:96px}
 }
 @media(prefers-reduced-motion:reduce){
   body.home-page .hero-live-proof,.hero-live-proof__label i{animation:none!important}
