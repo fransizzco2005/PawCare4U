@@ -11,6 +11,14 @@
   }
 
   if(isHome){
+    const qrLink=document.querySelector('[data-home-qr-link]');
+    const qrImage=document.querySelector('[data-home-qr-image]');
+    if(qrLink&&qrImage){
+      const targetUrl=new URL('index.html',location.href).href;
+      qrLink.href=targetUrl;
+      qrImage.src=`https://api.qrserver.com/v1/create-qr-code/?size=180x180&format=svg&margin=4&data=${encodeURIComponent(targetUrl)}`;
+    }
+
     const proof=document.querySelector('.hero-live-proof');
     const rating=proof?.querySelector('[data-home-rating]');
     const ratingCount=proof?.querySelector('[data-home-rating-count]');
@@ -323,12 +331,8 @@
 
   function toast(msg){let t=document.getElementById('pawcareEnhanceToast');if(!t){t=document.createElement('div');t.id='pawcareEnhanceToast';t.className='catalog-toast';document.body.appendChild(t)}t.textContent=msg;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2200)}
 
-  /* Music persists between pages and autoplays without needing a click.
-     Browsers block audible autoplay, but they always allow MUTED autoplay,
-     and they do NOT require a gesture just to unmute media that is already
-     playing. So: start muted immediately, then unmute the instant we see
-     ANY sign of activity (even a mouse move) rather than waiting for a
-     click specifically on the music icon. */
+  /* Music persists between pages. Start muted for autoplay, then unmute on
+     interaction because browsers block audible autoplay by default. */
   const audio=document.getElementById('pawcareMusic')||document.querySelector('audio[data-pawcare-music]');
   if(audio){
     audio.volume=.18;
@@ -349,7 +353,17 @@
     const isEnabled=()=>localStorage.getItem('pawcareMusicEnabled')!=='0';
     const enable=()=>localStorage.setItem('pawcareMusicEnabled','1');
     const disable=()=>localStorage.setItem('pawcareMusicEnabled','0');
-    const tryPlay=()=>{if(!isEnabled())return;setTime();audio.play().catch(()=>{})};
+    const tryPlay=()=>{
+      if(!isEnabled())return;
+      setTime();
+      const request=audio.play();
+      if(request&&typeof request.catch==='function'){
+        request.catch(error=>{
+          if(error.name!=='NotAllowedError')console.error('Unable to play PawCare background music:',error);
+          updateMusicButton();
+        });
+      }
+    };
 
     audio.muted=true;
     tryPlay();
@@ -376,11 +390,34 @@
       if(!document.hidden && isEnabled() && audio.paused) tryPlay();
     });
 
-    let b=document.getElementById('musicToggle');if(!b){b=document.createElement('button');b.id='musicToggle';b.type='button';b.className='music-toggle';b.textContent='♫';document.body.appendChild(b)}
+    let b=document.getElementById('musicToggle');
+    if(!b){
+      b=document.createElement('button');
+      b.id='musicToggle';
+      b.type='button';
+      b.className='music-toggle';
+      b.textContent='♫';
+      document.body.appendChild(b);
+    }
+    const updateMusicButton=()=>{
+      const isPlaying=!audio.paused&&!audio.muted;
+      b.classList.toggle('is-playing',isPlaying);
+      b.setAttribute('aria-label',isPlaying?'Pause background music':'Play background music');
+      b.setAttribute('aria-pressed',String(isPlaying));
+      b.title=isPlaying?'Pause background music':'Play background music';
+    };
+    audio.addEventListener('play',updateMusicButton);
+    audio.addEventListener('pause',updateMusicButton);
+    audio.addEventListener('volumechange',updateMusicButton);
+    audio.addEventListener('error',()=>{
+      console.error('Unable to load PawCare background music:',audio.error);
+      updateMusicButton();
+    });
     b.onclick=()=>{
       if(audio.paused||audio.muted){enable();unmuted=true;audio.muted=false;tryPlay();}
       else{disable();audio.pause();save();}
     };
+    updateMusicButton();
   }
 })();
 
