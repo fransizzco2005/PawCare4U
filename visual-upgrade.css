@@ -881,7 +881,7 @@ body:not(.home-page) .nav-menu a.active{
   color:#171c23!important;
   font-size:15px;
   line-height:1.7;
-  text-align:center;
+  text-align:left;
 }
 .page-services .services-list-modern .section-heading-modern p{color:#66758a!important}
 .page-services .service-card-modern-grid{
